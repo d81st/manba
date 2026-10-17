@@ -8,6 +8,7 @@ const t = getMessages();
 // Sections that already have pages.
 const LINKS: Partial<Record<keyof Messages["home"]["sections"], string>> = {
   library: "/quran",
+  quranMap: "/quran/map",
 };
 
 export default function Home() {

@@ -16,6 +16,9 @@ export const metadata: Metadata = { title: t.title };
 export default function QuranPage() {
   return (
     <main className="container">
+      <nav className={styles.crumbs}>
+        <Link href="/quran/map">{t.map.title} →</Link>
+      </nav>
       <h1 className={styles.title}>{t.title}</h1>
       <p className="muted">{t.subtitle}</p>
       <SearchForm />
