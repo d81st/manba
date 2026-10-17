@@ -4,6 +4,7 @@ export const ru = {
   appTagline: "Энциклопедия ислама по первоисточникам",
   nav: {
     signOut: "Выйти",
+    changePassword: "Сменить пароль",
   },
   login: {
     title: "Вход",

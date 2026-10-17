@@ -35,9 +35,15 @@ npm run dev                  # http://localhost:3000
 
 1. **Sign In / Providers → Email:** выключить «Allow new users to sign up».
 2. **URL Configuration:** Site URL — адрес сайта на Render; в Redirect URLs добавить его же с `/**`.
-3. **Emails → Invite user:** в шаблоне заменить ссылку на
-   `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite`.
-4. **Emails → Reset password:** ссылка
-   `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`.
 
-Пригласить человека: Authentication → Users → Invite user. Он получит письмо, перейдёт по ссылке и задаст пароль.
+Пригласить человека: Authentication → Users → Invite user. Он получит письмо, перейдёт по ссылке и задаст пароль. Сайт понимает стандартные письма Supabase, менять шаблоны не нужно.
+
+### Почта
+
+Без своего SMTP Supabase отправляет письма **только участникам команды проекта** (Organization → Team) и не чаще нескольких раз в час. Чтобы приглашать других людей, нужен свой SMTP (Authentication → Emails → Set up SMTP), например:
+
+- **Gmail:** `smtp.gmail.com`, порт `587`, логин — адрес Gmail, пароль — «пароль приложения» из настроек аккаунта Google (нужна двухэтапная проверка). Подходит для узкого круга, свой домен не нужен.
+- **Resend, Brevo и подобные** — когда появится свой домен.
+
+После подключения SMTP можно менять шаблоны писем. Для ссылок без токенов в адресе используйте
+`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite` (для сброса пароля — `type=recovery`).

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { getMessages } from "@/i18n";
 import { getCurrentUser } from "@/lib/auth";
@@ -45,6 +46,7 @@ async function Account() {
       <span className="muted">
         {t.home.signedInAs} {user.email}
       </span>
+      <Link href="/account/password">{t.nav.changePassword}</Link>
       <button className="button button-ghost" type="submit">
         {t.nav.signOut}
       </button>
