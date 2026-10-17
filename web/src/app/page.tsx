@@ -1,53 +1,46 @@
-import { Suspense } from "react";
-import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
-import { signOut } from "./actions";
+import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
+import { getMessages, type Messages } from "@/i18n";
 import styles from "./page.module.css";
 
 const t = getMessages();
 
+// Sections that already have pages.
+const LINKS: Partial<Record<keyof Messages["home"]["sections"], string>> = {
+  library: "/quran",
+};
+
 export default function Home() {
-  const sections = Object.values(t.home.sections);
+  const sections = Object.entries(t.home.sections) as [keyof typeof t.home.sections, string][];
 
   return (
     <>
-      <header className={styles.header}>
-        <div className={`container ${styles.headerInner}`}>
-          <div>
-            <p className={styles.brand}>{t.appName}</p>
-            <p className="muted">{t.appTagline}</p>
-          </div>
-          <Suspense fallback={<span className="muted">{t.home.loading}</span>}>
-            <Account />
-          </Suspense>
-        </div>
-      </header>
+      <SiteHeader />
       <main className="container">
         <h1 className={styles.title}>{t.home.sectionsTitle}</h1>
         <ul className={styles.grid}>
-          {sections.map((name) => (
-            <li key={name} className={`card ${styles.section}`}>
-              <span>{name}</span>
-              <span className={`muted ${styles.soon}`}>{t.home.soon}</span>
-            </li>
-          ))}
+          {sections.map(([key, name]) => {
+            const href = LINKS[key];
+            const body = (
+              <>
+                <span>{name}</span>
+                <span className={`muted ${styles.soon}`}>{href ? t.home.open : t.home.soon}</span>
+              </>
+            );
+            return (
+              <li key={key}>
+                {href ? (
+                  <Link href={href} className={`card ${styles.section} ${styles.link}`}>
+                    {body}
+                  </Link>
+                ) : (
+                  <div className={`card ${styles.section}`}>{body}</div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </main>
     </>
-  );
-}
-
-async function Account() {
-  const session = await requireSession();
-
-  return (
-    <form action={signOut} className={styles.account}>
-      <span className="muted">
-        {t.home.signedInAs} {session.login}
-      </span>
-      <button className="button button-ghost" type="submit">
-        {t.nav.signOut}
-      </button>
-    </form>
   );
 }
