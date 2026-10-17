@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { getMessages } from "@/i18n";
-import { getCurrentUser } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { signOut } from "./actions";
 import styles from "./page.module.css";
 
@@ -39,14 +38,13 @@ export default function Home() {
 }
 
 async function Account() {
-  const user = await getCurrentUser();
+  const session = await requireSession();
 
   return (
     <form action={signOut} className={styles.account}>
       <span className="muted">
-        {t.home.signedInAs} {user.email}
+        {t.home.signedInAs} {session.login}
       </span>
-      <Link href="/account/password">{t.nav.changePassword}</Link>
       <button className="button button-ghost" type="submit">
         {t.nav.signOut}
       </button>

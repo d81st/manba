@@ -7,14 +7,15 @@
 - [`docs/PLAN.md`](docs/PLAN.md) — план и журнал решений
 - [`docs/ADDRESSES.md`](docs/ADDRESSES.md) — черновик схемы адресов (на утверждении)
 - [`docs/SOURCES.md`](docs/SOURCES.md) — открытые корпуса-кандидаты и их лицензии
+- [`docs/REUSE.md`](docs/REUSE.md) — что взять из проектов avtoexpert и gameclub
 
 ## Сайт (`web/`)
 
-Next.js 16 + Supabase. Весь сайт закрыт входом; регистрация только по приглашению; индексация запрещена.
+Next.js 16. Весь сайт закрыт общим логином и паролем; индексация запрещена. Supabase подключится вместе с базой.
 
 ```bash
 cd web
-cp .env.example .env.local   # вставить publishable key из Supabase
+cp .env.example .env.local   # задать логин, пароль и SESSION_SECRET
 npm install
 npm run dev                  # http://localhost:3000
 ```
@@ -27,23 +28,18 @@ npm run dev                  # http://localhost:3000
 | --- | --- |
 | Код | GitHub `d81st/manba`, ветка `main` |
 | Сайт | Render, бесплатный план, Франкфурт (root: `web`) |
-| База и вход | Supabase `manba` (`kjxigiiahuxfwiikwwlx`), Франкфурт |
+| База (пока пустая) | Supabase `manba` (`kjxigiiahuxfwiikwwlx`), Франкфурт |
 
-### Настройки Supabase для входа по приглашению
+### Вход на время разработки
 
-В панели Supabase (Authentication):
+Весь сайт закрыт одним общим логином и паролем. Почта и учётные записи пользователей появятся позже.
 
-1. **Sign In / Providers → Email:** выключить «Allow new users to sign up».
-2. **URL Configuration:** Site URL — адрес сайта на Render; в Redirect URLs добавить его же с `/**`.
+Переменные окружения (на Render: сервис `manba` → Environment):
 
-Пригласить человека: Authentication → Users → Invite user. Он получит письмо, перейдёт по ссылке и задаст пароль. Сайт понимает стандартные письма Supabase, менять шаблоны не нужно.
+| Переменная | Что это |
+| --- | --- |
+| `SITE_LOGIN` | логин |
+| `SITE_PASSWORD` | пароль; после смены все выходят из сайта |
+| `SESSION_SECRET` | случайная строка от 32 символов (`openssl rand -base64 32`) |
 
-### Почта
-
-Без своего SMTP Supabase отправляет письма **только участникам команды проекта** (Organization → Team) и не чаще нескольких раз в час. Чтобы приглашать других людей, нужен свой SMTP (Authentication → Emails → Set up SMTP), например:
-
-- **Gmail:** `smtp.gmail.com`, порт `587`, логин — адрес Gmail, пароль — «пароль приложения» из настроек аккаунта Google (нужна двухэтапная проверка). Подходит для узкого круга, свой домен не нужен.
-- **Resend, Brevo и подобные** — когда появится свой домен.
-
-После подключения SMTP можно менять шаблоны писем. Для ссылок без токенов в адресе используйте
-`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite` (для сброса пароля — `type=recovery`).
+Если какой-то переменной нет, войти нельзя (сайт остаётся закрытым). После 10 неверных попыток с одного адреса вход закрывается на 15 минут.

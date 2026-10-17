@@ -18,7 +18,7 @@ export default function LoginPage() {
         <Suspense>
           <LoginForm t={t.login} />
         </Suspense>
-        <p className={`muted ${styles.note}`}>{t.login.inviteOnly}</p>
+        <p className={`muted ${styles.note}`}>{t.login.closed}</p>
       </div>
     </main>
   );

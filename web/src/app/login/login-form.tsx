@@ -16,13 +16,15 @@ export function LoginForm({ t }: { t: Messages["login"] }) {
     <form action={action} className="form">
       <input type="hidden" name="next" value={next} />
       <div className="field">
-        <label htmlFor="email">{t.email}</label>
+        <label htmlFor="login">{t.login}</label>
         <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          defaultValue={state.email}
+          id="login"
+          name="login"
+          type="text"
+          autoComplete="username"
+          autoCapitalize="none"
+          spellCheck={false}
+          defaultValue={state.login}
           required
         />
       </div>
