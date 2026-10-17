@@ -43,6 +43,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
 const LINKS: Partial<Record<SectionKey, string>> = {
   library: "/quran",
   quranMap: "/quran/map",
+  glossary: "/glossary",
 };
 
 export default function Home() {

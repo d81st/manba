@@ -1,4 +1,4 @@
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { signOut } from "@/app/actions";
@@ -32,6 +32,10 @@ async function Account() {
       <span className="text-muted-foreground">
         {t.home.signedInAs} {session.login}
       </span>
+      <Link href="/admin" className="inline-flex items-center gap-1">
+        <Settings className="size-4" />
+        {t.admin.link}
+      </Link>
       <Button type="submit" variant="outline" size="sm">
         <LogOut />
         {t.nav.signOut}

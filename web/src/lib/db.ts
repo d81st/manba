@@ -14,11 +14,10 @@ export function db() {
       connectionString: process.env.DATABASE_URL,
       // Supabase requires TLS; its certificate is not in the default CA store.
       ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : undefined,
+      // Supabase already looks up "extensions" (ltree); a plain local or CI
+      // Postgres gets the same lookup path at connection start.
+      options: process.env.DATABASE_SSL === "true" ? undefined : "-c search_path=public,extensions",
       max: 5,
-    });
-    // Same lookup path as Supabase, so ltree types and operators resolve.
-    store.dbPool.on("connect", (client) => {
-      client.query("SET search_path TO public, extensions").catch(() => {});
     });
   }
   return store.dbPool;
