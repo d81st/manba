@@ -4,6 +4,7 @@ export const ru = {
   appTagline: "Энциклопедия ислама по первоисточникам",
   nav: {
     signOut: "Выйти",
+    home: "Разделы",
   },
   login: {
     title: "Вход",
@@ -16,13 +17,19 @@ export const ru = {
     notConfigured: "Вход не настроен на сервере.",
     closed: "Сайт в разработке, доступ только для участников проекта.",
   },
+  notFound: {
+    title: "Страница не найдена",
+    text: "Такого адреса нет.",
+    back: "На главную",
+  },
   home: {
     signedInAs: "Вы вошли как",
     loading: "Загрузка…",
     sectionsTitle: "Разделы",
     soon: "в разработке",
+    open: "открыть",
     sections: {
-      library: "Библиотека первоисточников",
+      library: "Библиотека: Коран",
       encyclopedia: "Энциклопедия",
       quranMap: "Карта Корана",
       glossary: "Словарь терминов",
@@ -35,6 +42,23 @@ export const ru = {
       tests: "Тесты",
       assistant: "Ассистент по источникам",
     },
+  },
+  quran: {
+    title: "Коран",
+    subtitle: "Арабский текст: Хафс от Асима, письмо усмани",
+    sura: "Сура",
+    // Plural forms for Intl.PluralRules("ru"): one, few, many.
+    ayahs: { one: "аят", few: "аята", many: "аятов" },
+    revelationPlace: { meccan: "мекканская", medinan: "мединская" },
+    byTradition: "по традиции",
+    placeNote: "Мекканские и мединские суры указаны по традиционной классификации (данные Tanzil).",
+    previous: "Предыдущая сура",
+    next: "Следующая сура",
+    allSuras: "Все суры",
+    loading: "Загрузка…",
+    noDatabase: "База данных не подключена.",
+    attribution: "Текст",
+    unchanged: "копия без изменений",
   },
 };
 

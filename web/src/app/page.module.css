@@ -1,31 +1,3 @@
-.header {
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.headerInner {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 16px;
-  padding-bottom: 16px;
-}
-
-.brand {
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.account {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  font-size: 0.9rem;
-}
-
 .title {
   font-size: 1.2rem;
   margin: 32px 0 16px;
@@ -43,7 +15,18 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  height: 100%;
   padding: 16px;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  border-color: var(--accent);
+}
+
+.link:hover {
+  background: var(--background);
 }
 
 .soon {

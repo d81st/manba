@@ -61,6 +61,13 @@ a {
   line-height: 2;
 }
 
+/* Quran text: the Amiri Quran font is loaded on /quran pages. */
+.quran {
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-family: "Amiri Quran", var(--font-arabic);
+}
+
 .container {
   width: 100%;
   max-width: 960px;
