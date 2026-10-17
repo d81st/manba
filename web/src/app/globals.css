@@ -1,64 +1,142 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * shadcn/ui theme. Components use the tokens (bg-primary, text-muted-foreground,
+ * border-border, ...), never raw colors. Warm neutral base, green primary.
+ * Dark mode follows the system setting.
+ */
 :root {
+  color-scheme: light;
+  --radius: 0.625rem;
   --background: #fbfaf7;
   --foreground: #1c1b19;
-  --muted: #6b6860;
+  --card: #ffffff;
+  --card-foreground: #1c1b19;
+  --popover: #ffffff;
+  --popover-foreground: #1c1b19;
+  --primary: #1f5f4a;
+  --primary-foreground: #ffffff;
+  --secondary: #f1efe9;
+  --secondary-foreground: #1c1b19;
+  --muted: #f1efe9;
+  --muted-foreground: #6b6860;
+  --accent: #ece9e1;
+  --accent-foreground: #1c1b19;
+  --destructive: #a3261d;
+  --destructive-foreground: #ffffff;
   --border: #e3e0d8;
-  --surface: #ffffff;
-  --accent: #1f5f4a;
-  --accent-contrast: #ffffff;
-  --danger: #a3261d;
-  --radius: 10px;
-  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  /* Placeholder stack; the Arabic font must be vetted before source texts load. */
-  --font-arabic: "Noto Naskh Arabic", "Amiri", "Scheherazade New",
-    "Traditional Arabic", serif;
+  --input: #dcd8cf;
+  --ring: #1f5f4a;
+  --highlight: color-mix(in srgb, #1f5f4a 22%, transparent);
+
+  /* Quran map: validated categorical slots, one-hue ramp, neutral steps. */
+  --map-cell: #d9d6cf;
+  --map-faint: #ebe9e4;
+  --map-meccan: #2a78d6;
+  --map-medinan: #eb6834;
+  --map-juz-a: #c9c6be;
+  --map-juz-b: #9e9b93;
+  --map-match: #2a78d6;
+  --map-ramp: #cde2fb, #9ec5f4, #6da7ec, #3987e5, #256abf, #184f95, #0d366b;
+  --map-label: #52514e;
+  --map-focus: #0b0b0b;
+
+  --font-ui: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Placeholder stack for Arabic outside the Quran pages; to be vetted. */
+  --font-arabic: "Amiri Quran", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
     --background: #141412;
     --foreground: #ecebe6;
-    --muted: #a19e95;
+    --card: #1c1b19;
+    --card-foreground: #ecebe6;
+    --popover: #1c1b19;
+    --popover-foreground: #ecebe6;
+    --primary: #6fbf9f;
+    --primary-foreground: #0d1f18;
+    --secondary: #26251f;
+    --secondary-foreground: #ecebe6;
+    --muted: #26251f;
+    --muted-foreground: #a19e95;
+    --accent: #2c2b26;
+    --accent-foreground: #ecebe6;
+    --destructive: #f08c82;
+    --destructive-foreground: #1c1b19;
     --border: #2e2d29;
-    --surface: #1c1b19;
-    --accent: #6fbf9f;
-    --accent-contrast: #0d1f18;
-    --danger: #f08c82;
+    --input: #3a3934;
+    --ring: #6fbf9f;
+    --highlight: color-mix(in srgb, #6fbf9f 28%, transparent);
+
+    --map-cell: #45443f;
+    --map-faint: #2b2a27;
+    --map-meccan: #3987e5;
+    --map-medinan: #d95926;
+    --map-juz-a: #4a4944;
+    --map-juz-b: #77756e;
+    --map-match: #3987e5;
+    --map-ramp: #0d366b, #184f95, #256abf, #3987e5, #6da7ec, #9ec5f4, #cde2fb;
+    --map-label: #c3c2b7;
+    --map-focus: #f0efec;
   }
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-highlight: var(--highlight);
+  --font-sans: var(--font-ui);
 }
 
-html,
-body {
-  min-height: 100%;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  a {
+    @apply text-primary underline-offset-4;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-ui);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: var(--accent);
-}
-
-/* Arabic source text: right-to-left with its own font. */
+/* Arabic source text: right to left with its own font. */
 .ar,
 [lang="ar"] {
   direction: rtl;
   unicode-bidi: isolate;
   font-family: var(--font-arabic);
-  font-size: 1.35em;
-  line-height: 2;
 }
 
 /* Quran text: the Amiri Quran font is loaded on /quran pages. */
@@ -66,90 +144,4 @@ a {
   direction: rtl;
   unicode-bidi: isolate;
   font-family: "Amiri Quran", var(--font-arabic);
-}
-
-.container {
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.field label {
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-input {
-  font: inherit;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--background);
-  color: var(--foreground);
-}
-
-input:focus-visible,
-button:focus-visible,
-a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.button {
-  font: inherit;
-  cursor: pointer;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--accent-contrast);
-}
-
-.button:disabled {
-  opacity: 0.6;
-  cursor: progress;
-}
-
-.button-ghost {
-  background: transparent;
-  color: var(--foreground);
-  border: 1px solid var(--border);
-}
-
-.error {
-  color: var(--danger);
-  font-size: 0.9rem;
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
 }

@@ -18,6 +18,7 @@
 | Роли модератора и редактора, помощники администратора | gameclub: `backend/src/lib/permissions.ts`; avtoexpert: роли в `docs/AUTH.md` | Роли + точечные права поверх роли; последнего администратора нельзя снять |
 | Проверка «черновик → на проверке → опубликовано» | gameclub: утверждение погашений («четыре глаза») | Своё изменение утверждает другой человек; утверждённое окончательно |
 | Офлайн-режим и установка на телефон | gameclub: `frontend/public/sw.js`, `manifest.webmanifest` | Оболочка в кэше, данные — сначала сеть, при обрыве последняя копия |
+| Компоненты интерфейса | avtoexpert: `frontend/src/components/ui` (shadcn/ui), тема в `frontend/src/index.css` | **Перенесены 17.10.2026:** button, input, label, card, badge, radio-group, select, separator, alert. Остальные (dialog, tabs, tooltip, table, sonner, command, date-picker) — брать оттуда же по мере надобности |
 | Узбекский язык интерфейса | avtoexpert: `frontend/src/shared/context/LocaleContext.tsx`, `backend/data/norms-uz.json` | Переключение ru/uz |
 | Уведомления администратору (новые находки, недоступные видео) | gameclub: `backend/src/modules/telegram/` | Telegram-бот |
 | Тесты и CI | avtoexpert: `.github/workflows/platform-mvp.yml`, `backend/tests/` | Vitest, property-тесты, «золотые» примеры, общие для сервера и браузера (`tests/fixtures/*.json`); в CI ещё `npm audit` |

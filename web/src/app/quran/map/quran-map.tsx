@@ -1,12 +1,17 @@
 "use client";
 
+import { ExternalLink, ZoomIn, ZoomOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { plural, type Messages } from "@/i18n";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { MapSura } from "@/lib/quran";
 import { BLOCK_GAP, cellPosition, fittingCell, hitTest, layoutMap, type Layout } from "@/lib/quran-map-layout";
-import styles from "./map.module.css";
 
 type Lens = "none" | "place" | "juz" | "length" | "search";
 type Order = "mushaf" | "revelation";
@@ -17,7 +22,7 @@ const LENSES: Lens[] = ["none", "place", "juz", "length", "search"];
 const MIN_CELL = 3;
 const MAX_CELL = 16;
 
-// Colors come from CSS custom properties (map.module.css), so light and dark
+// Colors come from CSS custom properties (globals.css), so light and dark
 // themes each use their own validated steps.
 type Palette = {
   cell: string;
@@ -294,59 +299,79 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
   const cardText = card ? texts[`${card.sura}:${card.ayah}`] : undefined;
 
   return (
-    <section className={styles.map}>
-      <div className={styles.controls}>
-        <fieldset className={styles.lenses}>
-          <legend>{m.lens}</legend>
-          {LENSES.map((key) => (
-            <label key={key} className={styles.option}>
-              <input type="radio" name="lens" checked={lens === key} onChange={() => setLens(key)} />
-              {m.lenses[key]}
-            </label>
-          ))}
-          <details className={styles.upcoming}>
-            <summary>{m.upcoming}</summary>
-            <ul>
+    <section className="mt-4 mb-12">
+      <div className="mb-3 flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
+          <span className="text-sm text-muted-foreground">{m.lens}</span>
+          <RadioGroup
+            value={lens}
+            onValueChange={(value) => setLens(value as Lens)}
+            className="flex flex-wrap gap-x-5 gap-y-2"
+            aria-label={m.lens}
+          >
+            {LENSES.map((key) => (
+              <div key={key} className="flex items-center gap-2">
+                <RadioGroupItem value={key} id={`lens-${key}`} />
+                <Label htmlFor={`lens-${key}`} className="font-normal">
+                  {m.lenses[key]}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+          <details className="text-xs text-muted-foreground">
+            <summary className="cursor-pointer">{m.upcoming}</summary>
+            <ul className="mt-1 ms-5 list-disc">
               {m.upcomingLenses.map((name) => (
                 <li key={name}>{name}</li>
               ))}
             </ul>
           </details>
-        </fieldset>
+        </div>
 
-        <div className={styles.row}>
-          <label className={styles.option}>
-            {m.order}:{" "}
-            <select value={order} onChange={(e) => setOrder(e.target.value as Order)}>
-              <option value="mushaf">{m.orders.mushaf}</option>
-              <option value="revelation">{m.orders.revelation}</option>
-            </select>
-          </label>
-          <div className={styles.zoom}>
-            <button
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-sm">
+            <Label htmlFor="map-order" className="font-normal">
+              {m.order}
+            </Label>
+            <Select value={order} onValueChange={(value) => setOrder(value as Order)}>
+              <SelectTrigger id="map-order" className="w-56">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mushaf">{m.orders.mushaf}</SelectItem>
+                <SelectItem value="revelation">{m.orders.revelation}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2">
+            <Button
               type="button"
-              className="button button-ghost"
+              variant="outline"
+              size="icon"
               aria-label={m.zoomOut}
+              title={m.zoomOut}
               disabled={!cellSize || cellSize <= MIN_CELL}
               onClick={() => setCell(Math.max(MIN_CELL, (cellSize ?? MIN_CELL) - 1))}
             >
-              −
-            </button>
-            <button
+              <ZoomOut />
+            </Button>
+            <Button
               type="button"
-              className="button button-ghost"
+              variant="outline"
+              size="icon"
               aria-label={m.zoomIn}
+              title={m.zoomIn}
               disabled={!!cellSize && cellSize >= MAX_CELL}
               onClick={() => setCell(Math.min(MAX_CELL, (cellSize ?? MIN_CELL) + 1))}
             >
-              +
-            </button>
+              <ZoomIn />
+            </Button>
           </div>
         </div>
 
         {lens === "search" && (
-          <form onSubmit={runSearch} className={styles.search} role="search">
-            <input
+          <form onSubmit={runSearch} className="flex gap-2" role="search">
+            <Input
               type="search"
               dir="auto"
               value={query}
@@ -354,19 +379,17 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
               onChange={(e) => setQuery(e.target.value)}
               aria-label={t.search.label}
             />
-            <button type="submit" className="button">
-              {t.search.submit}
-            </button>
+            <Button type="submit">{t.search.submit}</Button>
           </form>
         )}
 
         <Legend lens={lens} m={m} bins={bins} matches={matches} ayahs={t.ayahs} />
       </div>
 
-      <div ref={wrapRef} className={styles.canvasWrap}>
+      <div ref={wrapRef} className="relative max-h-[80vh] overflow-auto p-0.5">
         <canvas
           ref={canvasRef}
-          className={styles.canvas}
+          className="block cursor-pointer touch-manipulation rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           tabIndex={0}
           role="img"
           aria-label={m.canvasLabel}
@@ -377,25 +400,34 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
         />
         {card && cardSura && (
           <div
-            className={`${styles.card} ${card.pinned ? styles.cardPinned : ""}`}
+            className={
+              card.pinned
+                ? "fixed inset-x-4 bottom-4 z-20 mx-auto max-w-xl rounded-xl border bg-popover p-3 text-popover-foreground shadow-lg"
+                : "pointer-events-none absolute z-20 w-[min(320px,calc(100%-16px))] rounded-xl border bg-popover p-3 text-popover-foreground shadow-lg"
+            }
             style={card.pinned ? undefined : { left: card.left, top: card.top }}
             role="status"
           >
-            <p className={styles.cardTitle}>
+            <p className="text-sm">
               <strong>
                 {card.sura}:{card.ayah}
               </strong>{" "}
               · {cardSura.name}
             </p>
-            <p className={`quran ${styles.cardText}`} lang="ar" dir="rtl">
+            <p className="quran my-1 line-clamp-3 text-[1.35rem] leading-loose" lang="ar" dir="rtl">
               {cardText ?? m.card.loading}
             </p>
-            <p className={`muted ${styles.cardMeta}`}>
+            <p className="mb-1 text-xs text-muted-foreground">
               {cardSura.place && `${t.revelationPlace[cardSura.place as "meccan" | "medinan"]} (${t.byTradition}) · `}
               {m.card.juz} {cardSura.juz[card.ayah - 1]} · {cardSura.words[card.ayah - 1]} {m.card.words}
             </p>
             {card.pinned && (
-              <Link href={`/quran/${card.sura}#${card.sura}-${card.ayah}`}>{m.card.open} →</Link>
+              <Button asChild size="sm" variant="outline">
+                <Link href={`/quran/${card.sura}#${card.sura}-${card.ayah}`} className="no-underline">
+                  <ExternalLink />
+                  {m.card.open}
+                </Link>
+              </Button>
             )}
           </div>
         )}
@@ -419,31 +451,31 @@ function Legend({
 }) {
   if (lens === "place") {
     return (
-      <p className={styles.legend}>
-        <span className={styles.swatch} style={{ background: "var(--map-meccan)" }} /> {m.legendMeccan}
-        <span className={styles.swatch} style={{ background: "var(--map-medinan)" }} /> {m.legendMedinan}
+      <p className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+        <span className="ms-1.5 inline-block size-3 rounded-[3px]" style={{ background: "var(--map-meccan)" }} /> {m.legendMeccan}
+        <span className="ms-1.5 inline-block size-3 rounded-[3px]" style={{ background: "var(--map-medinan)" }} /> {m.legendMedinan}
       </p>
     );
   }
   if (lens === "juz") {
     return (
-      <p className={styles.legend}>
-        <span className={styles.swatch} style={{ background: "var(--map-juz-a)" }} />
-        <span className={styles.swatch} style={{ background: "var(--map-juz-b)" }} /> {m.legendJuz}
+      <p className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+        <span className="ms-1.5 inline-block size-3 rounded-[3px]" style={{ background: "var(--map-juz-a)" }} />
+        <span className="ms-1.5 inline-block size-3 rounded-[3px]" style={{ background: "var(--map-juz-b)" }} /> {m.legendJuz}
       </p>
     );
   }
   if (lens === "length") {
     return (
-      <p className={styles.legend}>
-        {bins.min} <span className={styles.ramp} /> {bins.max} {m.legendLength}
+      <p className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+        {bins.min} <span className="inline-block h-2.5 w-24 rounded-[3px] bg-[linear-gradient(to_right,var(--map-ramp))]" /> {bins.max} {m.legendLength}
       </p>
     );
   }
   if (lens === "search" && matches) {
     return (
-      <p className={styles.legend}>
-        <span className={styles.swatch} style={{ background: "var(--map-match)" }} />
+      <p className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+        <span className="ms-1.5 inline-block size-3 rounded-[3px]" style={{ background: "var(--map-match)" }} />
         {matches.size ? `${m.searchFound}: ${plural(matches.size, ayahs)}` : m.searchNone}
       </p>
     );

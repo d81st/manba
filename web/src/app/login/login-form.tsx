@@ -1,23 +1,25 @@
 "use client";
 
-import { useActionState } from "react";
+import { CircleAlert } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useActionState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import type { Messages } from "@/i18n/ru";
 import { login, type LoginState } from "./actions";
 
 export function LoginForm({ t }: { t: Messages["login"] }) {
   const next = useSearchParams().get("next") ?? "/";
-  const [state, action, pending] = useActionState<LoginState, FormData>(
-    login,
-    {},
-  );
+  const [state, action, pending] = useActionState<LoginState, FormData>(login, {});
 
   return (
-    <form action={action} className="form">
+    <form action={action} className="space-y-4">
       <input type="hidden" name="next" value={next} />
-      <div className="field">
-        <label htmlFor="login">{t.login}</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="login">{t.login}</Label>
+        <Input
           id="login"
           name="login"
           type="text"
@@ -28,24 +30,19 @@ export function LoginForm({ t }: { t: Messages["login"] }) {
           required
         />
       </div>
-      <div className="field">
-        <label htmlFor="password">{t.password}</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-        />
+      <div className="space-y-2">
+        <Label htmlFor="password">{t.password}</Label>
+        <Input id="password" name="password" type="password" autoComplete="current-password" required />
       </div>
       {state.error && (
-        <p className="error" role="alert">
-          {state.error}
-        </p>
+        <Alert variant="destructive">
+          <CircleAlert className="size-4" />
+          <AlertDescription>{state.error}</AlertDescription>
+        </Alert>
       )}
-      <button className="button" type="submit" disabled={pending}>
+      <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t.pending : t.submit}
-      </button>
+      </Button>
     </form>
   );
 }

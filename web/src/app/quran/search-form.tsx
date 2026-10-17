@@ -1,16 +1,18 @@
+import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { getMessages } from "@/i18n";
 import { MAX_QUERY_LENGTH } from "@/lib/quran-query";
-import styles from "./quran.module.css";
 
 const t = getMessages().quran.search;
 
 export function SearchForm({ query = "" }: { query?: string }) {
   return (
-    <form action="/quran/search" className={styles.searchForm} role="search">
+    <form action="/quran/search" className="mt-5 mb-1.5 flex gap-2" role="search">
       <label htmlFor="q" className="sr-only">
         {t.label}
       </label>
-      <input
+      <Input
         id="q"
         name="q"
         type="search"
@@ -19,10 +21,12 @@ export function SearchForm({ query = "" }: { query?: string }) {
         placeholder={t.placeholder}
         maxLength={MAX_QUERY_LENGTH}
         autoComplete="off"
+        className="h-10 text-base"
       />
-      <button className="button" type="submit">
+      <Button type="submit" size="lg">
+        <Search />
         {t.submit}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -1,21 +1,22 @@
+import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { signOut } from "@/app/actions";
+import { Button } from "@/components/ui/button";
 import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
-import styles from "./site-header.module.css";
 
 const t = getMessages();
 
 export function SiteHeader() {
   return (
-    <header className={styles.header}>
-      <div className={`container ${styles.inner}`}>
-        <Link href="/" className={styles.brand}>
-          <span className={styles.name}>{t.appName}</span>
-          <span className={`muted ${styles.tagline}`}>{t.appTagline}</span>
+    <header className="border-b bg-card">
+      <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+        <Link href="/" className="flex flex-col text-foreground no-underline">
+          <span className="text-lg font-semibold leading-tight">{t.appName}</span>
+          <span className="text-sm text-muted-foreground">{t.appTagline}</span>
         </Link>
-        <Suspense fallback={<span className="muted">{t.home.loading}</span>}>
+        <Suspense fallback={<span className="text-sm text-muted-foreground">{t.home.loading}</span>}>
           <Account />
         </Suspense>
       </div>
@@ -27,13 +28,14 @@ async function Account() {
   const session = await requireSession();
 
   return (
-    <form action={signOut} className={styles.account}>
-      <span className="muted">
+    <form action={signOut} className="flex items-center gap-3 text-sm">
+      <span className="text-muted-foreground">
         {t.home.signedInAs} {session.login}
       </span>
-      <button className="button button-ghost" type="submit">
+      <Button type="submit" variant="outline" size="sm">
+        <LogOut />
         {t.nav.signOut}
-      </button>
+      </Button>
     </form>
   );
 }
