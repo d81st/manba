@@ -38,6 +38,7 @@ async function SuraText({ params }: { params: PageProps<"/quran/[sura]">["params
     <>
       <nav className={styles.crumbs}>
         <Link href="/quran">← {t.allSuras}</Link>
+        <Link href="/quran/search">{t.search.link}</Link>
       </nav>
       <header className={styles.suraHeader}>
         <h1 className={styles.title}>

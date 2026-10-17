@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { listSuras } from "@/lib/quran";
+import { SearchForm } from "./search-form";
 import { SuraMeta } from "./sura-meta";
 import styles from "./quran.module.css";
 
@@ -17,6 +18,7 @@ export default function QuranPage() {
     <main className="container">
       <h1 className={styles.title}>{t.title}</h1>
       <p className="muted">{t.subtitle}</p>
+      <SearchForm />
       <p className="muted">{t.placeNote}</p>
       <Suspense fallback={<p className="muted">{t.loading}</p>}>
         <SuraList />

@@ -1,7 +1,7 @@
 // Loads bundled source files into the library: once per source version.
 // Runs before the site starts, after the migrations. A load that already
 // happened (same import_batches.key) is skipped, so restarts change nothing.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
@@ -145,6 +145,70 @@ async function importTanzil(client: pg.Client) {
   }
 }
 
+// The same Hafs text in standard (imlaei) spelling, for search: people type
+// words the usual way, which the Uthmani script often spells differently.
+// Optional: loaded when data/sources/tanzil/quran-simple.xml is present.
+async function importTanzilSimple(client: pg.Client) {
+  const dir = join(DATA_DIR, "tanzil");
+  const file = join(dir, "quran-simple.xml");
+  if (!existsSync(file)) return;
+  const data = parseTanzil(readFileSync(file, "utf8"), readFileSync(join(dir, "quran-data.xml"), "utf8"));
+  const key = `tanzil:quran-simple:${data.textVersion}`;
+
+  const done = await client.query("SELECT 1 FROM import_batches WHERE key = $1", [key]);
+  if (done.rowCount) {
+    console.log(`Import skipped: ${key} is already loaded.`);
+    return;
+  }
+
+  await client.query("BEGIN");
+  try {
+    await client.query(
+      `INSERT INTO sources (id, title, url, license, license_text, version, retrieved_at)
+       VALUES ('tanzil.quran-simple', 'Tanzil Quran Text (Simple)', 'https://tanzil.net', 'CC BY 3.0', $1, $2, $3)
+       ON CONFLICT (id) DO NOTHING`,
+      [data.notice, data.textVersion, RETRIEVED_AT],
+    );
+    const batch = await client.query(
+      `INSERT INTO import_batches (key, source_id, actor, summary)
+       VALUES ($1, 'tanzil.quran-simple', $2, $3) RETURNING id`,
+      [key, ACTOR, json({ segments: data.segments.length })],
+    );
+    const batchId = batch.rows[0].id;
+    await client.query(
+      `INSERT INTO text_versions
+         (id, work_id, language, kind, title, riwaya, script, source_id, verification, is_primary, status, batch_id)
+       VALUES ('quran.ar.hafs-simple', 'quran', 'ar', 'original', $1, 'hafs', 'imlaei',
+               'tanzil.quran-simple', 'source_verified', false, 'draft', $2)`,
+      [`Хафс от Асима, обычное письмо (Tanzil Simple ${data.textVersion})`, batchId],
+    );
+    // Addresses come from the Uthmani load; a missing one fails the foreign key.
+    await client.query(
+      `INSERT INTO texts (address, version_id, content, search_plain, search_vocalized, batch_id)
+       SELECT a::extensions.ltree, 'quran.ar.hafs-simple', c, p, v, $5
+       FROM unnest($1::text[], $2::text[], $3::text[], $4::text[]) AS t(a, c, p, v)`,
+      [
+        data.segments.map((s) => s.address),
+        data.segments.map((s) => s.text),
+        data.segments.map((s) => searchKey(s.text)),
+        data.segments.map((s) => searchKey(s.text, { diacritics: true })),
+        batchId,
+      ],
+    );
+    await client.query("UPDATE text_versions SET status = 'published' WHERE id = 'quran.ar.hafs-simple'");
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, new_value, reason, actor)
+       VALUES ('import_batch', $1, 'created', $2, 'Текст Корана в обычном письме для поиска', $3)`,
+      [key, json({ batchId, version: "quran.ar.hafs-simple", segments: data.segments.length }), ACTOR],
+    );
+    await client.query("COMMIT");
+    console.log(`Import done: ${key} (${data.segments.length} segments).`);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  }
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     console.log("Import skipped: DATABASE_URL is not set.");
@@ -158,6 +222,7 @@ async function main() {
   try {
     await client.query("SET search_path TO public, extensions");
     await importTanzil(client);
+    await importTanzilSimple(client);
   } finally {
     await client.end();
   }
