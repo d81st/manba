@@ -20,7 +20,7 @@ npm install
 npm run dev                  # http://localhost:3000
 ```
 
-Проверки перед отправкой: `npm run lint && npm test && npm run build && npx tsc --noEmit`. То же самое (и миграции на чистой PostgreSQL) автоматически гоняет GitHub Actions (`.github/workflows/ci.yml`) на каждый PR и пуш в `main`.
+Проверки перед отправкой: `npm run build && npx tsc --noEmit` (сборка сама сначала запускает линтер и тесты). Render собирает сайт той же командой, поэтому версия с упавшим тестом на сайт не попадёт. Дополнительно GitHub Actions (`.github/workflows/ci.yml`) на каждый PR и пуш в `main` проверяет миграции на чистой PostgreSQL.
 
 ## Инфраструктура
 
