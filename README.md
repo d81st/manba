@@ -11,7 +11,7 @@
 
 ## Сайт (`web/`)
 
-Next.js 16. Весь сайт закрыт общим логином и паролем; индексация запрещена. Supabase подключится вместе с базой.
+Next.js 16 + PostgreSQL (Supabase). Весь сайт закрыт общим логином и паролем; индексация запрещена.
 
 ```bash
 cd web
@@ -20,7 +20,7 @@ npm install
 npm run dev                  # http://localhost:3000
 ```
 
-Проверки перед отправкой: `npm run build && npx tsc --noEmit && npm run lint`.
+Проверки перед отправкой: `npm run lint && npm test && npm run build && npx tsc --noEmit`. То же самое (и миграции на чистой PostgreSQL) автоматически гоняет GitHub Actions (`.github/workflows/ci.yml`) на каждый PR и пуш в `main`.
 
 ## Инфраструктура
 
@@ -28,7 +28,24 @@ npm run dev                  # http://localhost:3000
 | --- | --- |
 | Код | GitHub `d81st/manba`, ветка `main` |
 | Сайт | Render, бесплатный план, Франкфурт (root: `web`) |
-| База (пока пустая) | Supabase `manba` (`kjxigiiahuxfwiikwwlx`), Франкфурт |
+| База | Supabase `manba` (`kjxigiiahuxfwiikwwlx`), Франкфурт |
+
+### База данных
+
+Миграции — SQL-файлы в `db/migrations/` (`001_…sql`, `002_…sql`). Они накатываются по порядку при каждом запуске сайта (`npm start` вызывает `scripts/migrate.mjs`); уже применённые записаны в таблице `_migrations`. Вручную: `cd web && npm run db:migrate`. Без `DATABASE_URL` миграции пропускаются.
+
+Переменные на Render:
+
+| Переменная | Что это |
+| --- | --- |
+| `DATABASE_URL` | Supabase → проект `manba` → **Connect** → **Session pooler** (порт 5432), с паролем базы. Прямой адрес `db.<ref>.supabase.co` Render не видит (только IPv6) |
+| `DATABASE_SSL` | `true` |
+
+Правила:
+
+- новая миграция — новый файл со следующим номером; применённые файлы не меняются;
+- публичные роли Supabase (`anon`, `authenticated`) доступа к таблицам не имеют: данные идут только через наш сервер;
+- журнал `change_log` и будущие опубликованные тексты защищены триггером `forbid_change()`: изменить или удалить запись нельзя, исправление — новой записью.
 
 ### Вход на время разработки
 

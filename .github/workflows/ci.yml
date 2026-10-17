@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npx tsc --noEmit
+
+      - name: Migrations apply and are idempotent
+        run: |
+          # Supabase roles, so the access revocation is exercised too.
+          psql "$DATABASE_URL" -c "CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;"
+          npm run db:migrate
+          npm run db:migrate | grep -q "up to date"
+      - name: Journal is append-only and closed to public roles
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c \
+            "INSERT INTO change_log (entity, entity_id, action, actor) VALUES ('ci', 'x', 'created', 'ci')"
+          ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "UPDATE change_log SET reason = 'x'"
+          ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "DELETE FROM change_log"
+          test "$(psql "$DATABASE_URL" -tA -c "SELECT has_table_privilege('anon', 'change_log', 'SELECT')")" = f
