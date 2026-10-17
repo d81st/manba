@@ -96,3 +96,24 @@ describe("parseTanzil on the real files", () => {
     expect(count("page")).toBe(604);
   });
 });
+
+describe("parseTanzil on the standard-spelling (Simple) file", () => {
+  const dir = join(__dirname, "..", "..", "..", "..", "data", "sources", "tanzil");
+  const raw = readFileSync(join(dir, "quran-simple.xml"), "utf8");
+  const data = parseTanzil(raw, readFileSync(join(dir, "quran-data.xml"), "utf8"));
+
+  it("is the Simple text with its notice", () => {
+    expect(data.notice).toContain("Tanzil Quran Text (Simple");
+    expect(data.notice).toContain("CHANGING IT IS NOT ALLOWED");
+    expect(raw).not.toContain("&");
+  });
+
+  it("has the same addresses as the Uthmani text", () => {
+    const uthmani = parseTanzil(
+      readFileSync(join(dir, "quran-uthmani.xml"), "utf8"),
+      readFileSync(join(dir, "quran-data.xml"), "utf8"),
+    );
+    expect(data.segments.map((s) => s.address)).toEqual(uthmani.segments.map((s) => s.address));
+  });
+});
+

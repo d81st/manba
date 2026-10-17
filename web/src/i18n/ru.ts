@@ -72,6 +72,7 @@ export const ru = {
       unsupported: "Пока можно искать только по арабскому тексту и по адресу: переводов в библиотеке ещё нет.",
       withDiacritics: "с учётом огласовок",
       openSura: "Открыть суру",
+      sourceNote: "Текст: Tanzil Quran Text (Uthmani). Поиск также по Tanzil Quran Text (Simple) — тому же тексту в обычном письме.",
     },
     attribution: "Текст",
     unchanged: "копия без изменений",

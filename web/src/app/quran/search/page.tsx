@@ -98,6 +98,13 @@ async function Results({ parsed }: { parsed: ReturnType<typeof parseQuery> }) {
           </li>
         ))}
       </ol>
+      <footer className={`muted ${styles.attribution}`}>
+        {t.search.sourceNote}{" "}
+        <a href="https://tanzil.net" target="_blank" rel="noreferrer">
+          Tanzil Project (tanzil.net)
+        </a>
+        , CC BY 3.0, {t.unchanged}.
+      </footer>
     </section>
   );
 }
