@@ -23,7 +23,7 @@ SELECT close_to_public('terms');
 -- The term explained in one interface language.
 CREATE TABLE IF NOT EXISTS term_texts (
   term_id      BIGINT NOT NULL REFERENCES terms (id) ON DELETE CASCADE,
-  locale       TEXT NOT NULL,             -- ru, later uz, en
+  locale       TEXT NOT NULL,             -- ru, later en
   translation  TEXT NOT NULL,             -- the term in that language
   short        TEXT NOT NULL,             -- one or two sentences for a newcomer
   detail       TEXT NOT NULL DEFAULT '',  -- longer explanation; "2:106" becomes a link

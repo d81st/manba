@@ -3,7 +3,7 @@ import { ru, type Messages } from "./ru";
 export type { Messages };
 
 // Interface languages are separate from source-text languages.
-// Only Russian for now; add uz/en dictionaries with the same shape later.
+// Only Russian for now; an English dictionary with the same shape comes later.
 export const locales = ["ru"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "ru";
