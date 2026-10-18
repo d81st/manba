@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlert, CircleCheck, Plus, Trash2, X } from "lucide-react";
-import { useActionState, useState, useTransition } from "react";
+import { startTransition, useActionState, useState, useTransition } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +19,7 @@ import {
   type InputProblem,
   type TermInput,
 } from "@/lib/glossary-input";
+import { Field } from "../field";
 import { deleteTermAction, saveTermAction, type TermFormState } from "./actions";
 
 type Definition = TermInput["definitions"][number] & { key: number };
@@ -97,7 +98,16 @@ export function TermForm({
   const publishedBefore = initial?.status === "published";
 
   return (
-    <form action={action} className="mt-6 space-y-6">
+    <form
+      className="mt-6 space-y-6"
+      onSubmit={(event) => {
+        // Submitted by hand: a form `action` makes React reset the form afterwards,
+        // and the reset would also reset the selects back to their first values.
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        startTransition(() => action(data));
+      }}
+    >
       <input type="hidden" name="payload" value={payload} />
 
       {state.problems.length > 0 && (
@@ -416,30 +426,5 @@ export function TermForm({
         )}
       </div>
     </form>
-  );
-}
-
-function Field({
-  id,
-  label,
-  hint,
-  error,
-  wide,
-  children,
-}: {
-  id: string;
-  label: string;
-  hint?: string;
-  error?: string;
-  wide?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={wide ? "space-y-2 sm:col-span-2" : "space-y-2"}>
-      <Label htmlFor={id}>{label}</Label>
-      {children}
-      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
-    </div>
   );
 }

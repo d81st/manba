@@ -8,9 +8,18 @@ export const RECOGNITIONS = ["tradition", "research_majority", "minority"] as co
 export const RELATION_KINDS = ["related", "broader", "narrower", "opposite"] as const;
 const MAX_RANGE = 30;
 
-// "Nāsikh" -> "nasikh": the permanent id used in links.
+// Russian letters in links, so a Russian title gives a readable address.
+const CYRILLIC: Record<string, string> = {
+  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i", й: "y", к: "k", л: "l",
+  м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "kh", ц: "ts", ч: "ch", ш: "sh",
+  щ: "shch", ъ: "", ы: "y", ь: "", э: "e", ю: "yu", я: "ya",
+};
+
+// "Nāsikh" -> "nasikh", "Джихад" -> "dzhikhad": the permanent id used in links.
 export function slugify(text: string) {
   const slug = text
+    .toLowerCase()
+    .replace(/[а-яё]/g, (letter) => CYRILLIC[letter] ?? "")
     .normalize("NFD")
     .replace(/\p{M}/gu, "")
     .toLowerCase()

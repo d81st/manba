@@ -3,13 +3,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { Fragment, Suspense } from "react";
+import { Suspense } from "react";
+import { AyahList } from "@/components/ayah-list";
+import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
 import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getPublishedTerm, type RefAyah } from "@/lib/glossary";
-import { linkAddresses } from "@/lib/glossary-input";
+import { getPublishedTerm } from "@/lib/glossary";
 
 const messages = getMessages();
 const t = messages.glossary;
@@ -59,20 +60,14 @@ async function Term({ params }: { params: PageProps<"/glossary/[slug]">["params"
       {term.detail && (
         <section>
           <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.detail}</h2>
-          <div className="space-y-3 leading-relaxed">
-            {term.detail.split(/\n\s*\n/).map((paragraph, i) => (
-              <p key={i} className="whitespace-pre-line">
-                <LinkedText text={paragraph} />
-              </p>
-            ))}
-          </div>
+          <LinkedParagraphs text={term.detail} />
         </section>
       )}
 
       {term.refs.length > 0 && (
         <section>
           <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.examples}</h2>
-          <Ayahs refs={term.refs} />
+          <AyahList ayahs={term.refs} />
         </section>
       )}
 
@@ -91,7 +86,7 @@ async function Term({ params }: { params: PageProps<"/glossary/[slug]">["params"
                 <p className="mt-2 leading-relaxed">
                   <LinkedText text={definition.text} />
                 </p>
-                {definition.refs.length > 0 && <Ayahs refs={definition.refs} compact />}
+                {definition.refs.length > 0 && <AyahList ayahs={definition.refs} compact className="mt-3" />}
                 {definition.sourceNote && (
                   <p className="mt-2 text-sm text-muted-foreground">
                     {t.sourceNote}: {definition.sourceNote}
@@ -124,39 +119,5 @@ async function Term({ params }: { params: PageProps<"/glossary/[slug]">["params"
         </section>
       )}
     </article>
-  );
-}
-
-// Text where ayah addresses ("2:106") are links into the library.
-function LinkedText({ text }: { text: string }) {
-  return linkAddresses(text).map((piece, i) =>
-    "sura" in piece ? (
-      <Link key={i} href={`/quran/${piece.sura}#${piece.sura}-${piece.from}`}>
-        {piece.text}
-      </Link>
-    ) : (
-      <Fragment key={i}>{piece.text}</Fragment>
-    ),
-  );
-}
-
-function Ayahs({ refs, compact }: { refs: RefAyah[]; compact?: boolean }) {
-  return (
-    <ol className={compact ? "mt-3 border-t" : "border-t"}>
-      {refs.map((ref) => (
-        <li key={ref.address} className="flex flex-col gap-1 border-b py-3 sm:flex-row sm:items-baseline sm:gap-4">
-          <Link
-            href={`/quran/${ref.sura}#${ref.sura}-${ref.ayah}`}
-            className="min-w-24 shrink-0 text-xs tabular-nums text-muted-foreground no-underline"
-          >
-            {ref.sura}:{ref.ayah}
-            <span className="block">{ref.suraName}</span>
-          </Link>
-          <p className={`quran flex-1 leading-[2.2] ${compact ? "text-xl" : "text-2xl"}`} lang="ar" dir="rtl">
-            {ref.text}
-          </p>
-        </li>
-      ))}
-    </ol>
   );
 }

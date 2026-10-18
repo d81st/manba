@@ -19,6 +19,11 @@ describe("slugify", () => {
     expect(slugify("2 words")).toBe("t-2-words");
     expect(slugify("  ")).toBe("");
   });
+
+  it("transliterates Russian titles", () => {
+    expect(slugify("Джихад и война")).toBe("dzhikhad-i-voyna");
+    expect(slugify("История текста Корана")).toBe("istoriya-teksta-korana");
+  });
 });
 
 describe("parseRefs and formatRefs", () => {
