@@ -1,6 +1,7 @@
 // Validation of the glossary form and text helpers. No database access here,
 // so everything is unit-tested.
 import { z } from "zod";
+import { HADITH_REFERENCE, referencedWork } from "./hadith-query.ts";
 import { parseQuery } from "./quran-query.ts";
 
 export const TERM_STATUSES = ["draft", "review", "published", "retired"] as const;
@@ -69,20 +70,36 @@ export function formatRefs(addresses: string[]) {
   return parts.join(", ");
 }
 
-export type TextPiece = { text: string } | { sura: number; from: number; to: number; text: string };
+export type TextPiece =
+  | { text: string }
+  | { sura: number; from: number; to: number; text: string }
+  | { work: string; number: number; text: string };
 
-// Splits text so that ayah addresses ("2:106", "16:101-102") can become links.
+// Splits text so that ayah addresses ("2:106", "16:101-102") and hadith
+// references ("Бухари 3951") can become links.
 export function linkAddresses(text: string): TextPiece[] {
-  const pieces: TextPiece[] = [];
-  let last = 0;
+  const found: { index: number; length: number; piece: TextPiece }[] = [];
   for (const match of text.matchAll(/(?<![\d:])(\d{1,3}):(\d{1,3})(?:-(\d{1,3}))?(?![\d:])/g)) {
     const sura = Number(match[1]);
     const from = Number(match[2]);
     const to = match[3] ? Number(match[3]) : from;
     if (sura < 1 || sura > 114 || from < 1 || to < from) continue;
-    if (match.index > last) pieces.push({ text: text.slice(last, match.index) });
-    pieces.push({ sura, from, to, text: match[0] });
-    last = match.index + match[0].length;
+    found.push({ index: match.index, length: match[0].length, piece: { sura, from, to, text: match[0] } });
+  }
+  for (const match of text.matchAll(HADITH_REFERENCE)) {
+    const work = referencedWork(match[1]);
+    if (!work) continue;
+    found.push({ index: match.index, length: match[0].length, piece: { work, number: Number(match[2]), text: match[0] } });
+  }
+  found.sort((a, b) => a.index - b.index);
+
+  const pieces: TextPiece[] = [];
+  let last = 0;
+  for (const { index, length, piece } of found) {
+    if (index < last) continue;
+    if (index > last) pieces.push({ text: text.slice(last, index) });
+    pieces.push(piece);
+    last = index + length;
   }
   if (last < text.length) pieces.push({ text: text.slice(last) });
   return pieces;

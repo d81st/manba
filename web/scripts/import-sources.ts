@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { searchKey } from "../src/lib/arabic.ts";
+import { parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
 
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "sources");
@@ -209,6 +210,183 @@ async function importTanzilSimple(client: pg.Client) {
   }
 }
 
+// A hadith collection from the OpenITI corpus (Shamela export in mARkdown).
+type HadithSource = {
+  file: string; // in data/sources/openiti, kept byte for byte
+  key: string;
+  sourceId: string;
+  sourceTitle: string;
+  sourceVersion: string;
+  notice: string;
+  work: { id: string; canon: "sunni" | "shia"; titles: Record<string, string>; authoritySunni: number | null };
+  versionId: string;
+  versionTitle: string;
+  minHadiths: number; // the load stops if fewer hadiths are recognised
+};
+
+const OPENITI_LICENSE = "CC BY-NC-SA 4.0";
+const OPENITI_CITATION =
+  "Romanov, Maxim, and Masoumeh Seydi. OpenITI: A Machine-Readable Corpus of Islamicate Texts. Zenodo. doi:10.5281/zenodo.3082463";
+
+const BUKHARI: HadithSource = {
+  file: "0256Bukhari.Sahih.Shamela0001681-ara1",
+  key: "openiti:0256Bukhari.Sahih.Shamela0001681-ara1:44e1c36",
+  sourceId: "openiti.bukhari-shamela0001681",
+  sourceTitle: "OpenITI · 0256Bukhari.Sahih.Shamela0001681-ara1",
+  sourceVersion: "OpenITI/0275AH 44e1c36 (2025-11-28)",
+  notice: `${OPENITI_CITATION}. Text: 0256Bukhari.Sahih.Shamela0001681-ara1 — Sahih al-Bukhari, ed. Muhammad Zuhayr al-Nasir, Dar Tawq al-Najat, 1422 AH, with the numbering of Muhammad Fu'ad Abd al-Baqi. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: { id: "bukhari", canon: "sunni", titles: { ar: "صحيح البخاري", ru: "Сахих аль-Бухари" }, authoritySunni: 2 },
+  versionId: "bukhari.ar.tawq-najat",
+  versionTitle: "Арабский текст: изд. Дар Таук ан-Наджат (1422 г. х.), нумерация М. Ф. Абд аль-Баки (OpenITI)",
+  minHadiths: 7000,
+};
+
+async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
+  const done = await client.query("SELECT 1 FROM import_batches WHERE key = $1", [src.key]);
+  if (done.rowCount) {
+    console.log(`Import skipped: ${src.key} is already loaded.`);
+    return;
+  }
+  const data = parseOpenitiHadith(readFileSync(join(DATA_DIR, "openiti", src.file), "utf8"));
+  if (data.hadiths.length < src.minHadiths) {
+    throw new Error(`${src.file}: only ${data.hadiths.length} hadiths recognised`);
+  }
+  const address = (n: number) => `${src.work.id}.${n}`;
+  const content = (paragraphs: string[]) => paragraphs.join("\n\n");
+  const report = data.report;
+
+  await client.query("BEGIN");
+  try {
+    await client.query(
+      `INSERT INTO sources (id, title, url, license, license_text, version, retrieved_at)
+       VALUES ($1, $2, 'https://github.com/OpenITI/0275AH', $3, $4, $5, $6)
+       ON CONFLICT (id) DO NOTHING`,
+      [src.sourceId, src.sourceTitle, OPENITI_LICENSE, src.notice, src.sourceVersion, "2026-10-18"],
+    );
+    const batch = await client.query(
+      `INSERT INTO import_batches (key, source_id, actor, summary) VALUES ($1, $2, 'import:openiti', $3) RETURNING id`,
+      [
+        src.key,
+        src.sourceId,
+        json({
+          books: data.books.length,
+          chapters: data.chapters.length,
+          hadiths: data.hadiths.length,
+          markers: report.markers,
+          inferredGap: report.inferredGap,
+          inferredDisplaced: report.inferredDisplaced,
+          missing: report.missing,
+          appended: report.appended,
+          unassigned: report.unassigned.length,
+        }),
+      ],
+    );
+    const batchId = batch.rows[0].id;
+
+    await client.query(
+      `INSERT INTO works (id, canon, category, titles, levels, authority_sunni, authority_shia, status)
+       VALUES ($1, $2, 'hadith', $3, $4, $5, NULL, 'published')
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        src.work.id,
+        src.work.canon,
+        json(src.work.titles),
+        json([{ key: "hadith", names: { ar: "حديث", ru: "хадис" } }]),
+        src.work.authoritySunni,
+      ],
+    );
+    await client.query(
+      `INSERT INTO addresses (address, work_id, level, ordinal, batch_id)
+       SELECT a::extensions.ltree, $3, 'hadith', o, $4 FROM unnest($1::text[], $2::int[]) AS t(a, o)`,
+      [data.hadiths.map((h) => address(h.number)), data.hadiths.map((h) => h.ordinal), src.work.id, batchId],
+    );
+    await client.query(
+      `INSERT INTO text_versions
+         (id, work_id, language, kind, title, source_id, verification, is_primary, status, batch_id)
+       VALUES ($1, $2, 'ar', 'original', $3, $4, 'unverified', true, 'draft', $5)`,
+      [src.versionId, src.work.id, src.versionTitle, src.sourceId, batchId],
+    );
+    const texts = data.hadiths.map((h) => content(h.paragraphs));
+    await client.query(
+      `INSERT INTO texts (address, version_id, content, search_plain, search_vocalized, batch_id)
+       SELECT a::extensions.ltree, $5, c, p, v, $6
+       FROM unnest($1::text[], $2::text[], $3::text[], $4::text[]) AS t(a, c, p, v)`,
+      [
+        data.hadiths.map((h) => address(h.number)),
+        texts,
+        texts.map((t) => searchKey(t)),
+        texts.map((t) => searchKey(t, { diacritics: true })),
+        src.versionId,
+        batchId,
+      ],
+    );
+    await client.query(
+      `INSERT INTO section_items (version_id, address, book, chapter, numbering, batch_id)
+       SELECT $5, a::extensions.ltree, b, c, n, $6
+       FROM unnest($1::text[], $2::int[], $3::int[], $4::text[]) AS t(a, b, c, n)`,
+      [
+        data.hadiths.map((h) => address(h.number)),
+        data.hadiths.map((h) => h.book),
+        data.hadiths.map((h) => h.chapter),
+        data.hadiths.map((h) => h.numbering),
+        src.versionId,
+        batchId,
+      ],
+    );
+
+    // Books, then chapters in reading order; unnumbered narration stays with its chapter.
+    const unnumbered = new Map<string, string[]>();
+    for (const item of report.unassigned) {
+      const key = `${item.book}.${item.chapter}`;
+      unnumbered.set(key, [...(unnumbered.get(key) ?? []), ...item.paragraphs]);
+    }
+    const sections = [
+      ...data.books.map((b) => ({ kind: "book", book: b.number, chapter: null, title: b.title, intro: "", extra: "" })),
+      ...data.chapters.map((c) => ({
+        kind: "chapter",
+        book: c.book,
+        chapter: c.index,
+        title: c.title,
+        intro: content(c.intro),
+        extra: content(unnumbered.get(`${c.book}.${c.index}`) ?? []),
+      })),
+    ].sort((x, y) => x.book - y.book || (x.chapter ?? 0) - (y.chapter ?? 0));
+    await client.query(
+      `INSERT INTO work_sections (version_id, kind, book, chapter, ordinal, title, intro, unnumbered, batch_id)
+       SELECT $7, k, b, c, o, t, i, u, $8
+       FROM unnest($1::text[], $2::int[], $3::int[], $4::text[], $5::text[], $6::text[])
+         WITH ORDINALITY AS s(k, b, c, t, i, u, o)`,
+      [
+        sections.map((s) => s.kind),
+        sections.map((s) => s.book),
+        sections.map((s) => s.chapter),
+        sections.map((s) => s.title),
+        sections.map((s) => s.intro),
+        sections.map((s) => s.extra),
+        src.versionId,
+        batchId,
+      ],
+    );
+    await client.query("UPDATE text_versions SET status = 'published' WHERE id = $1", [src.versionId]);
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, new_value, reason, actor)
+       VALUES ('import_batch', $1, 'created', $2, $3, 'import:openiti')`,
+      [
+        src.key,
+        json({ batchId, version: src.versionId, hadiths: data.hadiths.length, missing: report.missing.length }),
+        `Загрузка: ${src.work.titles.ru} (OpenITI)`,
+      ],
+    );
+    await client.query("COMMIT");
+    console.log(
+      `Import done: ${src.key} (${data.hadiths.length} hadiths; inferred ${report.inferredGap.length + report.inferredDisplaced.length}, missing ${report.missing.length}).`,
+    );
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  }
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     console.log("Import skipped: DATABASE_URL is not set.");
@@ -223,6 +401,7 @@ async function main() {
     await client.query("SET search_path TO public, extensions");
     await importTanzil(client);
     await importTanzilSimple(client);
+    await importOpenitiHadith(client, BUKHARI);
   } finally {
     await client.end();
   }

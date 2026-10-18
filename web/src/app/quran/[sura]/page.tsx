@@ -10,7 +10,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { getSura } from "@/lib/quran";
 import { QuranNav } from "../nav";
 import { SuraMeta } from "../sura-meta";
-import { ScrollToHash } from "./scroll-to-hash";
+import { ScrollToHash } from "@/components/scroll-to-hash";
 
 const t = getMessages().quran;
 

@@ -50,7 +50,7 @@ jobs:
           test "$(psql "$DATABASE_URL" -tA -c "SELECT has_table_privilege('anon', 'change_log', 'SELECT')")" = f
           test "$(psql "$DATABASE_URL" -tA -c "SELECT count(*) FROM pg_tables t WHERE schemaname = 'public'
             AND (NOT rowsecurity OR NOT EXISTS (SELECT 1 FROM pg_policies p WHERE p.tablename = t.tablename))")" = 0
-      - name: Quran import loads once and stays immutable
+      - name: Source imports load once and stay immutable
         run: |
           npm run db:import
           npm run db:import | grep -q "already loaded"
@@ -60,3 +60,7 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE level = 'ayah'")" = 6236
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q UPDATE texts SET content = 'x' WHERE address = 'quran.1.1'"
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q DELETE FROM addresses WHERE address = 'quran.1.1'"
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'bukhari.ar.tawq-najat'")" = 7401
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM work_sections WHERE version_id = 'bukhari.ar.tawq-najat' AND kind = 'book'")" = 97
+          ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q UPDATE texts SET content = 'x' WHERE address = 'bukhari.1'"
+          ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q UPDATE work_sections SET title = 'x' WHERE version_id = 'bukhari.ar.tawq-najat'"

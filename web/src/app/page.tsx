@@ -41,7 +41,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
 
 // Sections that already have pages.
 const LINKS: Partial<Record<SectionKey, string>> = {
-  library: "/quran",
+  library: "/library",
   quranMap: "/quran/map",
   glossary: "/glossary",
   encyclopedia: "/topics",

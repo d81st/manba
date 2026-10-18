@@ -2,11 +2,16 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { linkAddresses } from "@/lib/glossary-input";
 
-// Text where ayah addresses ("2:106") are links into the library.
+// Text where ayah addresses ("2:106") and hadith references ("Бухари 3951")
+// are links into the library.
 export function LinkedText({ text }: { text: string }) {
   return linkAddresses(text).map((piece, i) =>
     "sura" in piece ? (
       <Link key={i} href={`/quran/${piece.sura}#${piece.sura}-${piece.from}`}>
+        {piece.text}
+      </Link>
+    ) : "work" in piece ? (
+      <Link key={i} href={`/hadith/${piece.work}/${piece.number}`}>
         {piece.text}
       </Link>
     ) : (

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-// Ayahs stream in after the browser has looked for the #anchor, so scroll
+// Text streams in after the browser has looked for the #anchor, so scroll
 // to it once the list is on the page.
 export function ScrollToHash() {
   useEffect(() => {
