@@ -1,5 +1,2 @@
 # Source files are kept byte for byte as published: no line-ending conversion.
 data/sources/** -text
-
-# Author materials: kept as received
-materials/** -text
