@@ -6,9 +6,11 @@ import { MAX_QUERY_LENGTH } from "@/lib/quran-query";
 
 const t = getMessages().hadith.search;
 
-export function HadithSearchForm({ query = "" }: { query?: string }) {
+// On a collection's page a bare number ("8") is read in that collection.
+export function HadithSearchForm({ query = "", work }: { query?: string; work?: string }) {
   return (
     <form action="/hadith/search" className="mt-5 mb-1.5 flex gap-2" role="search">
+      {work && <input type="hidden" name="work" value={work} />}
       <label htmlFor="q" className="sr-only">
         {t.label}
       </label>

@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { HADITH_SEARCH_LIMIT, searchHadith } from "@/lib/hadith";
-import { parseHadithQuery } from "@/lib/hadith-query";
+import { COLLECTION_NAMES, hadithAnchor, hadithLabel, hadithPath, parseHadithQuery } from "@/lib/hadith-query";
 import { highlight, likePatterns } from "@/lib/quran-query";
 import { HadithSearchForm } from "../search-form";
 
@@ -34,14 +34,15 @@ export default function HadithSearchPage({ searchParams }: PageProps<"/hadith/se
 
 async function Search({ searchParams }: { searchParams: PageProps<"/hadith/search">["searchParams"] }) {
   await connection();
-  const raw = (await searchParams).q;
+  const { q: raw, work } = await searchParams;
   const query = typeof raw === "string" ? raw : "";
-  const parsed = parseHadithQuery(query);
-  if (parsed.kind === "number") redirect(`/hadith/${parsed.work}/${parsed.number}`);
+  const collection = typeof work === "string" && work in COLLECTION_NAMES ? work : undefined;
+  const parsed = parseHadithQuery(query, collection);
+  if (parsed.kind === "number") redirect(hadithPath(parsed.work, parsed.number, parsed.variant));
 
   return (
     <>
-      <HadithSearchForm query={query} />
+      <HadithSearchForm query={query} work={collection} />
       <p className="mb-2 text-sm text-muted-foreground">{t.search.hint}</p>
       {parsed.kind === "unsupported" && <Notice kind="info">{t.search.unsupported}</Notice>}
       {parsed.kind === "text" && <Results words={parsed.words} diacritics={parsed.diacritics} />}
@@ -69,14 +70,14 @@ async function Results({ words, diacritics }: { words: string[]; diacritics: boo
       <ol className="mt-2 mb-6">
         {result.hits.map((hit) => (
           <li
-            key={`${hit.work}-${hit.number}`}
+            key={`${hit.work}-${hadithAnchor(hit.number, hit.variant)}`}
             className="flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4"
           >
             <Link
-              href={`/hadith/${hit.work}/book/${hit.book}#h-${hit.number}`}
+              href={`/hadith/${hit.work}/book/${hit.book}#${hadithAnchor(hit.number, hit.variant)}`}
               className="min-w-24 shrink-0 text-sm tabular-nums no-underline"
             >
-              {hit.workTitle.replace(/^Сахих /, "")} {hit.number}
+              {hit.workTitle.replace(/^Сахих /, "")} {hadithLabel(hit.number, hit.variant, hit.variants)}
             </Link>
             <p className="ar flex-1 text-[1.3rem] leading-[2.1]" lang="ar" dir="rtl">
               {highlight(hit.text, words, diacritics).map((piece, i) =>

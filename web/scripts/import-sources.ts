@@ -6,7 +6,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { searchKey } from "../src/lib/arabic.ts";
-import { parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
+import { type Numbering, parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
+import { parseOpenitiNarrations } from "../src/lib/import/openiti-narrations.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
 
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "sources");
@@ -210,9 +211,10 @@ async function importTanzilSimple(client: pg.Client) {
   }
 }
 
-// A hadith collection from the OpenITI corpus (Shamela export in mARkdown).
+// A hadith collection from the OpenITI corpus, in one of two layouts.
 type HadithSource = {
   file: string; // in data/sources/openiti, kept byte for byte
+  layout: "shamela" | "narrations";
   key: string;
   sourceId: string;
   sourceTitle: string;
@@ -221,7 +223,7 @@ type HadithSource = {
   work: { id: string; canon: "sunni" | "shia"; titles: Record<string, string>; authoritySunni: number | null };
   versionId: string;
   versionTitle: string;
-  minHadiths: number; // the load stops if fewer hadiths are recognised
+  minItems: number; // the load stops if fewer texts are recognised
 };
 
 const OPENITI_LICENSE = "CC BY-NC-SA 4.0";
@@ -230,6 +232,7 @@ const OPENITI_CITATION =
 
 const BUKHARI: HadithSource = {
   file: "0256Bukhari.Sahih.Shamela0001681-ara1",
+  layout: "shamela",
   key: "openiti:0256Bukhari.Sahih.Shamela0001681-ara1:44e1c36",
   sourceId: "openiti.bukhari-shamela0001681",
   sourceTitle: "OpenITI · 0256Bukhari.Sahih.Shamela0001681-ara1",
@@ -238,8 +241,103 @@ const BUKHARI: HadithSource = {
   work: { id: "bukhari", canon: "sunni", titles: { ar: "صحيح البخاري", ru: "Сахих аль-Бухари" }, authoritySunni: 2 },
   versionId: "bukhari.ar.tawq-najat",
   versionTitle: "Арабский текст: изд. Дар Таук ан-Наджат (1422 г. х.), нумерация М. Ф. Абд аль-Баки (OpenITI)",
-  minHadiths: 7000,
+  minItems: 7000,
 };
+
+const MUSLIM: HadithSource = {
+  file: "0261Muslim.Sahih.JK000109-ara1",
+  layout: "narrations",
+  key: "openiti:0261Muslim.Sahih.JK000109-ara1:44e1c36",
+  sourceId: "openiti.muslim-jk000109",
+  sourceTitle: "OpenITI · 0261Muslim.Sahih.JK000109-ara1",
+  sourceVersion: "OpenITI/0275AH 44e1c36 (2025-11-28)",
+  notice: `${OPENITI_CITATION}. Text: 0261Muslim.Sahih.JK000109-ara1 — Sahih Muslim, ed. Muhammad Fu'ad Abd al-Baqi, Dar Ihya al-Turath al-Arabi, Beirut (al-Jami' al-Kabir export), with the editor's numbering. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  // Level 2 like al-Bukhari until a specialist confirms the levels (docs/PLAN.md).
+  work: { id: "muslim", canon: "sunni", titles: { ar: "صحيح مسلم", ru: "Сахих Муслим" }, authoritySunni: 2 },
+  versionId: "muslim.ar.ihya-turath",
+  versionTitle: "Арабский текст: изд. Дар Ихья ат-Турас аль-Араби (Бейрут), под ред. и с нумерацией М. Ф. Абд аль-Баки (OpenITI)",
+  minItems: 7000,
+};
+
+// What both layouts give the loader: a text per address, in reading order.
+type HadithItem = {
+  path: number[]; // [number] or [number, narration]
+  ordinal: number;
+  book: number;
+  chapter: number;
+  paragraphs: string[];
+  numbering: Numbering;
+};
+type PreparedCollection = {
+  books: { number: number; title: string }[];
+  chapters: { book: number; index: number; title: string; intro: string[] }[];
+  items: HadithItem[];
+  containers: number[]; // hadith numbers whose narrations have their own addresses
+  unnumbered: { book: number; chapter: number; paragraphs: string[] }[];
+  levels: { key: string; names: Record<string, string> }[];
+  summary: Record<string, unknown>;
+  missing: number;
+};
+
+const HADITH_LEVEL = { key: "hadith", names: { ar: "حديث", ru: "хадис" } };
+const NARRATION_LEVEL = { key: "narration", names: { ar: "رواية", ru: "передача" } };
+
+function prepare(src: HadithSource, text: string): PreparedCollection {
+  if (src.layout === "shamela") {
+    const data = parseOpenitiHadith(text);
+    const report = data.report;
+    return {
+      books: data.books,
+      chapters: data.chapters,
+      items: data.hadiths.map((h) => ({ ...h, path: [h.number] })),
+      containers: [],
+      unnumbered: report.unassigned,
+      levels: [HADITH_LEVEL],
+      summary: {
+        books: data.books.length,
+        chapters: data.chapters.length,
+        hadiths: data.hadiths.length,
+        markers: report.markers,
+        inferredGap: report.inferredGap,
+        inferredDisplaced: report.inferredDisplaced,
+        missing: report.missing,
+        appended: report.appended,
+        unassigned: report.unassigned.length,
+      },
+      missing: report.missing.length,
+    };
+  }
+  const data = parseOpenitiNarrations(text);
+  const report = data.report;
+  return {
+    books: data.books,
+    chapters: data.chapters,
+    items: data.narrations.map((n) => ({
+      path: [n.number, n.variant],
+      ordinal: n.ordinal,
+      book: n.book,
+      chapter: n.chapter,
+      paragraphs: n.paragraphs,
+      numbering: "marker",
+    })),
+    containers: [...new Set(data.narrations.map((n) => n.number))],
+    unnumbered: [],
+    levels: [HADITH_LEVEL, NARRATION_LEVEL],
+    summary: {
+      books: data.books.length,
+      chapters: data.chapters.length,
+      narrations: report.narrations,
+      numbers: report.numbers,
+      missing: report.missing,
+      backReferences: report.backReferences.length,
+      glued: report.glued,
+      numberedHeadings: report.numberedHeadings.length,
+      textHeadings: report.textHeadings.length,
+      appended: report.appended,
+    },
+    missing: report.missing.length,
+  };
+}
 
 async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
   const done = await client.query("SELECT 1 FROM import_batches WHERE key = $1", [src.key]);
@@ -247,13 +345,13 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
     console.log(`Import skipped: ${src.key} is already loaded.`);
     return;
   }
-  const data = parseOpenitiHadith(readFileSync(join(DATA_DIR, "openiti", src.file), "utf8"));
-  if (data.hadiths.length < src.minHadiths) {
-    throw new Error(`${src.file}: only ${data.hadiths.length} hadiths recognised`);
+  const data = prepare(src, readFileSync(join(DATA_DIR, "openiti", src.file), "utf8"));
+  if (data.items.length < src.minItems) {
+    throw new Error(`${src.file}: only ${data.items.length} texts recognised`);
   }
-  const address = (n: number) => `${src.work.id}.${n}`;
+  const address = (path: number[]) => [src.work.id, ...path].join(".");
   const content = (paragraphs: string[]) => paragraphs.join("\n\n");
-  const report = data.report;
+  const items = data.items;
 
   await client.query("BEGIN");
   try {
@@ -265,21 +363,7 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
     );
     const batch = await client.query(
       `INSERT INTO import_batches (key, source_id, actor, summary) VALUES ($1, $2, 'import:openiti', $3) RETURNING id`,
-      [
-        src.key,
-        src.sourceId,
-        json({
-          books: data.books.length,
-          chapters: data.chapters.length,
-          hadiths: data.hadiths.length,
-          markers: report.markers,
-          inferredGap: report.inferredGap,
-          inferredDisplaced: report.inferredDisplaced,
-          missing: report.missing,
-          appended: report.appended,
-          unassigned: report.unassigned.length,
-        }),
-      ],
+      [src.key, src.sourceId, json(data.summary)],
     );
     const batchId = batch.rows[0].id;
 
@@ -287,18 +371,19 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
       `INSERT INTO works (id, canon, category, titles, levels, authority_sunni, authority_shia, status)
        VALUES ($1, $2, 'hadith', $3, $4, $5, NULL, 'published')
        ON CONFLICT (id) DO NOTHING`,
-      [
-        src.work.id,
-        src.work.canon,
-        json(src.work.titles),
-        json([{ key: "hadith", names: { ar: "حديث", ru: "хадис" } }]),
-        src.work.authoritySunni,
-      ],
+      [src.work.id, src.work.canon, json(src.work.titles), json(data.levels), src.work.authoritySunni],
     );
+    // Containers: a hadith number that groups its narrations.
+    await client.query(
+      `INSERT INTO addresses (address, work_id, level, batch_id)
+       SELECT a::extensions.ltree, $2, 'hadith', $3 FROM unnest($1::text[]) AS t(a)`,
+      [data.containers.map((n) => address([n])), src.work.id, batchId],
+    );
+    const level = data.levels[data.levels.length - 1].key;
     await client.query(
       `INSERT INTO addresses (address, work_id, level, ordinal, batch_id)
-       SELECT a::extensions.ltree, $3, 'hadith', o, $4 FROM unnest($1::text[], $2::int[]) AS t(a, o)`,
-      [data.hadiths.map((h) => address(h.number)), data.hadiths.map((h) => h.ordinal), src.work.id, batchId],
+       SELECT a::extensions.ltree, $3, $4, o, $5 FROM unnest($1::text[], $2::int[]) AS t(a, o)`,
+      [items.map((h) => address(h.path)), items.map((h) => h.ordinal), src.work.id, level, batchId],
     );
     await client.query(
       `INSERT INTO text_versions
@@ -306,13 +391,13 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
        VALUES ($1, $2, 'ar', 'original', $3, $4, 'unverified', true, 'draft', $5)`,
       [src.versionId, src.work.id, src.versionTitle, src.sourceId, batchId],
     );
-    const texts = data.hadiths.map((h) => content(h.paragraphs));
+    const texts = items.map((h) => content(h.paragraphs));
     await client.query(
       `INSERT INTO texts (address, version_id, content, search_plain, search_vocalized, batch_id)
        SELECT a::extensions.ltree, $5, c, p, v, $6
        FROM unnest($1::text[], $2::text[], $3::text[], $4::text[]) AS t(a, c, p, v)`,
       [
-        data.hadiths.map((h) => address(h.number)),
+        items.map((h) => address(h.path)),
         texts,
         texts.map((t) => searchKey(t)),
         texts.map((t) => searchKey(t, { diacritics: true })),
@@ -325,10 +410,10 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
        SELECT $5, a::extensions.ltree, b, c, n, $6
        FROM unnest($1::text[], $2::int[], $3::int[], $4::text[]) AS t(a, b, c, n)`,
       [
-        data.hadiths.map((h) => address(h.number)),
-        data.hadiths.map((h) => h.book),
-        data.hadiths.map((h) => h.chapter),
-        data.hadiths.map((h) => h.numbering),
+        items.map((h) => address(h.path)),
+        items.map((h) => h.book),
+        items.map((h) => h.chapter),
+        items.map((h) => h.numbering),
         src.versionId,
         batchId,
       ],
@@ -336,7 +421,7 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
 
     // Books, then chapters in reading order; unnumbered narration stays with its chapter.
     const unnumbered = new Map<string, string[]>();
-    for (const item of report.unassigned) {
+    for (const item of data.unnumbered) {
       const key = `${item.book}.${item.chapter}`;
       unnumbered.set(key, [...(unnumbered.get(key) ?? []), ...item.paragraphs]);
     }
@@ -373,14 +458,12 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
        VALUES ('import_batch', $1, 'created', $2, $3, 'import:openiti')`,
       [
         src.key,
-        json({ batchId, version: src.versionId, hadiths: data.hadiths.length, missing: report.missing.length }),
+        json({ batchId, version: src.versionId, texts: items.length, missing: data.missing }),
         `Загрузка: ${src.work.titles.ru} (OpenITI)`,
       ],
     );
     await client.query("COMMIT");
-    console.log(
-      `Import done: ${src.key} (${data.hadiths.length} hadiths; inferred ${report.inferredGap.length + report.inferredDisplaced.length}, missing ${report.missing.length}).`,
-    );
+    console.log(`Import done: ${src.key} (${items.length} texts; ${data.missing} numbers missing).`);
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -402,6 +485,7 @@ async function main() {
     await importTanzil(client);
     await importTanzilSimple(client);
     await importOpenitiHadith(client, BUKHARI);
+    await importOpenitiHadith(client, MUSLIM);
   } finally {
     await client.end();
   }

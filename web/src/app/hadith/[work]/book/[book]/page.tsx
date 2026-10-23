@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getBook, getCollection } from "@/lib/hadith";
+import { hadithAnchor, hadithLabel } from "@/lib/hadith-query";
 import { HadithAttribution } from "../../../attribution";
 
 const t = getMessages().hadith;
@@ -74,9 +75,7 @@ async function BookText({ params }: { params: PageProps<"/hadith/[work]/book/[bo
         </Link>
       </nav>
       <header className="flex flex-col gap-1 border-b pt-3 pb-4">
-        <p className="text-sm text-muted-foreground">
-          {t.book} {book.number}
-        </p>
+        <p className="text-sm text-muted-foreground">{book.number === 0 ? t.preface : `${t.book} ${book.number}`}</p>
         <h1 className="ar text-3xl leading-loose" lang="ar" dir="rtl">
           {book.title}
         </h1>
@@ -93,13 +92,16 @@ async function BookText({ params }: { params: PageProps<"/hadith/[work]/book/[bo
           <ol>
             {chapter.hadiths.map((hadith) => (
               <li
-                key={hadith.number}
-                id={`h-${hadith.number}`}
+                key={hadithAnchor(hadith.number, hadith.variant)}
+                id={hadithAnchor(hadith.number, hadith.variant)}
                 className="flex scroll-mt-4 flex-col gap-1 border-t py-4 first:border-t-0 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
               >
                 <span className="flex min-w-20 shrink-0 flex-col gap-1">
-                  <a href={`#h-${hadith.number}`} className="text-sm font-medium tabular-nums no-underline">
-                    {collection.title.replace(/^Сахих /, "")} {hadith.number}
+                  <a
+                    href={`#${hadithAnchor(hadith.number, hadith.variant)}`}
+                    className="text-sm font-medium tabular-nums no-underline"
+                  >
+                    {collection.title.replace(/^Сахих /, "")} {hadithLabel(hadith.number, hadith.variant, hadith.variants)}
                   </a>
                   {hadith.numbering !== "marker" && (
                     <Badge variant="outline" className="w-fit text-[0.7rem]" title={t.inferredHint}>

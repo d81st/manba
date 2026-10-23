@@ -8,12 +8,14 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getCollection, locateHadith } from "@/lib/hadith";
+import { hadithAnchor, hadithPath, parseVariant } from "@/lib/hadith-query";
 
 const t = getMessages().hadith;
 
 export const metadata: Metadata = { title: t.title };
 
-// A permanent link to one hadith: /hadith/bukhari/3951 opens it in its book.
+// A permanent link to one hadith: /hadith/bukhari/3951 opens it in its book;
+// /hadith/muslim/8b opens the second narration of Muslim 8.
 export default function HadithNumberPage({ params }: PageProps<"/hadith/[work]/[number]">) {
   return (
     <Page>
@@ -27,11 +29,14 @@ export default function HadithNumberPage({ params }: PageProps<"/hadith/[work]/[
 async function Locate({ params }: { params: PageProps<"/hadith/[work]/[number]">["params"] }) {
   await connection();
   const { work, number: raw } = await params;
-  if (!/^[a-z][a-z0-9_]*$/.test(work) || !/^\d{1,5}$/.test(raw) || !isDatabaseConfigured()) notFound();
-  const number = Number(raw);
-  const [collection, place] = await Promise.all([getCollection(work), locateHadith(work, number)]);
+  const label = safeDecode(raw).match(/^(\d{1,5})(\p{L}{1,2})?$/u);
+  if (!/^[a-z][a-z0-9_]*$/.test(work) || !label || !isDatabaseConfigured()) notFound();
+  const number = Number(label[1]);
+  const variant = label[2] ? parseVariant(label[2]) : null;
+  if (label[2] && !variant) notFound();
+  const [collection, place] = await Promise.all([getCollection(work), locateHadith(work, number, variant)]);
   if (!collection || !place) notFound();
-  if (place.book !== null) redirect(`/hadith/${work}/book/${place.book}#h-${number}`);
+  if (place.book !== null) redirect(`/hadith/${work}/book/${place.book}#${hadithAnchor(number, place.variant)}`);
 
   const beyond = place.after === null;
   return (
@@ -55,7 +60,7 @@ async function Locate({ params }: { params: PageProps<"/hadith/[work]/[number]">
               (n) =>
                 n !== null && (
                   <li key={n}>
-                    <Link href={`/hadith/${work}/${n}`}>
+                    <Link href={hadithPath(work, n)}>
                       {collection.title} {n}
                     </Link>
                   </li>
@@ -66,4 +71,12 @@ async function Locate({ params }: { params: PageProps<"/hadith/[work]/[number]">
       )}
     </>
   );
+}
+
+function safeDecode(raw: string) {
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
 }
