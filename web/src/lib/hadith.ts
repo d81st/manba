@@ -1,14 +1,22 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
+import { COLLECTION_ORDER } from "@/lib/hadith-query";
 
 export const HADITH_TAG = "hadith";
+
+// Name before a number: "Абу Дауд 12". Works loaded before short names were
+// stored drop the "Сахих".
+function shortTitle(title: string, short: string | null) {
+  return short ?? title.replace(/^Сахих /, "");
+}
 
 export type Attribution = { title: string; url: string; license: string; notice: string; version: string };
 
 export type Collection = {
   id: string;
   title: string;
+  shortTitle: string;
   titleAr: string;
   canon: string;
   versionId: string;
@@ -57,7 +65,8 @@ export async function listCollections(): Promise<{ id: string; title: string; ti
     `SELECT w.id, w.titles->>'ru' AS title, w.titles->>'ar' AS "titleAr", w.canon FROM works w
      WHERE w.category = 'hadith' AND w.status = 'published'
        AND EXISTS (SELECT 1 FROM text_versions v WHERE v.work_id = w.id AND v.is_primary AND v.status = 'published')
-     ORDER BY w.authority_sunni NULLS LAST, w.id`,
+     ORDER BY w.authority_sunni NULLS LAST, array_position($1::text[], w.id) NULLS LAST, w.id`,
+    [COLLECTION_ORDER],
   );
   return rows;
 }
@@ -67,7 +76,7 @@ export async function getCollection(workId: string): Promise<Collection | null> 
   cacheTag(HADITH_TAG);
   cacheLife("hours");
   const work = await db().query(
-    `SELECT id, titles->>'ru' AS title, titles->>'ar' AS title_ar, canon FROM works
+    `SELECT id, titles->>'ru' AS title, titles->>'ru-short' AS short, titles->>'ar' AS title_ar, canon FROM works
      WHERE id = $1 AND category = 'hadith' AND status = 'published'`,
     [workId],
   );
@@ -97,6 +106,7 @@ export async function getCollection(workId: string): Promise<Collection | null> 
   return {
     id: work.rows[0].id,
     title: work.rows[0].title,
+    shortTitle: shortTitle(work.rows[0].title, work.rows[0].short),
     titleAr: work.rows[0].title_ar,
     canon: work.rows[0].canon,
     versionId: version.id,
@@ -212,7 +222,7 @@ export async function locateHadith(
 
 export type HadithHit = {
   work: string;
-  workTitle: string;
+  workTitle: string; // short name: "Абу Дауд"
   number: number;
   variant: number | null;
   variants: number;
@@ -228,12 +238,13 @@ export async function searchHadith(
 ): Promise<{ hits: HadithHit[]; total: number }> {
   const column = diacritics ? "t.search_vocalized" : "t.search_plain";
   const conditions = patterns.map((_, i) => `${column} LIKE $${i + 1}`).join(" AND ");
-  const { rows } = await db().query<HadithHit & { total: number }>(
+  const { rows } = await db().query<HadithHit & { total: number; workShort: string | null }>(
     `SELECT h.*,
             (SELECT count(*)::int FROM section_items s
              WHERE s.version_id = h.version_id AND s.address <@ subpath(h.address, 0, 2)) AS variants
      FROM (
-       SELECT w.id AS work, w.titles->>'ru' AS "workTitle", t.version_id, t.address,
+       SELECT w.id AS work, w.titles->>'ru' AS "workTitle", w.titles->>'ru-short' AS "workShort",
+              t.version_id, t.address,
               split_part(t.address::text, '.', 2)::int AS number,
               CASE WHEN nlevel(t.address) > 2 THEN split_part(t.address::text, '.', 3)::int END AS variant,
               i.book, t.content AS text, count(*) OVER ()::int AS total,
@@ -244,15 +255,17 @@ export async function searchHadith(
        JOIN section_items i ON i.version_id = t.version_id AND i.address = t.address
        JOIN addresses a ON a.address = t.address
        WHERE ${conditions}
-       ORDER BY w.authority_sunni NULLS LAST, w.id, a.ordinal
+       ORDER BY w.authority_sunni NULLS LAST, array_position($${patterns.length + 1}::text[], w.id) NULLS LAST,
+                w.id, a.ordinal
        LIMIT ${HADITH_SEARCH_LIMIT}
      ) h
-     ORDER BY h.authority NULLS LAST, h.work, h.ordinal`,
-    patterns,
+     ORDER BY h.authority NULLS LAST, array_position($${patterns.length + 1}::text[], h.work) NULLS LAST,
+              h.work, h.ordinal`,
+    [...patterns, COLLECTION_ORDER],
   );
   const hits = rows.map((row) => ({
     work: row.work,
-    workTitle: row.workTitle,
+    workTitle: shortTitle(row.workTitle, row.workShort),
     number: row.number,
     variant: row.variant,
     variants: row.variants,

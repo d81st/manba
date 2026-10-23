@@ -224,6 +224,7 @@ type HadithSource = {
   versionId: string;
   versionTitle: string;
   minItems: number; // the load stops if fewer texts are recognised
+  retrievedAt: string;
 };
 
 const OPENITI_LICENSE = "CC BY-NC-SA 4.0";
@@ -238,10 +239,11 @@ const BUKHARI: HadithSource = {
   sourceTitle: "OpenITI · 0256Bukhari.Sahih.Shamela0001681-ara1",
   sourceVersion: "OpenITI/0275AH 44e1c36 (2025-11-28)",
   notice: `${OPENITI_CITATION}. Text: 0256Bukhari.Sahih.Shamela0001681-ara1 — Sahih al-Bukhari, ed. Muhammad Zuhayr al-Nasir, Dar Tawq al-Najat, 1422 AH, with the numbering of Muhammad Fu'ad Abd al-Baqi. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
-  work: { id: "bukhari", canon: "sunni", titles: { ar: "صحيح البخاري", ru: "Сахих аль-Бухари" }, authoritySunni: 2 },
+  work: { id: "bukhari", canon: "sunni", titles: { ar: "صحيح البخاري", ru: "Сахих аль-Бухари", "ru-short": "аль-Бухари" }, authoritySunni: 2 },
   versionId: "bukhari.ar.tawq-najat",
   versionTitle: "Арабский текст: изд. Дар Таук ан-Наджат (1422 г. х.), нумерация М. Ф. Абд аль-Баки (OpenITI)",
   minItems: 7000,
+  retrievedAt: "2026-10-18",
 };
 
 const MUSLIM: HadithSource = {
@@ -253,11 +255,101 @@ const MUSLIM: HadithSource = {
   sourceVersion: "OpenITI/0275AH 44e1c36 (2025-11-28)",
   notice: `${OPENITI_CITATION}. Text: 0261Muslim.Sahih.JK000109-ara1 — Sahih Muslim, ed. Muhammad Fu'ad Abd al-Baqi, Dar Ihya al-Turath al-Arabi, Beirut (al-Jami' al-Kabir export), with the editor's numbering. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
   // Level 2 like al-Bukhari until a specialist confirms the levels (docs/PLAN.md).
-  work: { id: "muslim", canon: "sunni", titles: { ar: "صحيح مسلم", ru: "Сахих Муслим" }, authoritySunni: 2 },
+  work: { id: "muslim", canon: "sunni", titles: { ar: "صحيح مسلم", ru: "Сахих Муслим", "ru-short": "Муслим" }, authoritySunni: 2 },
   versionId: "muslim.ar.ihya-turath",
+  retrievedAt: "2026-10-23",
   versionTitle: "Арабский текст: изд. Дар Ихья ат-Турас аль-Араби (Бейрут), под ред. и с нумерацией М. Ф. Абд аль-Баки (OpenITI)",
   minItems: 7000,
 };
+
+// The four Sunan, each in the edition whose numbering is the one in common
+// use (Abd al-Baqi numbered only Ibn Majah of them).
+const OPENITI_COMMITS = { "0275AH": "44e1c36 (2025-11-28)", "0300AH": "01a1544 (2025-11-28)", "0325AH": "089e665 (2025-12-01)" };
+
+function sunan(options: {
+  file: string;
+  repo: keyof typeof OPENITI_COMMITS;
+  edition: string;
+  work: HadithSource["work"];
+  versionId: string;
+  versionTitle: string;
+  minItems: number;
+}): HadithSource {
+  const uri = options.file.replace(/\.(?:mARkdown|completed)$/, "");
+  const commit = OPENITI_COMMITS[options.repo];
+  return {
+    file: options.file,
+    layout: "narrations",
+    key: `openiti:${uri}:${commit.split(" ")[0]}`,
+    sourceId: `openiti.${options.work.id.replace(/_/g, "-")}-${uri.split(".").pop()!.replace(/-ara\d+$/, "").toLowerCase()}`,
+    sourceTitle: `OpenITI · ${uri}`,
+    sourceVersion: `OpenITI/${options.repo} ${commit}`,
+    notice: `${OPENITI_CITATION}. Text: ${uri} — ${options.edition} (al-Jami' al-Kabir export), with the edition's numbering. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+    work: options.work,
+    versionId: options.versionId,
+    versionTitle: options.versionTitle,
+    minItems: options.minItems,
+    retrievedAt: "2026-10-23",
+  };
+}
+
+// Level 3 for the Sunan until a specialist confirms the levels (docs/PLAN.md).
+const ABU_DAWUD = sunan({
+  file: "0275AbuDawudSijistani.Sunan.JK000142-ara1",
+  repo: "0275AH",
+  edition: "Sunan Abi Dawud, ed. Muhammad Muhyi al-Din Abd al-Hamid, Dar al-Fikr",
+  work: {
+    id: "abu_dawud",
+    canon: "sunni",
+    titles: { ar: "سنن أبي داود", ru: "Сунан Абу Дауда", "ru-short": "Абу Дауд" },
+    authoritySunni: 3,
+  },
+  versionId: "abu_dawud.ar.abd-al-hamid",
+  versionTitle: "Арабский текст: изд. Мухаммада Мухйи ад-Дина Абд аль-Хамида (Дар аль-Фикр), его нумерация (OpenITI)",
+  minItems: 5000,
+});
+const TIRMIDHI = sunan({
+  file: "0279Tirmidhi.Sunan.JK000140-ara1.completed",
+  repo: "0300AH",
+  edition: "Sunan al-Tirmidhi (al-Jami'), ed. Ahmad Muhammad Shakir et al., Dar Ihya al-Turath al-Arabi",
+  work: {
+    id: "tirmidhi",
+    canon: "sunni",
+    titles: { ar: "سنن الترمذي", ru: "Сунан ат-Тирмизи", "ru-short": "ат-Тирмизи" },
+    authoritySunni: 3,
+  },
+  versionId: "tirmidhi.ar.shakir",
+  versionTitle: "Арабский текст: изд. Ахмада Мухаммада Шакира и др. (Дар Ихья ат-Турас аль-Араби), нумерация издания (OpenITI)",
+  minItems: 3900,
+});
+const NASAI = sunan({
+  file: "0303Nasai.SunanSughra.JK000130-ara1.mARkdown",
+  repo: "0325AH",
+  edition: "al-Mujtaba (Sunan al-Nasa'i al-Sughra), ed. Abd al-Fattah Abu Ghudda, Maktab al-Matbu'at al-Islamiyya, Aleppo",
+  work: {
+    id: "nasai",
+    canon: "sunni",
+    titles: { ar: "سنن النسائي", ru: "Сунан ан-Насаи", "ru-short": "ан-Насаи" },
+    authoritySunni: 3,
+  },
+  versionId: "nasai.ar.abu-ghudda",
+  versionTitle: "Арабский текст «аль-Муджтаба»: изд. Абд аль-Фаттаха Абу Гудды (Халеб), его нумерация (OpenITI)",
+  minItems: 5700,
+});
+const IBN_MAJAH = sunan({
+  file: "0273IbnMaja.Sunan.JK000141-ara1",
+  repo: "0275AH",
+  edition: "Sunan Ibn Majah, ed. Muhammad Fu'ad Abd al-Baqi, Dar al-Fikr",
+  work: {
+    id: "ibn_majah",
+    canon: "sunni",
+    titles: { ar: "سنن ابن ماجه", ru: "Сунан Ибн Маджи", "ru-short": "Ибн Маджа" },
+    authoritySunni: 3,
+  },
+  versionId: "ibn_majah.ar.abd-al-baqi",
+  versionTitle: "Арабский текст: изд. М. Ф. Абд аль-Баки (Дар аль-Фикр), его нумерация (OpenITI)",
+  minItems: 4300,
+});
 
 // What both layouts give the loader: a text per address, in reading order.
 type HadithItem = {
@@ -309,20 +401,22 @@ function prepare(src: HadithSource, text: string): PreparedCollection {
   }
   const data = parseOpenitiNarrations(text);
   const report = data.report;
+  // Narrations get their own addresses only where a number has several.
+  const nested = data.narrations.some((n) => n.variant > 1);
   return {
     books: data.books,
     chapters: data.chapters,
     items: data.narrations.map((n) => ({
-      path: [n.number, n.variant],
+      path: nested ? [n.number, n.variant] : [n.number],
       ordinal: n.ordinal,
       book: n.book,
       chapter: n.chapter,
       paragraphs: n.paragraphs,
       numbering: "marker",
     })),
-    containers: [...new Set(data.narrations.map((n) => n.number))],
+    containers: nested ? [...new Set(data.narrations.map((n) => n.number))] : [],
     unnumbered: [],
-    levels: [HADITH_LEVEL, NARRATION_LEVEL],
+    levels: nested ? [HADITH_LEVEL, NARRATION_LEVEL] : [HADITH_LEVEL],
     summary: {
       books: data.books.length,
       chapters: data.chapters.length,
@@ -333,6 +427,8 @@ function prepare(src: HadithSource, text: string): PreparedCollection {
       glued: report.glued,
       numberedHeadings: report.numberedHeadings.length,
       textHeadings: report.textHeadings.length,
+      inferredBooks: report.inferredBooks,
+      repeatMarks: report.repeatMarks,
       appended: report.appended,
     },
     missing: report.missing.length,
@@ -359,7 +455,7 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
       `INSERT INTO sources (id, title, url, license, license_text, version, retrieved_at)
        VALUES ($1, $2, 'https://github.com/OpenITI/0275AH', $3, $4, $5, $6)
        ON CONFLICT (id) DO NOTHING`,
-      [src.sourceId, src.sourceTitle, OPENITI_LICENSE, src.notice, src.sourceVersion, "2026-10-18"],
+      [src.sourceId, src.sourceTitle, OPENITI_LICENSE, src.notice, src.sourceVersion, src.retrievedAt],
     );
     const batch = await client.query(
       `INSERT INTO import_batches (key, source_id, actor, summary) VALUES ($1, $2, 'import:openiti', $3) RETURNING id`,
@@ -486,6 +582,7 @@ async function main() {
     await importTanzilSimple(client);
     await importOpenitiHadith(client, BUKHARI);
     await importOpenitiHadith(client, MUSLIM);
+    for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH]) await importOpenitiHadith(client, src);
   } finally {
     await client.end();
   }

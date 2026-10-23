@@ -83,3 +83,83 @@ describe("parseOpenitiNarrations", () => {
     expect(report.numberedHeadings).toEqual(["5 باب عنوان مرقم"]);
   });
 });
+
+// Fictional data in the annotated layout: levels mark books and chapters,
+// "### ||| N" gives the number of the paragraph after it.
+const ANNOTATED = [
+  "######OpenITI#",
+  "#META#Header#End#",
+  "# بسم الله تجريبي",
+  "### | ( 1 كتاب أول )",
+  "### || ( 1 باب أول )",
+  "### ||| 1",
+  "# حدثنا نص أول",
+  "### ||| 1 ms0001",
+  "# م حدثنا سند آخر",
+  "### | ( 2 أبواب ثانية )",
+  "### ||| ( 2 باب ثان )",
+  "### ||| 2",
+  "# حدثنا نص ثان",
+  "### | ( كتاب تابع )",
+  "### ||| 3",
+  "# حدثنا نص ثالث",
+  "### |PARATEXT|",
+  "# فهرس لا يحمل",
+].join("\n");
+
+describe("parseOpenitiNarrations, annotated layout", () => {
+  const collection = parseOpenitiNarrations(ANNOTATED);
+
+  it("reads books and chapters by level and stops before the editor's matter", () => {
+    expect(collection.books).toEqual([
+      { number: 1, title: "كتاب أول" },
+      { number: 2, title: "أبواب ثانية" },
+    ]);
+    expect(collection.chapters.map((c) => [c.book, c.index, c.title, c.intro])).toEqual([
+      [1, 1, "باب أول", ["بسم الله تجريبي"]],
+      [2, 1, "باب ثان", []],
+      [2, 2, "كتاب تابع", []],
+    ]);
+    expect(collection.narrations.at(-1)?.paragraphs).toEqual(["حدثنا نص ثالث"]);
+  });
+
+  it("takes numbers from their own lines and drops the repeat mark", () => {
+    expect(collection.narrations.map((n) => [n.number, n.variant, n.book, n.chapter, n.paragraphs[0]])).toEqual([
+      [1, 1, 1, 1, "حدثنا نص أول"],
+      [1, 2, 1, 1, "حدثنا سند آخر"],
+      [2, 1, 2, 1, "حدثنا نص ثان"],
+      [3, 1, 2, 2, "حدثنا نص ثالث"],
+    ]);
+    expect(collection.report.repeatMarks).toBe(1);
+  });
+});
+
+describe("parseOpenitiNarrations, book headings in words", () => {
+  const collection = parseOpenitiNarrations(
+    [
+      "######OpenITI#",
+      "#META#Header#End#",
+      "# | 1 ( سنن تجريبية )",
+      "# 1 كتاب أول",
+      "# | 1 ( 1 باب أول )",
+      "# 1 حدثنا نص أول",
+      "# | 1 ( أول كتاب ثان )",
+      "# | 1 ( فضل تجريبي )",
+      "# 2 حدثنا نص ثان",
+    ].join("\n"),
+  );
+
+  it("skips the title page, numbers an unnumbered first heading of a book and keeps other titles as chapters", () => {
+    expect(collection.report.title).toBe("سنن تجريبية");
+    expect(collection.books).toEqual([
+      { number: 1, title: "كتاب أول" },
+      { number: 2, title: "كتاب ثان" },
+    ]);
+    expect(collection.report.inferredBooks).toEqual([{ number: 2, title: "كتاب ثان" }]);
+    expect(collection.report.numberedHeadings).toEqual(["1 كتاب أول"]);
+    expect(collection.chapters.map((c) => [c.book, c.title])).toEqual([
+      [1, "باب أول"],
+      [2, "فضل تجريبي"],
+    ]);
+  });
+});

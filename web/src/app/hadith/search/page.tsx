@@ -77,7 +77,7 @@ async function Results({ words, diacritics }: { words: string[]; diacritics: boo
               href={`/hadith/${hit.work}/book/${hit.book}#${hadithAnchor(hit.number, hit.variant)}`}
               className="min-w-24 shrink-0 text-sm tabular-nums no-underline"
             >
-              {hit.workTitle.replace(/^Сахих /, "")} {hadithLabel(hit.number, hit.variant, hit.variants)}
+              {hit.workTitle} {hadithLabel(hit.number, hit.variant, hit.variants)}
             </Link>
             <p className="ar flex-1 text-[1.3rem] leading-[2.1]" lang="ar" dir="rtl">
               {highlight(hit.text, words, diacritics).map((piece, i) =>

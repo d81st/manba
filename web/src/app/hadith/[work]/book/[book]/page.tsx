@@ -101,7 +101,7 @@ async function BookText({ params }: { params: PageProps<"/hadith/[work]/book/[bo
                     href={`#${hadithAnchor(hadith.number, hadith.variant)}`}
                     className="text-sm font-medium tabular-nums no-underline"
                   >
-                    {collection.title.replace(/^Сахих /, "")} {hadithLabel(hadith.number, hadith.variant, hadith.variants)}
+                    {collection.shortTitle} {hadithLabel(hadith.number, hadith.variant, hadith.variants)}
                   </a>
                   {hadith.numbering !== "marker" && (
                     <Badge variant="outline" className="w-fit text-[0.7rem]" title={t.inferredHint}>

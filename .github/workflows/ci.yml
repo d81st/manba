@@ -68,3 +68,7 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'muslim' AND level = 'hadith'")" = 3027
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM work_sections WHERE version_id = 'muslim.ar.ihya-turath' AND kind = 'book'")" = 55
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q UPDATE section_items SET book = 1 WHERE address = 'muslim.8.1'"
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'abu_dawud.ar.abd-al-hamid'")" = 5274
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tirmidhi.ar.shakir'")" = 3976
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'nasai.ar.abu-ghudda'")" = 5769
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ibn_majah.ar.abd-al-baqi'")" = 4341

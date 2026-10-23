@@ -3,11 +3,20 @@
 import { hasDiacritics, searchKey } from "./arabic.ts";
 import { MAX_QUERY_LENGTH } from "./quran-query.ts";
 
-// How collections are named in references; only loaded collections are listed.
+// How collections are named in references; only loaded collections are
+// listed, in the traditional order of the six books.
 export const COLLECTION_NAMES: Record<string, string[]> = {
   bukhari: ["бухари", "bukhari"],
   muslim: ["муслим", "муслима", "muslim"],
+  abu_dawud: ["абу дауд", "абу дауда", "абу-дауд", "abu dawud", "abu dawood"],
+  tirmidhi: ["тирмизи", "tirmidhi"],
+  nasai: ["насаи", "nasai"],
+  ibn_majah: ["ибн маджа", "ибн маджи", "ибн маджах", "ibn majah", "ibn maja"],
 };
+export const COLLECTION_ORDER = Object.keys(COLLECTION_NAMES);
+
+// The Arabic article before a name: "аль-Бухари", "ат-Тирмизи", "an-Nasai".
+const ARTICLE = "(?:аль|ал|ат|ан|ас|аш|ад|аз|ар|al|at|an|as|ash|ad|az|ar)-";
 export const DEFAULT_COLLECTION = "bukhari";
 
 const MAX_WORDS = 10;
@@ -64,7 +73,10 @@ export function hadithAnchor(number: number, variant: number | null) {
 }
 
 function workOf(name: string) {
-  const key = name.toLowerCase().replace(/^(?:аль|ал|al)-/, "");
+  const key = name
+    .toLowerCase()
+    .replace(new RegExp(`^${ARTICLE}`), "")
+    .replace(/\s+/g, " ");
   return Object.entries(COLLECTION_NAMES).find(([, names]) => names.includes(key))?.[0];
 }
 
@@ -73,7 +85,7 @@ export function parseHadithQuery(input: string, work = DEFAULT_COLLECTION): Hadi
   if (!query) return { kind: "empty" };
 
   // "3951", "Бухари 3951", "аль-Бухари № 3951", "bukhari.3951", "Муслим 8b", "muslim.8.2"
-  const number = query.match(/^(?:([\p{L}-]+)\s*[.\s]\s*(?:№\s*)?)?(\d{1,5})(?:\.(\d{1,3})|\s?(\p{L}{1,2}))?$/u);
+  const number = query.match(/^(?:([\p{L}-]+(?:\s+[\p{L}-]+)?)\s*[.\s]\s*(?:№\s*)?)?(\d{1,5})(?:\.(\d{1,3})|\s?(\p{L}{1,2}))?$/u);
   if (number) {
     const named = number[1] ? workOf(number[1]) : work;
     const variant = number[3] ? Number(number[3]) : number[4] ? parseVariant(number[4]) : null;
@@ -98,9 +110,12 @@ export function parseHadithQuery(input: string, work = DEFAULT_COLLECTION): Hadi
 
 // "Сахих аль-Бухари 3951", "Бухари № 3951", "Муслим 8b": a collection name,
 // a number and, for a narration, its letter.
-const NAMES = Object.values(COLLECTION_NAMES).flat().join("|");
+const NAMES = Object.values(COLLECTION_NAMES)
+  .flat()
+  .map((name) => name.replace(/ /g, "\\s+"))
+  .join("|");
 export const HADITH_REFERENCE = new RegExp(
-  `(?<![\\p{L}])(?:(?:аль|ал|al)-)?(${NAMES})\\s*(?:№\\s*)?(\\d{1,5})([a-z]{1,2}|[а-я])?(?![\\p{L}\\d:])`,
+  `(?<![\\p{L}])(?:${ARTICLE})?(${NAMES})\\s*(?:№\\s*)?(\\d{1,5})([a-z]{1,2}|[а-я])?(?![\\p{L}\\d:])`,
   "giu",
 );
 

@@ -18,7 +18,11 @@ describe("parseHadithQuery", () => {
     expect(parseHadithQuery("Муслима 21б")).toEqual({ kind: "number", work: "muslim", number: 21, variant: 2 });
     expect(parseHadithQuery("muslim.8.3")).toEqual({ kind: "number", work: "muslim", number: 8, variant: 3 });
     expect(parseHadithQuery("8", "muslim")).toEqual({ kind: "number", work: "muslim", number: 8, variant: null });
-    expect(parseHadithQuery("Тирмизи 12")).toEqual({ kind: "unsupported" });
+    expect(parseHadithQuery("Тирмизи 12")).toEqual({ kind: "number", work: "tirmidhi", number: 12, variant: null });
+    expect(parseHadithQuery("Абу Дауд 4297")).toEqual({ kind: "number", work: "abu_dawud", number: 4297, variant: null });
+    expect(parseHadithQuery("ан-Насаи 1")).toEqual({ kind: "number", work: "nasai", number: 1, variant: null });
+    expect(parseHadithQuery("Ибн Маджа 224")).toEqual({ kind: "number", work: "ibn_majah", number: 224, variant: null });
+    expect(parseHadithQuery("Ахмад 12")).toEqual({ kind: "unsupported" });
   });
 
   it("reads Arabic words in the search form", () => {
@@ -41,6 +45,17 @@ describe("linkAddresses with hadith references", () => {
       { text: "; " },
       { work: "muslim", number: 1731, variant: null, text: "Муслим 1731" },
       { text: "." },
+    ]);
+  });
+
+  it("links the four Sunan, with or without the article", () => {
+    expect(linkAddresses("Сунан Абу Дауда 4297, ат-Тирмизи 2641 и Ибн Маджи 224")).toEqual([
+      { text: "Сунан " },
+      { work: "abu_dawud", number: 4297, variant: null, text: "Абу Дауда 4297" },
+      { text: ", " },
+      { work: "tirmidhi", number: 2641, variant: null, text: "ат-Тирмизи 2641" },
+      { text: " и " },
+      { work: "ibn_majah", number: 224, variant: null, text: "Ибн Маджи 224" },
     ]);
   });
 
