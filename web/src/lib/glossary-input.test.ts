@@ -44,6 +44,25 @@ describe("parseRefs and formatRefs", () => {
     );
     expect(formatRefs([])).toBe("");
   });
+
+  it("reads hadiths of every collection and writes them back the same way", () => {
+    const text = "Бухари 3951, аль-Муслим 8b, 2:255, ат-Тирмизи 815а, аль-Кафи 4.60.3, Ахмад 24009/2, Абу Дауд 12";
+    const { addresses, invalid } = parseRefs(text);
+    expect(addresses).toEqual([
+      "bukhari.3951",
+      "muslim.8.2",
+      "quran.2.255",
+      "tirmidhi.815.1",
+      "kafi.4.60.3",
+      "ahmad.24009.2",
+      "abu_dawud.12",
+    ]);
+    expect(invalid).toEqual([]);
+    expect(formatRefs(addresses)).toBe(
+      "Бухари 3951, Муслим 8b, 2:255, Тирмизи 815a, аль-Кафи 4.60.3, Ахмад 24009/2, Абу Дауд 12",
+    );
+    expect(parseRefs("Муслим 8, Дарими 5, Кафи 4.60b").invalid).toEqual(["Дарими 5", "Кафи 4.60b"]);
+  });
 });
 
 describe("linkAddresses", () => {

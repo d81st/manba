@@ -11,15 +11,24 @@ import { MAX_QUERY_LENGTH } from "./quran-query.ts";
 //   narration — muslim.8.2: narrations of one number, "Муслим 8b"
 //   chapter   — kafi.4.60.3: book, chapter, number in the chapter, "аль-Кафи 4.60.3"
 export type Scheme = "number" | "narration" | "chapter";
-export const COLLECTIONS: Record<string, { names: string[]; scheme: Scheme }> = {
-  bukhari: { names: ["бухари", "bukhari"], scheme: "number" },
-  muslim: { names: ["муслим", "муслима", "muslim"], scheme: "narration" },
-  abu_dawud: { names: ["абу дауд", "абу дауда", "абу-дауд", "abu dawud", "abu dawood"], scheme: "number" },
-  tirmidhi: { names: ["тирмизи", "tirmidhi"], scheme: "narration" },
-  nasai: { names: ["насаи", "nasai"], scheme: "narration" },
-  ibn_majah: { names: ["ибн маджа", "ибн маджи", "ибн маджах", "ibn majah", "ibn maja"], scheme: "number" },
-  ahmad: { names: ["ахмад", "ахмада", "ahmad", "муснад ахмада", "musnad ahmad"], scheme: "number" },
-  kafi: { names: ["кафи", "kafi"], scheme: "chapter" },
+// label — how a reference is written back in forms: "Муслим 8b".
+export const COLLECTIONS: Record<string, { names: string[]; scheme: Scheme; label: string }> = {
+  bukhari: { names: ["бухари", "bukhari"], scheme: "number", label: "Бухари" },
+  muslim: { names: ["муслим", "муслима", "muslim"], scheme: "narration", label: "Муслим" },
+  abu_dawud: {
+    names: ["абу дауд", "абу дауда", "абу-дауд", "abu dawud", "abu dawood"],
+    scheme: "number",
+    label: "Абу Дауд",
+  },
+  tirmidhi: { names: ["тирмизи", "tirmidhi"], scheme: "narration", label: "Тирмизи" },
+  nasai: { names: ["насаи", "nasai"], scheme: "narration", label: "Насаи" },
+  ibn_majah: {
+    names: ["ибн маджа", "ибн маджи", "ибн маджах", "ibn majah", "ibn maja"],
+    scheme: "number",
+    label: "Ибн Маджа",
+  },
+  ahmad: { names: ["ахмад", "ахмада", "ahmad", "муснад ахмада", "musnad ahmad"], scheme: "number", label: "Ахмад" },
+  kafi: { names: ["кафи", "kafi"], scheme: "chapter", label: "аль-Кафи" },
 };
 export const COLLECTION_ORDER = Object.keys(COLLECTIONS);
 
@@ -157,4 +166,22 @@ export const HADITH_REFERENCE = new RegExp(
 
 export function referencedWork(name: string) {
   return workOf(name);
+}
+
+// One reference typed in a form ("Бухари 3951", "аль-Кафи 4.60.3"): its
+// library address, or null.
+const HADITH_TOKEN = new RegExp(`^(?:${ARTICLE})?(${NAMES})\\s*(?:№\\s*)?(\\S+)$`, "iu");
+
+export function parseHadithRef(text: string): string | null {
+  const m = text.trim().match(HADITH_TOKEN);
+  const work = m ? workOf(m[1]) : undefined;
+  const path = work ? parseRef(schemeOf(work), m![2]) : null;
+  return work && path ? [work, ...path].join(".") : null;
+}
+
+// A hadith address written back for a form: muslim.8.2 -> "Муслим 8b".
+export function formatHadithRef(address: string) {
+  const [work, ...rest] = address.split(".");
+  const label = COLLECTIONS[work]?.label ?? work;
+  return `${label} ${refLabel(schemeOf(work), rest.map(Number))}`;
 }

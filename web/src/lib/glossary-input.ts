@@ -1,7 +1,7 @@
 // Validation of the glossary form and text helpers. No database access here,
 // so everything is unit-tested.
 import { z } from "zod";
-import { HADITH_REFERENCE, parseRef, referencedWork, schemeOf } from "./hadith-query.ts";
+import { formatHadithRef, HADITH_REFERENCE, parseHadithRef, parseRef, referencedWork, schemeOf } from "./hadith-query.ts";
 import { parseQuery } from "./quran-query.ts";
 
 export const TERM_STATUSES = ["draft", "review", "published", "retired"] as const;
@@ -30,25 +30,32 @@ export function slugify(text: string) {
   return /^[a-z]/.test(slug) ? slug : slug ? `t-${slug}` : "";
 }
 
-// "2:106, 16:101-102" -> quran.2.106, quran.16.101, quran.16.102
+// "2:106, 16:101-102, Бухари 3951" -> quran.2.106, quran.16.101, quran.16.102,
+// bukhari.3951: ayahs and hadiths of the library.
 export function parseRefs(text: string) {
   const addresses: string[] = [];
   const invalid: string[] = [];
+  const add = (address: string) => {
+    if (!addresses.includes(address)) addresses.push(address);
+  };
   for (const token of text.split(/[,;\n]+/).map((t) => t.trim()).filter(Boolean)) {
+    const hadith = parseHadithRef(token);
+    if (hadith) {
+      add(hadith);
+      continue;
+    }
     const parsed = parseQuery(token);
     if (parsed.kind !== "ayahs" || parsed.to - parsed.from >= MAX_RANGE) {
       invalid.push(token);
       continue;
     }
-    for (let ayah = parsed.from; ayah <= parsed.to; ayah++) {
-      const address = `quran.${parsed.sura}.${ayah}`;
-      if (!addresses.includes(address)) addresses.push(address);
-    }
+    for (let ayah = parsed.from; ayah <= parsed.to; ayah++) add(`quran.${parsed.sura}.${ayah}`);
   }
   return { addresses, invalid };
 }
 
-// quran.16.101, quran.16.102 -> "16:101-102" (for editing and display)
+// quran.16.101, quran.16.102, bukhari.3951 -> "16:101-102, Бухари 3951"
+// (for editing and display)
 export function formatRefs(addresses: string[]) {
   const parts: string[] = [];
   let start: [number, number] | null = null;
@@ -56,8 +63,14 @@ export function formatRefs(addresses: string[]) {
   const flush = () => {
     if (!start || !previous) return;
     parts.push(start[1] === previous[1] ? `${start[0]}:${start[1]}` : `${start[0]}:${start[1]}-${previous[1]}`);
+    start = previous = null;
   };
   for (const address of addresses) {
+    if (!address.startsWith("quran.")) {
+      flush();
+      parts.push(formatHadithRef(address));
+      continue;
+    }
     const [, sura, ayah] = address.split(".").map(Number);
     if (previous && previous[0] === sura && previous[1] + 1 === ayah) {
       previous = [sura, ayah];

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { AyahList } from "@/components/ayah-list";
+import { HadithRefList } from "@/components/hadith-ref-list";
 import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
 import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
@@ -64,10 +65,11 @@ async function Term({ params }: { params: PageProps<"/glossary/[slug]">["params"
         </section>
       )}
 
-      {term.refs.length > 0 && (
+      {(term.refs.length > 0 || term.hadiths.length > 0) && (
         <section>
           <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.examples}</h2>
-          <AyahList ayahs={term.refs} />
+          {term.refs.length > 0 && <AyahList ayahs={term.refs} />}
+          {term.hadiths.length > 0 && <HadithRefList hadiths={term.hadiths} className="mt-3" />}
         </section>
       )}
 
@@ -87,6 +89,7 @@ async function Term({ params }: { params: PageProps<"/glossary/[slug]">["params"
                   <LinkedText text={definition.text} />
                 </p>
                 {definition.refs.length > 0 && <AyahList ayahs={definition.refs} compact className="mt-3" />}
+                {definition.hadiths.length > 0 && <HadithRefList hadiths={definition.hadiths} className="mt-3" />}
                 {definition.sourceNote && (
                   <p className="mt-2 text-sm text-muted-foreground">
                     {t.sourceNote}: {definition.sourceNote}

@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
 import { defaultLocale } from "@/i18n";
 import { db } from "@/lib/db";
+import { getHadithRefs, type HadithRef } from "@/lib/hadith";
 import { formatRefs, parseRefs, type InputProblem } from "@/lib/glossary-input";
 import { CONTEXT_AYAHS, passagesOf, type TopicInput } from "@/lib/topics-input";
 
@@ -182,8 +183,11 @@ export async function listTopicChoices(): Promise<{ id: number; name: string }[]
 async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
   if (addresses.length === 0) return [];
   const { rows } = await client.query<{ address: string }>(
-    `SELECT a FROM unnest($1::text[]) AS a
-     WHERE NOT EXISTS (SELECT 1 FROM addresses x WHERE x.address = a::extensions.ltree AND x.level = 'ayah')`,
+    `SELECT a AS address FROM unnest($1::text[]) AS a
+     WHERE NOT EXISTS (
+       SELECT 1 FROM addresses x
+       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration')
+     )`,
     [addresses],
   );
   return rows.map((r) => r.address);
@@ -407,13 +411,17 @@ export type PublicPosition = {
   text: string;
   sourceNote: string;
   refs: TopicAyah[];
+  hadiths: HadithRef[];
 };
 export type PublicTopic = TopicSummary & {
   circumstances: string;
   circumstancesNote: string;
   main: MainPassage[];
+  mainHadiths: HadithRef[];
   circumstancesRefs: TopicAyah[];
+  circumstancesHadiths: HadithRef[];
   relatedRefs: TopicAyah[];
+  relatedHadiths: HadithRef[];
   // Grouped by side in the order of the sides list.
   sides: { title: string; positions: PublicPosition[] }[];
   terms: { slug: string; translation: string }[];
@@ -460,14 +468,27 @@ export async function getPublishedTopic(slug: string): Promise<PublicTopic | nul
   const topic = summary.rows[0];
   if (!topic) return null;
 
-  const refs = await db().query<AyahRow & { role: RefRole; position_id: string | null }>(
-    `SELECT r.role, r.position_id, a.address::text, t.content AS text, s.names->>'translit' AS sura_name
-     FROM topic_refs r JOIN addresses a ON a.address = r.address ${AYAH_TEXT}
-     WHERE r.topic_id = $1 ORDER BY r.position`,
+  // Referenced ayahs with their text and sura name; hadiths with their texts.
+  const refs = await db().query<{ role: RefRole; position_id: string | null; address: string }>(
+    "SELECT role, position_id, address::text FROM topic_refs WHERE topic_id = $1 ORDER BY position",
     [topic.id],
   );
+  const ayahRows = await db().query<AyahRow>(
+    `SELECT a.address::text, t.content AS text, s.names->>'translit' AS sura_name
+     FROM addresses a ${AYAH_TEXT}
+     WHERE a.address = ANY($1::extensions.ltree[])`,
+    [refs.rows.filter((r) => r.address.startsWith("quran.")).map((r) => r.address)],
+  );
+  const ayahs = new Map(ayahRows.rows.map((row) => [row.address, toAyah(row)]));
+  const hadiths = await getHadithRefs([
+    ...new Set(refs.rows.filter((r) => !r.address.startsWith("quran.")).map((r) => r.address)),
+  ]);
+  const refsFor = (role: RefRole, positionId: string | null) =>
+    refs.rows.filter((r) => r.role === role && r.position_id === positionId).map((r) => r.address);
   const refsOf = (role: RefRole, positionId: string | null = null) =>
-    refs.rows.filter((r) => r.role === role && r.position_id === positionId).map(toAyah);
+    refsFor(role, positionId).flatMap((address) => ayahs.get(address) ?? []);
+  const hadithsOf = (role: RefRole, positionId: string | null = null) =>
+    refsFor(role, positionId).flatMap((address) => hadiths.get(address) ?? []);
 
   // Each main passage with the ayahs before and after it.
   const mainAyahs = refsOf("main");
@@ -502,6 +523,7 @@ export async function getPublishedTopic(slug: string): Promise<PublicTopic | nul
       text: p.text,
       sourceNote: p.source_note,
       refs: refsOf("position", String(p.id)),
+      hadiths: hadithsOf("position", String(p.id)),
     };
     const group = sides.at(-1);
     if (group && group.id === p.side_id) group.positions.push(position);
@@ -526,8 +548,11 @@ export async function getPublishedTopic(slug: string): Promise<PublicTopic | nul
   return {
     ...topic,
     main,
+    mainHadiths: hadithsOf("main"),
     circumstancesRefs: refsOf("circumstances"),
+    circumstancesHadiths: hadithsOf("circumstances"),
     relatedRefs: refsOf("related"),
+    relatedHadiths: hadithsOf("related"),
     sides: sides.map(({ title, positions }) => ({ title, positions })),
     terms: terms.rows,
     related: related.rows,

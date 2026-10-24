@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
 import { defaultLocale } from "@/i18n";
 import { db } from "@/lib/db";
+import { getHadithRefs, type HadithRef } from "@/lib/hadith";
 import {
   formatRefs,
   parseRefs,
@@ -122,8 +123,11 @@ export async function listTermChoices(): Promise<{ id: number; name: string }[]>
 async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
   if (addresses.length === 0) return [];
   const { rows } = await client.query<{ address: string }>(
-    `SELECT a FROM unnest($1::text[]) AS a
-     WHERE NOT EXISTS (SELECT 1 FROM addresses x WHERE x.address = a::extensions.ltree AND x.level = 'ayah')`,
+    `SELECT a AS address FROM unnest($1::text[]) AS a
+     WHERE NOT EXISTS (
+       SELECT 1 FROM addresses x
+       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration')
+     )`,
     [addresses],
   );
   return rows.map((r) => r.address);
@@ -308,10 +312,12 @@ export type PublicDefinition = {
   text: string;
   sourceNote: string;
   refs: RefAyah[];
+  hadiths: HadithRef[];
 };
 export type PublicTerm = TermSummary & {
   detail: string;
   refs: RefAyah[];
+  hadiths: HadithRef[];
   definitions: PublicDefinition[];
   related: { slug: string; translation: string; transliteration: string; kind: RelationKind }[];
 };
@@ -328,7 +334,7 @@ export async function getPublishedTerm(slug: string): Promise<PublicTerm | null>
   const term = summary.rows[0];
   if (!term) return null;
 
-  // Referenced ayahs with the primary text and the sura name.
+  // Referenced ayahs with the primary text and the sura name; hadiths with their texts.
   const refs = await db().query<{ definition_id: string | null; address: string; text: string; sura_name: string }>(
     `SELECT r.definition_id, r.address::text, t.content AS text, s.names->>'translit' AS sura_name
      FROM term_refs r
@@ -339,6 +345,14 @@ export async function getPublishedTerm(slug: string): Promise<PublicTerm | null>
      WHERE r.term_id = $1 ORDER BY r.position`,
     [term.id],
   );
+  const hadithRefs = await db().query<{ definition_id: string | null; address: string }>(
+    `SELECT definition_id, address::text FROM term_refs
+     WHERE term_id = $1 AND NOT address <@ 'quran'::extensions.ltree ORDER BY position`,
+    [term.id],
+  );
+  const hadiths = await getHadithRefs([...new Set(hadithRefs.rows.map((r) => r.address))]);
+  const hadithsOf = (definitionId: string | null) =>
+    hadithRefs.rows.filter((r) => r.definition_id === definitionId).flatMap((r) => hadiths.get(r.address) ?? []);
   const toAyah = (row: { address: string; text: string; sura_name: string }): RefAyah => {
     const [, sura, ayah] = row.address.split(".").map(Number);
     return { address: row.address, sura, ayah, suraName: row.sura_name, text: row.text };
@@ -359,12 +373,14 @@ export async function getPublishedTerm(slug: string): Promise<PublicTerm | null>
   return {
     ...term,
     refs: refs.rows.filter((r) => r.definition_id === null).map(toAyah),
+    hadiths: hadithsOf(null),
     definitions: definitions.rows.map((d) => ({
       holder: d.holder,
       recognition: d.recognition,
       text: d.text,
       sourceNote: d.source_note,
       refs: refs.rows.filter((r) => r.definition_id === String(d.id)).map(toAyah),
+      hadiths: hadithsOf(String(d.id)),
     })),
     related: related.rows,
   };

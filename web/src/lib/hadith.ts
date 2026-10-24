@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
-import { COLLECTION_ORDER, type Scheme, schemeOf } from "@/lib/hadith-query";
+import { COLLECTION_ORDER, hadithPath, refLabel, type Scheme, schemeOf } from "@/lib/hadith-query";
 
 export const HADITH_TAG = "hadith";
 
@@ -326,4 +326,63 @@ export async function searchHadith(
     text: row.text,
   }));
   return { hits, total: rows[0]?.total ?? 0 };
+}
+
+// A hadith referred to from a topic or a term: its text, or the texts under
+// it (the narrations of a number), the first few of them.
+export type HadithRef = {
+  address: string;
+  title: string; // "Муслим 8"
+  href: string;
+  items: { label: string; text: string }[]; // label only when there are several
+  more: number; // texts under it not shown
+};
+const REF_ITEMS = 10;
+
+export async function getHadithRefs(addresses: string[]): Promise<Map<string, HadithRef>> {
+  const refs = new Map<string, HadithRef>();
+  if (addresses.length === 0) return refs;
+  const { rows } = await db().query<{
+    ref: string;
+    title: string;
+    short: string | null;
+    path: number[];
+    variants: number;
+    text: string;
+    total: number;
+  }>(
+    `SELECT * FROM (
+       SELECT r.ref, w.titles->>'ru' AS title, w.titles->>'ru-short' AS short,
+              ${PATH("a.address")} AS path, t.content AS text,
+              (SELECT count(*)::int FROM section_items s
+               WHERE s.version_id = t.version_id AND s.address <@ subpath(a.address, 0, 2)) AS variants,
+              row_number() OVER (PARTITION BY r.ref ORDER BY a.ordinal) AS n,
+              count(*) OVER (PARTITION BY r.ref)::int AS total
+       FROM unnest($1::text[]) AS r(ref)
+       JOIN addresses a ON a.address <@ r.ref::extensions.ltree
+       JOIN texts t ON t.address = a.address
+       JOIN text_versions v ON v.id = t.version_id AND v.is_primary AND v.status = 'published' AND v.language = 'ar'
+       JOIN works w ON w.id = v.work_id AND w.category = 'hadith'
+     ) x WHERE n <= ${REF_ITEMS} ORDER BY ref, n`,
+    [addresses],
+  );
+  for (const row of rows) {
+    const [work, ...rest] = row.ref.split(".");
+    const scheme = schemeOf(work);
+    let ref = refs.get(row.ref);
+    if (!ref) {
+      const path = rest.map(Number);
+      ref = {
+        address: row.ref,
+        title: `${shortTitle(row.title, row.short)} ${refLabel(scheme, path)}`,
+        href: hadithPath(work, path),
+        items: [],
+        more: row.total - Math.min(row.total, REF_ITEMS),
+      };
+      refs.set(row.ref, ref);
+    }
+    const several = row.total > 1;
+    ref.items.push({ label: several ? refLabel(scheme, row.path, row.variants) : "", text: row.text });
+  }
+  return refs;
 }

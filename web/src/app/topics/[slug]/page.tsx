@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { AyahList } from "@/components/ayah-list";
+import { HadithRefList } from "@/components/hadith-ref-list";
 import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
 import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
@@ -54,23 +55,34 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
         <p className="text-lg text-muted-foreground">{topic.question}</p>
       </header>
 
-      {topic.main.length > 0 && (
+      {(topic.main.length > 0 || topic.mainHadiths.length > 0) && (
         <section>
           <Heading>{t.texts}</Heading>
           <div className="space-y-6">
             {topic.main.map((passage) => (
               <Passage key={`${passage.sura}-${passage.from}`} passage={passage} />
             ))}
+            {topic.mainHadiths.length > 0 && (
+              <div className="rounded-xl border bg-card px-4 shadow-sm">
+                <HadithRefList hadiths={topic.mainHadiths} className="border-t-0" />
+              </div>
+            )}
           </div>
         </section>
       )}
 
-      {(topic.circumstances || topic.circumstancesRefs.length > 0 || topic.circumstancesNote) && (
+      {(topic.circumstances ||
+        topic.circumstancesRefs.length > 0 ||
+        topic.circumstancesHadiths.length > 0 ||
+        topic.circumstancesNote) && (
         <section>
           <Heading>{t.circumstances}</Heading>
           {topic.circumstances && <LinkedParagraphs text={topic.circumstances} />}
           {topic.circumstancesRefs.length > 0 && (
             <AyahList ayahs={topic.circumstancesRefs} compact className="mt-3" />
+          )}
+          {topic.circumstancesHadiths.length > 0 && (
+            <HadithRefList hadiths={topic.circumstancesHadiths} className="mt-3" />
           )}
           {topic.circumstancesNote && (
             <p className="mt-3 text-sm text-muted-foreground">
@@ -102,6 +114,7 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
                         <LinkedParagraphs text={position.text} />
                       </div>
                       {position.refs.length > 0 && <AyahList ayahs={position.refs} compact className="mt-3" />}
+                      {position.hadiths.length > 0 && <HadithRefList hadiths={position.hadiths} className="mt-3" />}
                       {position.sourceNote && (
                         <p className="mt-2 text-sm text-muted-foreground">
                           {t.sourceNote}: <LinkedText text={position.sourceNote} />
@@ -116,10 +129,11 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
         )}
       </section>
 
-      {topic.relatedRefs.length > 0 && (
+      {(topic.relatedRefs.length > 0 || topic.relatedHadiths.length > 0) && (
         <section>
           <Heading>{t.relatedRefs}</Heading>
-          <AyahList ayahs={topic.relatedRefs} compact />
+          {topic.relatedRefs.length > 0 && <AyahList ayahs={topic.relatedRefs} compact />}
+          {topic.relatedHadiths.length > 0 && <HadithRefList hadiths={topic.relatedHadiths} className="mt-3" />}
         </section>
       )}
 
