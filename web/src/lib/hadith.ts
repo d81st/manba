@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
-import { COLLECTION_ORDER } from "@/lib/hadith-query";
+import { COLLECTION_ORDER, type Scheme, schemeOf } from "@/lib/hadith-query";
 
 export const HADITH_TAG = "hadith";
 
@@ -19,6 +19,7 @@ export type Collection = {
   shortTitle: string;
   titleAr: string;
   canon: string;
+  scheme: Scheme;
   versionId: string;
   versionTitle: string;
   verification: string;
@@ -82,11 +83,15 @@ export async function getCollection(workId: string): Promise<Collection | null> 
   );
   const version = await primaryVersion(workId);
   if (!work.rows[0] || !version) return null;
+  const scheme = schemeOf(workId);
+  // A hadith is the first level of the address, except in collections
+  // numbered inside chapters, where every text is one.
+  const hadith = scheme === "chapter" ? "i.address::text" : "split_part(i.address::text, '.', 2)";
   // Numbers of the first and last text in reading order: a repeated hadith
   // keeps its earlier number, so min/max would mislead.
   const books = await db().query(
     `SELECT b.book AS number, b.title,
-            count(DISTINCT split_part(i.address::text, '.', 2))::int AS hadiths,
+            count(DISTINCT ${hadith})::int AS hadiths,
             count(i.address)::int AS texts,
             (array_agg(split_part(i.address::text, '.', 2)::int ORDER BY a.ordinal))[1] AS first,
             (array_agg(split_part(i.address::text, '.', 2)::int ORDER BY a.ordinal DESC))[1] AS last
@@ -97,18 +102,19 @@ export async function getCollection(workId: string): Promise<Collection | null> 
      GROUP BY b.book, b.title ORDER BY b.book`,
     [version.id],
   );
-  const totals = await db().query<{ hadiths: number; texts: number; nested: boolean }>(
-    `SELECT count(DISTINCT split_part(address::text, '.', 2))::int AS hadiths, count(*)::int AS texts,
-            bool_or(nlevel(address) > 2) AS nested
-     FROM section_items WHERE version_id = $1`,
+  const totals = await db().query<{ hadiths: number; texts: number }>(
+    `SELECT count(DISTINCT ${hadith})::int AS hadiths, count(*)::int AS texts
+     FROM section_items i WHERE i.version_id = $1`,
     [version.id],
   );
+  const narrations = scheme === "narration";
   return {
     id: work.rows[0].id,
     title: work.rows[0].title,
     shortTitle: shortTitle(work.rows[0].title, work.rows[0].short),
     titleAr: work.rows[0].title_ar,
     canon: work.rows[0].canon,
+    scheme,
     versionId: version.id,
     versionTitle: version.title,
     verification: version.verification,
@@ -120,15 +126,19 @@ export async function getCollection(workId: string): Promise<Collection | null> 
       version: version.version,
     },
     hadiths: totals.rows[0].hadiths,
-    narrations: totals.rows[0].nested ? totals.rows[0].texts : null,
-    books: books.rows.map(({ texts, ...book }) => ({ ...book, narrations: totals.rows[0].nested ? texts : null })),
+    narrations: narrations ? totals.rows[0].texts : null,
+    books: books.rows.map(({ texts, first, last, ...book }) => ({
+      ...book,
+      narrations: narrations ? texts : null,
+      first: scheme === "chapter" ? null : first,
+      last: scheme === "chapter" ? null : last,
+    })),
   };
 }
 
 export type BookHadith = {
-  number: number;
-  variant: number | null; // narration of the hadith, when narrations have their own addresses
-  variants: number; // narrations with this number in the whole collection
+  path: number[]; // the address after the work id: [3951], [8, 2], [4, 60, 3]
+  variants: number; // texts under the same first number in the whole collection
   text: string;
   numbering: string;
 };
@@ -140,6 +150,9 @@ export type BookChapter = {
   hadiths: BookHadith[];
 };
 export type Book = { number: number; title: string; chapters: BookChapter[]; previous: number | null; next: number | null };
+
+// The address after the work id, as numbers.
+const PATH = (column: string) => `string_to_array(subpath(${column}, 1)::text, '.')::int[]`;
 
 export async function getBook(workId: string, book: number): Promise<Book | null> {
   "use cache";
@@ -162,13 +175,12 @@ export async function getBook(workId: string, book: number): Promise<Book | null
   );
   const hadiths = await db().query<BookHadith & { chapter: number }>(
     `WITH counts AS (
-       SELECT split_part(address::text, '.', 2)::int AS number, count(*)::int AS variants
+       SELECT subpath(address, 0, 2) AS head, count(*)::int AS variants
        FROM section_items WHERE version_id = $1 GROUP BY 1
      )
-     SELECT i.chapter, c.number, c.variants, t.content AS text, i.numbering,
-            CASE WHEN nlevel(i.address) > 2 THEN split_part(i.address::text, '.', 3)::int END AS variant
+     SELECT i.chapter, ${PATH("i.address")} AS path, c.variants, t.content AS text, i.numbering
      FROM section_items i
-     JOIN counts c ON c.number = split_part(i.address::text, '.', 2)::int
+     JOIN counts c ON c.head = subpath(i.address, 0, 2)
      JOIN addresses a ON a.address = i.address
      JOIN texts t ON t.address = i.address AND t.version_id = i.version_id
      WHERE i.version_id = $1 AND i.book = $2
@@ -184,38 +196,35 @@ export async function getBook(workId: string, book: number): Promise<Book | null
       ...c,
       hadiths: hadiths.rows
         .filter((h) => h.chapter === c.index)
-        .map((h) => ({ number: h.number, variant: h.variant, variants: h.variants, text: h.text, numbering: h.numbering })),
+        .map((h) => ({ path: h.path, variants: h.variants, text: h.text, numbering: h.numbering })),
     })),
   };
 }
 
-// Where a hadith (its first narration) or one narration is, or the nearest
-// numbers when the source has none. A letter the hadith does not have leads
-// to its first narration.
+// Where a hadith is: the first text at or under its address (a hadith's
+// first narration, a chapter's first hadith). A narration the hadith does
+// not have leads to the hadith; for a lone number with no text, the nearest
+// numbers.
 export async function locateHadith(
   workId: string,
-  number: number,
-  variant: number | null,
-): Promise<
-  { book: number; variant: number | null } | { book: null; before: number | null; after: number | null } | null
-> {
+  path: number[],
+): Promise<{ book: number; path: number[] } | { book: null; before: number | null; after: number | null } | null> {
   const version = await primaryVersion(workId);
   if (!version) return null;
-  const hadith = `${workId}.${number}`;
-  const found = await db().query<{ book: number; variant: number | null }>(
-    `SELECT i.book, CASE WHEN nlevel(i.address) > 2 THEN split_part(i.address::text, '.', 3)::int END AS variant
+  const found = await db().query<{ book: number; path: number[] }>(
+    `SELECT i.book, ${PATH("i.address")} AS path
      FROM section_items i JOIN addresses a ON a.address = i.address
      WHERE i.version_id = $1 AND i.address <@ $2::extensions.ltree
-       AND ($3::text IS NULL OR i.address = $3::extensions.ltree)
      ORDER BY a.ordinal LIMIT 1`,
-    [version.id, hadith, variant === null ? null : `${hadith}.${variant}`],
+    [version.id, [workId, ...path].join(".")],
   );
   if (found.rows[0]) return found.rows[0];
-  if (variant !== null) return locateHadith(workId, number, null);
+  if (schemeOf(workId) === "narration" && path.length === 2) return locateHadith(workId, path.slice(0, 1));
+  if (schemeOf(workId) === "chapter" || path.length > 1) return { book: null, before: null, after: null };
   const near = await db().query<{ before: number | null; after: number | null }>(
     `SELECT max(n) FILTER (WHERE n < $2) AS before, min(n) FILTER (WHERE n > $2) AS after
      FROM (SELECT split_part(address::text, '.', 2)::int AS n FROM section_items WHERE version_id = $1) s`,
-    [version.id, number],
+    [version.id, path[0]],
   );
   return { book: null, ...near.rows[0] };
 }
@@ -223,8 +232,7 @@ export async function locateHadith(
 export type HadithHit = {
   work: string;
   workTitle: string; // short name: "Абу Дауд"
-  number: number;
-  variant: number | null;
+  path: number[];
   variants: number;
   book: number;
   text: string;
@@ -238,16 +246,14 @@ export async function searchHadith(
 ): Promise<{ hits: HadithHit[]; total: number }> {
   const column = diacritics ? "t.search_vocalized" : "t.search_plain";
   const conditions = patterns.map((_, i) => `${column} LIKE $${i + 1}`).join(" AND ");
+  const order = `$${patterns.length + 1}::text[]`;
   const { rows } = await db().query<HadithHit & { total: number; workShort: string | null }>(
-    `SELECT h.*,
+    `SELECT h.*, ${PATH("h.address")} AS path,
             (SELECT count(*)::int FROM section_items s
              WHERE s.version_id = h.version_id AND s.address <@ subpath(h.address, 0, 2)) AS variants
      FROM (
        SELECT w.id AS work, w.titles->>'ru' AS "workTitle", w.titles->>'ru-short' AS "workShort",
-              t.version_id, t.address,
-              split_part(t.address::text, '.', 2)::int AS number,
-              CASE WHEN nlevel(t.address) > 2 THEN split_part(t.address::text, '.', 3)::int END AS variant,
-              i.book, t.content AS text, count(*) OVER ()::int AS total,
+              t.version_id, t.address, i.book, t.content AS text, count(*) OVER ()::int AS total,
               w.authority_sunni AS authority, a.ordinal
        FROM texts t
        JOIN text_versions v ON v.id = t.version_id AND v.is_primary AND v.status = 'published' AND v.language = 'ar'
@@ -255,19 +261,16 @@ export async function searchHadith(
        JOIN section_items i ON i.version_id = t.version_id AND i.address = t.address
        JOIN addresses a ON a.address = t.address
        WHERE ${conditions}
-       ORDER BY w.authority_sunni NULLS LAST, array_position($${patterns.length + 1}::text[], w.id) NULLS LAST,
-                w.id, a.ordinal
+       ORDER BY w.authority_sunni NULLS LAST, array_position(${order}, w.id) NULLS LAST, w.id, a.ordinal
        LIMIT ${HADITH_SEARCH_LIMIT}
      ) h
-     ORDER BY h.authority NULLS LAST, array_position($${patterns.length + 1}::text[], h.work) NULLS LAST,
-              h.work, h.ordinal`,
+     ORDER BY h.authority NULLS LAST, array_position(${order}, h.work) NULLS LAST, h.work, h.ordinal`,
     [...patterns, COLLECTION_ORDER],
   );
   const hits = rows.map((row) => ({
     work: row.work,
     workTitle: shortTitle(row.workTitle, row.workShort),
-    number: row.number,
-    variant: row.variant,
+    path: row.path,
     variants: row.variants,
     book: row.book,
     text: row.text,

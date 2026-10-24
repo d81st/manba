@@ -1,7 +1,7 @@
 // Validation of the glossary form and text helpers. No database access here,
 // so everything is unit-tested.
 import { z } from "zod";
-import { HADITH_REFERENCE, parseVariant, referencedWork } from "./hadith-query.ts";
+import { HADITH_REFERENCE, parseRef, referencedWork, schemeOf } from "./hadith-query.ts";
 import { parseQuery } from "./quran-query.ts";
 
 export const TERM_STATUSES = ["draft", "review", "published", "retired"] as const;
@@ -73,7 +73,7 @@ export function formatRefs(addresses: string[]) {
 export type TextPiece =
   | { text: string }
   | { sura: number; from: number; to: number; text: string }
-  | { work: string; number: number; variant: number | null; text: string };
+  | { work: string; path: number[]; text: string };
 
 // Splits text so that ayah addresses ("2:106", "16:101-102") and hadith
 // references ("Бухари 3951") can become links.
@@ -89,12 +89,9 @@ export function linkAddresses(text: string): TextPiece[] {
   for (const match of text.matchAll(HADITH_REFERENCE)) {
     const work = referencedWork(match[1]);
     if (!work) continue;
-    const variant = match[3] ? parseVariant(match[3]) : null;
-    found.push({
-      index: match.index,
-      length: match[0].length,
-      piece: { work, number: Number(match[2]), variant, text: match[0] },
-    });
+    const path = parseRef(schemeOf(work), match[2]);
+    if (!path) continue;
+    found.push({ index: match.index, length: match[0].length, piece: { work, path, text: match[0] } });
   }
   found.sort((a, b) => a.index - b.index);
 

@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { searchKey } from "../src/lib/arabic.ts";
 import { type Numbering, parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
+import { parseOpenitiKafi } from "../src/lib/import/openiti-kafi.ts";
 import { parseOpenitiNarrations } from "../src/lib/import/openiti-narrations.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
 
@@ -214,13 +215,19 @@ async function importTanzilSimple(client: pg.Client) {
 // A hadith collection from the OpenITI corpus, in one of two layouts.
 type HadithSource = {
   file: string; // in data/sources/openiti, kept byte for byte
-  layout: "shamela" | "narrations";
+  layout: "shamela" | "narrations" | "kafi";
   key: string;
   sourceId: string;
   sourceTitle: string;
   sourceVersion: string;
   notice: string;
-  work: { id: string; canon: "sunni" | "shia"; titles: Record<string, string>; authoritySunni: number | null };
+  work: {
+    id: string;
+    canon: "sunni" | "shia";
+    titles: Record<string, string>;
+    authoritySunni: number | null;
+    authorityShia?: number;
+  };
   versionId: string;
   versionTitle: string;
   minItems: number; // the load stops if fewer texts are recognised
@@ -351,6 +358,30 @@ const IBN_MAJAH = sunan({
   minItems: 4300,
 });
 
+// al-Kafi, the first of the four Shia books: hadiths are numbered inside each
+// chapter, so the address is book.chapter.number (docs/ADDRESSES.md). Level 2
+// for the Shia canon until a specialist confirms the levels (docs/PLAN.md).
+const KAFI: HadithSource = {
+  file: "0329IbnYacqubKulayni.Kafi.Shia001122Vols-ara1.mARkdown",
+  layout: "kafi",
+  key: "openiti:0329IbnYacqubKulayni.Kafi.Shia001122Vols-ara1:3f52b87",
+  sourceId: "openiti.kafi-shia001122vols",
+  sourceTitle: "OpenITI · 0329IbnYacqubKulayni.Kafi.Shia001122Vols-ara1",
+  sourceVersion: "OpenITI/0350AH 3f52b87 (2025-11-28)",
+  notice: `${OPENITI_CITATION}. Text: 0329IbnYacqubKulayni.Kafi.Shia001122Vols-ara1 — al-Kafi of al-Kulayni, ed. Ali Akbar al-Ghaffari, Dar al-Kutub al-Islamiyya, Tehran, 1968 (8 vols). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "kafi",
+    canon: "shia",
+    titles: { ar: "الكافي", ru: "аль-Кафи", "ru-short": "аль-Кафи" },
+    authoritySunni: null,
+    authorityShia: 2,
+  },
+  versionId: "kafi.ar.ghaffari",
+  versionTitle: "Арабский текст: изд. Али Акбара аль-Гаффари (Дар аль-Кутуб аль-Исламийя, Тегеран, 1968), нумерация хадисов внутри глав (OpenITI)",
+  minItems: 15000,
+  retrievedAt: "2026-10-24",
+};
+
 // What both layouts give the loader: a text per address, in reading order.
 type HadithItem = {
   path: number[]; // [number] or [number, narration]
@@ -364,7 +395,7 @@ type PreparedCollection = {
   books: { number: number; title: string }[];
   chapters: { book: number; index: number; title: string; intro: string[] }[];
   items: HadithItem[];
-  containers: number[]; // hadith numbers whose narrations have their own addresses
+  containers: { path: number[]; level: string }[]; // addresses that group texts: a hadith, a book, a chapter
   unnumbered: { book: number; chapter: number; paragraphs: string[] }[];
   levels: { key: string; names: Record<string, string> }[];
   summary: Record<string, unknown>;
@@ -373,8 +404,42 @@ type PreparedCollection = {
 
 const HADITH_LEVEL = { key: "hadith", names: { ar: "حديث", ru: "хадис" } };
 const NARRATION_LEVEL = { key: "narration", names: { ar: "رواية", ru: "передача" } };
+const BOOK_LEVEL = { key: "book", names: { ar: "كتاب", ru: "книга" } };
+const CHAPTER_LEVEL = { key: "chapter", names: { ar: "باب", ru: "глава" } };
 
 function prepare(src: HadithSource, text: string): PreparedCollection {
+  if (src.layout === "kafi") {
+    const data = parseOpenitiKafi(text);
+    const report = data.report;
+    return {
+      books: data.books,
+      chapters: data.chapters,
+      items: data.hadiths.map((h) => ({
+        path: [h.book, h.chapter, h.number],
+        ordinal: h.ordinal,
+        book: h.book,
+        chapter: h.chapter,
+        paragraphs: h.paragraphs,
+        numbering: "marker",
+      })),
+      containers: [
+        ...data.books.map((b) => ({ path: [b.number], level: "book" })),
+        ...data.chapters.map((c) => ({ path: [c.book, c.index], level: "chapter" })),
+      ],
+      unnumbered: [],
+      levels: [BOOK_LEVEL, CHAPTER_LEVEL, HADITH_LEVEL],
+      summary: {
+        books: data.books.length,
+        chapters: data.chapters.length,
+        hadiths: report.hadiths,
+        inline: report.inline,
+        gaps: report.gaps.reduce((sum, g) => sum + g.numbers.length, 0),
+        ignored: report.ignored.length,
+        runOn: report.runOn,
+      },
+      missing: report.gaps.reduce((sum, g) => sum + g.numbers.length, 0),
+    };
+  }
   if (src.layout === "shamela") {
     const data = parseOpenitiHadith(text);
     const report = data.report;
@@ -414,7 +479,7 @@ function prepare(src: HadithSource, text: string): PreparedCollection {
       paragraphs: n.paragraphs,
       numbering: "marker",
     })),
-    containers: nested ? [...new Set(data.narrations.map((n) => n.number))] : [],
+    containers: nested ? [...new Set(data.narrations.map((n) => n.number))].map((n) => ({ path: [n], level: "hadith" })) : [],
     unnumbered: [],
     levels: nested ? [HADITH_LEVEL, NARRATION_LEVEL] : [HADITH_LEVEL],
     summary: {
@@ -465,15 +530,22 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
 
     await client.query(
       `INSERT INTO works (id, canon, category, titles, levels, authority_sunni, authority_shia, status)
-       VALUES ($1, $2, 'hadith', $3, $4, $5, NULL, 'published')
+       VALUES ($1, $2, 'hadith', $3, $4, $5, $6, 'published')
        ON CONFLICT (id) DO NOTHING`,
-      [src.work.id, src.work.canon, json(src.work.titles), json(data.levels), src.work.authoritySunni],
+      [
+        src.work.id,
+        src.work.canon,
+        json(src.work.titles),
+        json(data.levels),
+        src.work.authoritySunni,
+        src.work.authorityShia ?? null,
+      ],
     );
-    // Containers: a hadith number that groups its narrations.
+    // Containers: a hadith number that groups its narrations, a book, a chapter.
     await client.query(
       `INSERT INTO addresses (address, work_id, level, batch_id)
-       SELECT a::extensions.ltree, $2, 'hadith', $3 FROM unnest($1::text[]) AS t(a)`,
-      [data.containers.map((n) => address([n])), src.work.id, batchId],
+       SELECT a::extensions.ltree, $3, l, $4 FROM unnest($1::text[], $2::text[]) AS t(a, l)`,
+      [data.containers.map((c) => address(c.path)), data.containers.map((c) => c.level), src.work.id, batchId],
     );
     const level = data.levels[data.levels.length - 1].key;
     await client.query(
@@ -582,7 +654,7 @@ async function main() {
     await importTanzilSimple(client);
     await importOpenitiHadith(client, BUKHARI);
     await importOpenitiHadith(client, MUSLIM);
-    for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH]) await importOpenitiHadith(client, src);
+    for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH, KAFI]) await importOpenitiHadith(client, src);
   } finally {
     await client.end();
   }

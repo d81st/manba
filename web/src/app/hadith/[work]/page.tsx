@@ -71,13 +71,16 @@ async function CollectionBooks({ params }: { params: PageProps<"/hadith/[work]">
                 <span className="ar text-lg" lang="ar" dir="rtl">
                   {book.title}
                 </span>
-                {book.first !== null && (
-                  <span className="text-xs tabular-nums text-muted-foreground">
-                    {book.number === 0 && `${t.preface} · `}
-                    {t.numbers} {book.first}–{book.last} · {plural(book.hadiths, t.hadiths)}
-                    {book.narrations !== null && ` · ${plural(book.narrations, t.narrations)}`}
-                  </span>
-                )}
+                <span className="text-xs tabular-nums text-muted-foreground">
+                  {[
+                    book.number === 0 && t.preface,
+                    book.first !== null && `${t.numbers} ${book.first}–${book.last}`,
+                    book.hadiths > 0 && plural(book.hadiths, t.hadiths),
+                    book.narrations !== null && plural(book.narrations, t.narrations),
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
               </span>
             </Link>
           </li>

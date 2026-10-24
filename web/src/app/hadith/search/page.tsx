@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { HADITH_SEARCH_LIMIT, searchHadith } from "@/lib/hadith";
-import { COLLECTION_NAMES, hadithAnchor, hadithLabel, hadithPath, parseHadithQuery } from "@/lib/hadith-query";
+import { COLLECTIONS, hadithAnchor, hadithPath, parseHadithQuery, refLabel, schemeOf } from "@/lib/hadith-query";
 import { highlight, likePatterns } from "@/lib/quran-query";
 import { HadithSearchForm } from "../search-form";
 
@@ -36,9 +36,9 @@ async function Search({ searchParams }: { searchParams: PageProps<"/hadith/searc
   await connection();
   const { q: raw, work } = await searchParams;
   const query = typeof raw === "string" ? raw : "";
-  const collection = typeof work === "string" && work in COLLECTION_NAMES ? work : undefined;
+  const collection = typeof work === "string" && work in COLLECTIONS ? work : undefined;
   const parsed = parseHadithQuery(query, collection);
-  if (parsed.kind === "number") redirect(hadithPath(parsed.work, parsed.number, parsed.variant));
+  if (parsed.kind === "ref") redirect(hadithPath(parsed.work, parsed.path));
 
   return (
     <>
@@ -70,14 +70,14 @@ async function Results({ words, diacritics }: { words: string[]; diacritics: boo
       <ol className="mt-2 mb-6">
         {result.hits.map((hit) => (
           <li
-            key={`${hit.work}-${hadithAnchor(hit.number, hit.variant)}`}
+            key={`${hit.work}-${hadithAnchor(hit.path)}`}
             className="flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4"
           >
             <Link
-              href={`/hadith/${hit.work}/book/${hit.book}#${hadithAnchor(hit.number, hit.variant)}`}
+              href={`/hadith/${hit.work}/book/${hit.book}#${hadithAnchor(hit.path)}`}
               className="min-w-24 shrink-0 text-sm tabular-nums no-underline"
             >
-              {hit.workTitle} {hadithLabel(hit.number, hit.variant, hit.variants)}
+              {hit.workTitle} {refLabel(schemeOf(hit.work), hit.path, hit.variants)}
             </Link>
             <p className="ar flex-1 text-[1.3rem] leading-[2.1]" lang="ar" dir="rtl">
               {highlight(hit.text, words, diacritics).map((piece, i) =>

@@ -12,7 +12,7 @@ export function LinkedText({ text }: { text: string }) {
         {piece.text}
       </Link>
     ) : "work" in piece ? (
-      <Link key={i} href={hadithPath(piece.work, piece.number, piece.variant)}>
+      <Link key={i} href={hadithPath(piece.work, piece.path)}>
         {piece.text}
       </Link>
     ) : (

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getBook, getCollection } from "@/lib/hadith";
-import { hadithAnchor, hadithLabel } from "@/lib/hadith-query";
+import { hadithAnchor, refLabel } from "@/lib/hadith-query";
 import { HadithAttribution } from "../../../attribution";
 
 const t = getMessages().hadith;
@@ -92,16 +92,16 @@ async function BookText({ params }: { params: PageProps<"/hadith/[work]/book/[bo
           <ol>
             {chapter.hadiths.map((hadith) => (
               <li
-                key={hadithAnchor(hadith.number, hadith.variant)}
-                id={hadithAnchor(hadith.number, hadith.variant)}
+                key={hadithAnchor(hadith.path)}
+                id={hadithAnchor(hadith.path)}
                 className="flex scroll-mt-4 flex-col gap-1 border-t py-4 first:border-t-0 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
               >
                 <span className="flex min-w-20 shrink-0 flex-col gap-1">
                   <a
-                    href={`#${hadithAnchor(hadith.number, hadith.variant)}`}
+                    href={`#${hadithAnchor(hadith.path)}`}
                     className="text-sm font-medium tabular-nums no-underline"
                   >
-                    {collection.shortTitle} {hadithLabel(hadith.number, hadith.variant, hadith.variants)}
+                    {collection.shortTitle} {refLabel(collection.scheme, hadith.path, hadith.variants)}
                   </a>
                   {hadith.numbering !== "marker" && (
                     <Badge variant="outline" className="w-fit text-[0.7rem]" title={t.inferredHint}>

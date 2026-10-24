@@ -72,3 +72,5 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tirmidhi.ar.shakir'")" = 3976
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'nasai.ar.abu-ghudda'")" = 5769
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ibn_majah.ar.abd-al-baqi'")" = 4341
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'kafi.ar.ghaffari'")" = 15197
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'kafi' AND level = 'chapter'")" = 2319
