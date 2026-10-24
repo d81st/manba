@@ -11,7 +11,7 @@ import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { listTopicsForAdmin } from "@/lib/topics";
 import { TOPIC_CATEGORIES, TOPIC_STATUSES } from "@/lib/topics-input";
-import { cn } from "@/lib/utils";
+import { Filters } from "../filters";
 import { StatusBadge } from "../status-badge";
 
 const t = getMessages().admin;
@@ -37,33 +37,6 @@ export default function TopicsPage({ searchParams }: PageProps<"/admin/topics">)
         <TopicsTable searchParams={searchParams} />
       </Suspense>
     </Page>
-  );
-}
-
-function Filters({
-  items,
-  current,
-  href,
-}: {
-  items: { key?: string; label: string }[];
-  current?: string;
-  href: (key?: string) => string;
-}) {
-  return (
-    <nav className="flex flex-wrap gap-2 text-sm">
-      {items.map((item) => (
-        <Link
-          key={item.label}
-          href={href(item.key)}
-          className={cn(
-            "rounded-full border px-3 py-1 no-underline",
-            item.key === current ? "border-primary bg-primary text-primary-foreground" : "text-foreground hover:bg-accent",
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
-    </nav>
   );
 }
 

@@ -1,4 +1,4 @@
-import { BookA, type LucideIcon, Scale, Users } from "lucide-react";
+import { BookA, Link2, type LucideIcon, Scale, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Page } from "@/components/page";
@@ -12,6 +12,7 @@ const SECTIONS: { href: string; icon: LucideIcon; title: string; hint: string }[
   { href: "/admin/terms", icon: BookA, title: t.sections.terms, hint: t.sections.termsHint },
   { href: "/admin/topics", icon: Scale, title: t.sections.topics, hint: t.sections.topicsHint },
   { href: "/admin/sides", icon: Users, title: t.sections.sides, hint: t.sections.sidesHint },
+  { href: "/admin/links", icon: Link2, title: t.sections.links, hint: t.sections.linksHint },
 ];
 
 export default function AdminPage() {

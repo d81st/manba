@@ -151,9 +151,20 @@ async function BookText({
                           <li key={other.href} className="tabular-nums">
                             <Link href={other.href}>{other.label}</Link>{" "}
                             <span className="text-muted-foreground">{Math.round(other.share * 100)}%</span>
+                            {other.checked && (
+                              <Badge variant="secondary" className="ms-1 text-[0.7rem]">
+                                {t.similar.checked}
+                              </Badge>
+                            )}
                           </li>
                         ))}
                       </ul>
+                      <Link
+                        href={`/admin/links?status=all&q=${[work, ...hadith.path].join(".")}`}
+                        className="mt-2 inline-block text-xs"
+                      >
+                        {t.similar.review}
+                      </Link>
                     </details>
                   )}
                 </div>

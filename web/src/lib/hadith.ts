@@ -7,7 +7,7 @@ export const HADITH_TAG = "hadith";
 
 // Name before a number: "Абу Дауд 12". Works loaded before short names were
 // stored drop the "Сахих".
-function shortTitle(title: string, short: string | null) {
+export function shortTitle(title: string, short: string | null) {
   return short ?? title.replace(/^Сахих /, "");
 }
 
@@ -137,7 +137,7 @@ export async function getCollection(workId: string): Promise<Collection | null> 
 
 // A text of another collection with shared wording, found automatically
 // (data/sources/links/README.md): a measure, not a claim of one hadith.
-export type SimilarText = { label: string; href: string; share: number };
+export type SimilarText = { label: string; href: string; share: number; checked: boolean };
 
 export type BookHadith = {
   path: number[]; // the address after the work id: [3951], [8, 2], [4, 60, 3]
@@ -264,22 +264,30 @@ async function similarTexts(addresses: string[]): Promise<Map<string, SimilarTex
     path: number[];
     variants: number;
     share: string;
+    checked: boolean;
   }>(
+    // Pairs a person marked "not the same hadith" are left out; confirmed ones are flagged.
     `WITH page AS (SELECT unnest($1::text[])::extensions.ltree AS address),
      pairs AS (
-       SELECT p.address, l.b AS other, l.share FROM page p JOIN hadith_links l ON l.a = p.address
+       SELECT p.address, l.id, l.b AS other, l.share FROM page p JOIN hadith_links l ON l.a = p.address
        UNION ALL
-       SELECT p.address, l.a, l.share FROM page p JOIN hadith_links l ON l.b = p.address
+       SELECT p.address, l.id, l.a, l.share FROM page p JOIN hadith_links l ON l.b = p.address
+     ),
+     verdicts AS (
+       SELECT DISTINCT ON (r.link_id) r.link_id, r.verdict FROM hadith_link_reviews r
+       WHERE r.link_id IN (SELECT id FROM pairs) ORDER BY r.link_id, r.id DESC
      )
      SELECT x.address::text, w.id AS work, w.titles->>'ru' AS title, w.titles->>'ru-short' AS short,
-            ${PATH("x.other")} AS path, x.share::text AS share,
+            ${PATH("x.other")} AS path, x.share::text AS share, coalesce(v.verdict = 'same', false) AS checked,
             CASE WHEN o.level = 'narration' THEN (
               SELECT count(*)::int FROM addresses n
               WHERE n.address <@ subpath(x.other, 0, 2) AND n.level = 'narration'
             ) ELSE 1 END AS variants
      FROM pairs x
+     LEFT JOIN verdicts v ON v.link_id = x.id
      JOIN addresses o ON o.address = x.other
      JOIN works w ON w.id = o.work_id
+     WHERE v.verdict IS DISTINCT FROM 'different'
      ORDER BY x.address, array_position($2::text[], w.id), o.ordinal`,
     [addresses, COLLECTION_ORDER],
   );
@@ -289,6 +297,7 @@ async function similarTexts(addresses: string[]): Promise<Map<string, SimilarTex
       label: `${shortTitle(row.title, row.short)} ${refLabel(schemeOf(row.work), row.path, row.variants)}`,
       href: hadithPath(row.work, row.path),
       share: Number(row.share),
+      checked: row.checked,
     });
     result.set(row.address, list);
   }
