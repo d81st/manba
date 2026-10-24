@@ -135,11 +135,16 @@ export async function getCollection(workId: string): Promise<Collection | null> 
   };
 }
 
+// A text of another collection with shared wording, found automatically
+// (data/sources/links/README.md): a measure, not a claim of one hadith.
+export type SimilarText = { label: string; href: string; share: number };
+
 export type BookHadith = {
   path: number[]; // the address after the work id: [3951], [8, 2], [4, 60, 3]
   variants: number; // texts under the same first number in the whole collection
   text: string;
   numbering: string;
+  similar: SimilarText[];
 };
 export type BookChapter = {
   index: number;
@@ -188,7 +193,7 @@ export async function getBook(workId: string, book: number, page = 1): Promise<B
      WHERE version_id = $1 AND kind = 'chapter' AND book = $2 ORDER BY chapter`,
     [version.id, book],
   );
-  const hadiths = await db().query<BookHadith & { chapter: number }>(
+  const hadiths = await db().query<Omit<BookHadith, "similar"> & { chapter: number }>(
     `WITH page AS (
        SELECT i.address, i.chapter, i.numbering, a.ordinal
        FROM section_items i JOIN addresses a ON a.address = i.address
@@ -208,6 +213,7 @@ export async function getBook(workId: string, book: number, page = 1): Promise<B
      ORDER BY p.ordinal`,
     [version.id, book, BOOK_PAGE_SIZE, (page - 1) * BOOK_PAGE_SIZE],
   );
+  const similar = await similarTexts(hadiths.rows.map((h) => [workId, ...h.path].join(".")));
   // Chapters on this page: those of its texts and the empty ones between
   // them; on the first and last pages also the empty ones before and after.
   const rows = hadiths.rows;
@@ -233,10 +239,60 @@ export async function getBook(workId: string, book: number, page = 1): Promise<B
           continued,
           hadiths: rows
             .filter((h) => h.chapter === c.index)
-            .map((h) => ({ path: h.path, variants: h.variants, text: h.text, numbering: h.numbering })),
+            .map((h) => ({
+              path: h.path,
+              variants: h.variants,
+              text: h.text,
+              numbering: h.numbering,
+              similar: similar.get([workId, ...h.path].join(".")) ?? [],
+            })),
         };
       }),
   };
+}
+
+// Texts of other collections with shared wording, for each address, in the
+// order of the collections and of their numbers.
+async function similarTexts(addresses: string[]): Promise<Map<string, SimilarText[]>> {
+  const result = new Map<string, SimilarText[]>();
+  if (addresses.length === 0) return result;
+  const { rows } = await db().query<{
+    address: string;
+    work: string;
+    title: string;
+    short: string | null;
+    path: number[];
+    variants: number;
+    share: string;
+  }>(
+    `WITH page AS (SELECT unnest($1::text[])::extensions.ltree AS address),
+     pairs AS (
+       SELECT p.address, l.b AS other, l.share FROM page p JOIN hadith_links l ON l.a = p.address
+       UNION ALL
+       SELECT p.address, l.a, l.share FROM page p JOIN hadith_links l ON l.b = p.address
+     )
+     SELECT x.address::text, w.id AS work, w.titles->>'ru' AS title, w.titles->>'ru-short' AS short,
+            ${PATH("x.other")} AS path, x.share::text AS share,
+            CASE WHEN o.level = 'narration' THEN (
+              SELECT count(*)::int FROM addresses n
+              WHERE n.address <@ subpath(x.other, 0, 2) AND n.level = 'narration'
+            ) ELSE 1 END AS variants
+     FROM pairs x
+     JOIN addresses o ON o.address = x.other
+     JOIN works w ON w.id = o.work_id
+     ORDER BY x.address, array_position($2::text[], w.id), o.ordinal`,
+    [addresses, COLLECTION_ORDER],
+  );
+  for (const row of rows) {
+    const list = result.get(row.address) ?? [];
+    list.push({
+      label: `${shortTitle(row.title, row.short)} ${refLabel(schemeOf(row.work), row.path, row.variants)}`,
+      href: hadithPath(row.work, row.path),
+      share: Number(row.share),
+    });
+    result.set(row.address, list);
+  }
+  return result;
 }
 
 // Where a hadith is: the first text at or under its address (a hadith's

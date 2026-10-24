@@ -693,6 +693,80 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
   }
 }
 
+// Pairs of hadiths of different collections with shared wording
+// (data/sources/links/README.md): a measure shown as such, not a claim.
+const SIMILAR_TEXTS = {
+  key: "manba:similar-texts:v1",
+  file: "similar-texts-v1.tsv",
+  method: "similar-texts:v1",
+  minPairs: 40_000,
+};
+
+async function importSimilarTexts(client: pg.Client) {
+  const src = SIMILAR_TEXTS;
+  const done = await client.query("SELECT 1 FROM import_batches WHERE key = $1", [src.key]);
+  if (done.rowCount) {
+    console.log(`Import skipped: ${src.key} is already loaded.`);
+    return;
+  }
+  const pairs = readFileSync(join(DATA_DIR, "links", src.file), "utf8")
+    .split("\n")
+    .filter(Boolean)
+    .map((line, i) => {
+      const [a, b, share] = line.split("\t");
+      if (!/^[a-z_]+(\.\d+)+$/.test(a) || !/^[a-z_]+(\.\d+)+$/.test(b) || !/^(0\.\d\d|1\.00)$/.test(share)) {
+        throw new Error(`${src.file}:${i + 1}: not "address, address, share"`);
+      }
+      if (a.split(".")[0] === b.split(".")[0]) throw new Error(`${src.file}:${i + 1}: both texts in one collection`);
+      return { a, b, share };
+    });
+  if (pairs.length < src.minPairs) throw new Error(`${src.file}: only ${pairs.length} pairs`);
+  if (new Set(pairs.map((p) => `${p.a} ${p.b}`)).size !== pairs.length) throw new Error(`${src.file}: repeated pairs`);
+
+  await client.query("BEGIN");
+  try {
+    await client.query(
+      `INSERT INTO sources (id, title, url, license, license_text, version, retrieved_at)
+       VALUES ('manba.similar-texts', 'Похожие тексты в разных сборниках хадисов (автоматическое сравнение)',
+               'https://github.com/d81st/manba/tree/main/data/sources/links', $1, $2, 'v1', '2026-10-24')
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        OPENITI_LICENSE,
+        "Вычислено проектом из текстов OpenITI (CC BY-NC-SA 4.0); распространяется на тех же условиях.",
+      ],
+    );
+    const batch = await client.query(
+      `INSERT INTO import_batches (key, source_id, actor, summary)
+       VALUES ($1, 'manba.similar-texts', 'import:links', $2) RETURNING id`,
+      [src.key, json({ pairs: pairs.length })],
+    );
+    const batchId = batch.rows[0].id;
+    // Addresses must exist and hold a text: a pair never points nowhere.
+    const missing = await client.query(
+      `SELECT a FROM unnest($1::text[]) AS a
+       WHERE NOT EXISTS (SELECT 1 FROM texts t WHERE t.address = a::extensions.ltree) LIMIT 5`,
+      [[...new Set(pairs.flatMap((p) => [p.a, p.b]))]],
+    );
+    if (missing.rowCount) throw new Error(`${src.file}: no text at ${missing.rows.map((r) => r.a).join(", ")}`);
+    await client.query(
+      `INSERT INTO hadith_links (a, b, kind, share, method, batch_id)
+       SELECT a::extensions.ltree, b::extensions.ltree, 'similar_text', s, $4, $5
+       FROM unnest($1::text[], $2::text[], $3::numeric[]) AS t(a, b, s)`,
+      [pairs.map((p) => p.a), pairs.map((p) => p.b), pairs.map((p) => p.share), src.method, batchId],
+    );
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, new_value, reason, actor)
+       VALUES ('import_batch', $1, 'created', $2, $3, 'import:links')`,
+      [src.key, json({ batchId, pairs: pairs.length }), "Похожие тексты в разных сборниках хадисов (способ 1)"],
+    );
+    await client.query("COMMIT");
+    console.log(`Import done: ${src.key} (${pairs.length} pairs).`);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  }
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     console.log("Import skipped: DATABASE_URL is not set.");
@@ -710,6 +784,7 @@ async function main() {
     await importOpenitiHadith(client, BUKHARI);
     await importOpenitiHadith(client, MUSLIM);
     for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH, AHMAD, KAFI]) await importOpenitiHadith(client, src);
+    await importSimilarTexts(client);
   } finally {
     await client.end();
   }

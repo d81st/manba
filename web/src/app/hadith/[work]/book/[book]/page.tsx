@@ -138,7 +138,25 @@ async function BookText({
                     </Badge>
                   )}
                 </span>
-                <ArabicText text={hadith.text} className="flex-1" />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <ArabicText text={hadith.text} />
+                  {hadith.similar.length > 0 && (
+                    <details className="text-sm">
+                      <summary className="cursor-pointer text-muted-foreground">
+                        {t.similar.summary.replace("{count}", String(hadith.similar.length))}
+                      </summary>
+                      <p className="mt-1 text-xs text-muted-foreground">{t.similar.hint}</p>
+                      <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                        {hadith.similar.map((other) => (
+                          <li key={other.href} className="tabular-nums">
+                            <Link href={other.href}>{other.label}</Link>{" "}
+                            <span className="text-muted-foreground">{Math.round(other.share * 100)}%</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                </div>
               </li>
             ))}
           </ol>

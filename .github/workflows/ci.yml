@@ -75,3 +75,5 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'kafi.ar.ghaffari'")" = 15197
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ahmad.ar.arnaut'")" = 27697
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'kafi' AND level = 'chapter'")" = 2319
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM hadith_links WHERE method = 'similar-texts:v1'")" = 49053
+          ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q UPDATE hadith_links SET share = 1"
