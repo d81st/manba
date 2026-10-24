@@ -78,3 +78,6 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM hadith_links WHERE method = 'similar-texts:v1'")" = 49053
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q UPDATE hadith_links SET share = 1"
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q TRUNCATE hadith_link_reviews"
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ibn_hisham.ar.saqqa'")" = 3302
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'ibn_hisham' AND level = 'page'")" = 1385
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM work_sections WHERE version_id = 'ibn_hisham.ar.saqqa' AND kind = 'book'")" = 264

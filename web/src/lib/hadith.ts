@@ -1,5 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
+import { bookPath, isBook, pageLabel } from "@/lib/book-query";
 import { db } from "@/lib/db";
 import { COLLECTION_ORDER, hadithPath, refLabel, type Scheme, schemeOf } from "@/lib/hadith-query";
 
@@ -53,7 +54,7 @@ type PrimaryRow = {
   version: string;
 };
 
-async function primaryVersion(workId: string) {
+export async function primaryVersion(workId: string) {
   const { rows } = await db().query<PrimaryRow>(PRIMARY, [workId]);
   return rows[0] ?? null;
 }
@@ -420,10 +421,17 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
     // hadith text (seconds for a topic with a hundred references).
     `SELECT r.ref, w.titles->>'ru' AS title, w.titles->>'ru-short' AS short,
             ${PATH("x.address")} AS path, x.content AS text, x.total,
-            CASE WHEN x.level = 'narration' THEN (
-              SELECT count(*)::int FROM addresses n
-              WHERE n.address <@ subpath(x.address, 0, 2) AND n.level = 'narration'
-            ) ELSE 1 END AS variants
+            CASE x.level
+              WHEN 'narration' THEN (
+                SELECT count(*)::int FROM addresses n
+                WHERE n.address <@ subpath(x.address, 0, 2) AND n.level = 'narration'
+              )
+              WHEN 'passage' THEN (
+                SELECT count(*)::int FROM addresses n
+                WHERE n.address <@ subpath(x.address, 0, 3) AND n.level = 'passage'
+              )
+              ELSE 1
+            END AS variants
      FROM unnest($1::text[]) AS r(ref)
      CROSS JOIN LATERAL (
        SELECT a.address, a.level, a.ordinal, t.content, v.work_id, count(*) OVER ()::int AS total
@@ -433,27 +441,31 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
        WHERE a.address <@ r.ref::extensions.ltree
        ORDER BY a.ordinal LIMIT ${REF_ITEMS}
      ) x
-     JOIN works w ON w.id = x.work_id AND w.category = 'hadith'
+     JOIN works w ON w.id = x.work_id AND w.category IN ('hadith', 'sira')
      ORDER BY r.ref, x.ordinal`,
     [addresses],
   );
   for (const row of rows) {
     const [work, ...rest] = row.ref.split(".");
     const scheme = schemeOf(work);
+    // Books cited by volume and page (the Sira) have their own labels and pages.
+    const label = (path: number[], variants?: number) =>
+      isBook(work) ? pageLabel(path, variants) : refLabel(scheme, path, variants);
     let ref = refs.get(row.ref);
     if (!ref) {
       const path = rest.map(Number);
       ref = {
         address: row.ref,
-        title: `${shortTitle(row.title, row.short)} ${refLabel(scheme, path)}`,
-        href: hadithPath(work, path),
+        // A reference to one text knows how many share its number or page.
+        title: `${shortTitle(row.title, row.short)} ${label(path, row.total === 1 && row.path.length === path.length ? row.variants : undefined)}`,
+        href: isBook(work) ? bookPath(work, path) : hadithPath(work, path),
         items: [],
         more: row.total - Math.min(row.total, REF_ITEMS),
       };
       refs.set(row.ref, ref);
     }
     const several = row.total > 1;
-    ref.items.push({ label: several ? refLabel(scheme, row.path, row.variants) : "", text: row.text });
+    ref.items.push({ label: several ? label(row.path, row.variants) : "", text: row.text });
   }
   return refs;
 }

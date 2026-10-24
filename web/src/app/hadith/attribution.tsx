@@ -4,7 +4,11 @@ import type { Collection } from "@/lib/hadith";
 const t = getMessages().hadith;
 
 // Where the text comes from, under which license, and whether it is checked.
-export function HadithAttribution({ collection }: { collection: Collection }) {
+export function HadithAttribution({
+  collection,
+}: {
+  collection: Pick<Collection, "versionTitle" | "attribution" | "verification">;
+}) {
   return (
     <footer className="space-y-1 border-t pt-4 text-sm text-muted-foreground">
       <p>

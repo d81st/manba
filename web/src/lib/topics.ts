@@ -186,7 +186,7 @@ async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
     `SELECT a AS address FROM unnest($1::text[]) AS a
      WHERE NOT EXISTS (
        SELECT 1 FROM addresses x
-       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration')
+       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration', 'page', 'passage')
      )`,
     [addresses],
   );

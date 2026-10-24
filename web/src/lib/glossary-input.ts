@@ -1,6 +1,7 @@
 // Validation of the glossary form and text helpers. No database access here,
 // so everything is unit-tested.
 import { z } from "zod";
+import { BOOK_REFERENCE, formatBookRef, isBook, parseBookRef, parsePageRef, referencedBook } from "./book-query.ts";
 import { formatHadithRef, HADITH_REFERENCE, parseHadithRef, parseRef, referencedWork, schemeOf } from "./hadith-query.ts";
 import { parseQuery } from "./quran-query.ts";
 
@@ -39,6 +40,11 @@ export function parseRefs(text: string) {
     if (!addresses.includes(address)) addresses.push(address);
   };
   for (const token of text.split(/[,;\n]+/).map((t) => t.trim()).filter(Boolean)) {
+    const book = parseBookRef(token);
+    if (book) {
+      add(book);
+      continue;
+    }
     const hadith = parseHadithRef(token);
     if (hadith) {
       add(hadith);
@@ -68,7 +74,7 @@ export function formatRefs(addresses: string[]) {
   for (const address of addresses) {
     if (!address.startsWith("quran.")) {
       flush();
-      parts.push(formatHadithRef(address));
+      parts.push(isBook(address.split(".")[0]) ? formatBookRef(address) : formatHadithRef(address));
       continue;
     }
     const [, sura, ayah] = address.split(".").map(Number);
@@ -86,7 +92,8 @@ export function formatRefs(addresses: string[]) {
 export type TextPiece =
   | { text: string }
   | { sura: number; from: number; to: number; text: string }
-  | { work: string; path: number[]; text: string };
+  | { work: string; path: number[]; text: string }
+  | { book: string; path: number[]; text: string };
 
 // Splits text so that ayah addresses ("2:106", "16:101-102") and hadith
 // references ("Бухари 3951") can become links.
@@ -106,7 +113,14 @@ export function linkAddresses(text: string): TextPiece[] {
     if (!path) continue;
     found.push({ index: match.index, length: match[0].length, piece: { work, path, text: match[0] } });
   }
-  found.sort((a, b) => a.index - b.index);
+  for (const match of text.matchAll(BOOK_REFERENCE)) {
+    const book = referencedBook(match[1]);
+    const path = book ? parsePageRef(match[2]) : null;
+    if (!book || !path) continue;
+    found.push({ index: match.index, length: match[0].length, piece: { book, path, text: match[0] } });
+  }
+  // Earlier and longer matches first: "Ибн Хишам 1:235" wins over the "1:235" inside it.
+  found.sort((a, b) => a.index - b.index || b.length - a.length);
 
   const pieces: TextPiece[] = [];
   let last = 0;

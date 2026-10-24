@@ -9,6 +9,7 @@ import { searchKey } from "../src/lib/arabic.ts";
 import { type Numbering, parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
 import { parseOpenitiKafi } from "../src/lib/import/openiti-kafi.ts";
 import { parseOpenitiNarrations } from "../src/lib/import/openiti-narrations.ts";
+import { parseOpenitiPages } from "../src/lib/import/openiti-pages.ts";
 import { parseOpenitiRunning } from "../src/lib/import/openiti-running.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
 
@@ -216,14 +217,16 @@ async function importTanzilSimple(client: pg.Client) {
 // A hadith collection from the OpenITI corpus, in one of two layouts.
 type HadithSource = {
   file: string; // in data/sources/openiti, kept byte for byte
-  layout: "shamela" | "narrations" | "kafi" | "running";
+  layout: "shamela" | "narrations" | "kafi" | "running" | "pages";
   key: string;
   sourceId: string;
   sourceTitle: string;
   sourceVersion: string;
   notice: string;
+  sourceUrl?: string; // the OpenITI repository, when not 0275AH
   work: {
     id: string;
+    category?: "hadith" | "sira"; // hadith by default
     canon: "sunni" | "shia";
     titles: Record<string, string>;
     authoritySunni: number | null;
@@ -430,8 +433,37 @@ const HADITH_LEVEL = { key: "hadith", names: { ar: "حديث", ru: "хадис" 
 const NARRATION_LEVEL = { key: "narration", names: { ar: "رواية", ru: "передача" } };
 const BOOK_LEVEL = { key: "book", names: { ar: "كتاب", ru: "книга" } };
 const CHAPTER_LEVEL = { key: "chapter", names: { ar: "باب", ru: "глава" } };
+const VOLUME_LEVEL = { key: "volume", names: { ar: "جزء", ru: "том" } };
+const PAGE_LEVEL = { key: "page", names: { ar: "صفحة", ru: "страница" } };
+const PASSAGE_LEVEL = { key: "passage", names: { ar: "مقطع", ru: "отрывок" } };
 
 function prepare(src: HadithSource, text: string): PreparedCollection {
+  if (src.layout === "pages") {
+    // Sections of the book as books, its chapters as chapters; a text is a
+    // piece of a printed page: volume.page.piece.
+    const data = parseOpenitiPages(text);
+    const pages = [...new Set(data.pieces.map((p) => `${p.volume}.${p.page}`))].map((k) => k.split(".").map(Number));
+    return {
+      books: data.sections,
+      chapters: data.chapters.map((c) => ({ book: c.section, index: c.index, title: c.title, intro: [] })),
+      items: data.pieces.map((p) => ({
+        path: [p.volume, p.page, p.piece],
+        ordinal: p.ordinal,
+        book: p.section,
+        chapter: p.chapter,
+        paragraphs: p.paragraphs,
+        numbering: "marker",
+      })),
+      containers: [
+        ...data.report.volumes.map((v) => ({ path: [v.volume], level: "volume" })),
+        ...pages.map((path) => ({ path, level: "page" })),
+      ],
+      unnumbered: [],
+      levels: [VOLUME_LEVEL, PAGE_LEVEL, PASSAGE_LEVEL],
+      summary: { sections: data.sections.length, chapters: data.chapters.length, ...data.report },
+      missing: 0,
+    };
+  }
   if (src.layout === "kafi") {
     const data = parseOpenitiKafi(text);
     const report = data.report;
@@ -573,9 +605,17 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
   try {
     await client.query(
       `INSERT INTO sources (id, title, url, license, license_text, version, retrieved_at)
-       VALUES ($1, $2, 'https://github.com/OpenITI/0275AH', $3, $4, $5, $6)
+       VALUES ($1, $2, $7, $3, $4, $5, $6)
        ON CONFLICT (id) DO NOTHING`,
-      [src.sourceId, src.sourceTitle, OPENITI_LICENSE, src.notice, src.sourceVersion, src.retrievedAt],
+      [
+        src.sourceId,
+        src.sourceTitle,
+        OPENITI_LICENSE,
+        src.notice,
+        src.sourceVersion,
+        src.retrievedAt,
+        src.sourceUrl ?? "https://github.com/OpenITI/0275AH",
+      ],
     );
     const batch = await client.query(
       `INSERT INTO import_batches (key, source_id, actor, summary) VALUES ($1, $2, 'import:openiti', $3) RETURNING id`,
@@ -585,7 +625,7 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
 
     await client.query(
       `INSERT INTO works (id, canon, category, titles, levels, authority_sunni, authority_shia, status)
-       VALUES ($1, $2, 'hadith', $3, $4, $5, $6, 'published')
+       VALUES ($1, $2, $7, $3, $4, $5, $6, 'published')
        ON CONFLICT (id) DO NOTHING`,
       [
         src.work.id,
@@ -594,6 +634,7 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
         json(data.levels),
         src.work.authoritySunni,
         src.work.authorityShia ?? null,
+        src.work.category ?? "hadith",
       ],
     );
     // Containers: a hadith number that groups its narrations, a book, a chapter.
@@ -693,6 +734,31 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
   }
 }
 
+// The Sira of Ibn Hisham (ed. al-Saqqa, al-Abyari, al-Shalabi, Cairo 1955),
+// cited by volume and page of that edition (docs/ADDRESSES.md). Not a hadith
+// collection: no authority level until a specialist sets one (docs/PLAN.md).
+const IBN_HISHAM: HadithSource = {
+  file: "0213IbnHisham.SiraNabawiyya.Shamela0023833-ara1.completed",
+  layout: "pages",
+  key: "openiti:0213IbnHisham.SiraNabawiyya.Shamela0023833-ara1:2cfdc8c",
+  sourceId: "openiti.ibn-hisham-shamela0023833",
+  sourceTitle: "OpenITI · 0213IbnHisham.SiraNabawiyya.Shamela0023833-ara1",
+  sourceVersion: "OpenITI/0225AH 2cfdc8c (2026-03-23)",
+  sourceUrl: "https://github.com/OpenITI/0225AH",
+  notice: `${OPENITI_CITATION}. Text: 0213IbnHisham.SiraNabawiyya.Shamela0023833-ara1 — al-Sira al-Nabawiyya of Ibn Hisham, ed. Mustafa al-Saqqa, Ibrahim al-Abyari, Abd al-Hafiz al-Shalabi, 2nd ed., Mustafa al-Babi al-Halabi, Cairo, 1955 (2 vols), with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "ibn_hisham",
+    category: "sira",
+    canon: "sunni",
+    titles: { ar: "السيرة النبوية لابن هشام", ru: "Сира Ибн Хишама", "ru-short": "Ибн Хишам" },
+    authoritySunni: null,
+  },
+  versionId: "ibn_hisham.ar.saqqa",
+  versionTitle: "Арабский текст: изд. Мустафы ас-Сакка, Ибрахима аль-Абьяри и Абд аль-Хафиза аш-Шальби (Мустафа аль-Баби аль-Халяби, Каир, 2-е изд., 1955), страницы издания (OpenITI)",
+  minItems: 3000,
+  retrievedAt: "2026-10-24",
+};
+
 // Pairs of hadiths of different collections with shared wording
 // (data/sources/links/README.md): a measure shown as such, not a claim.
 const SIMILAR_TEXTS = {
@@ -785,6 +851,7 @@ async function main() {
     await importOpenitiHadith(client, MUSLIM);
     for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH, AHMAD, KAFI]) await importOpenitiHadith(client, src);
     await importSimilarTexts(client);
+    await importOpenitiHadith(client, IBN_HISHAM);
   } finally {
     await client.end();
   }
