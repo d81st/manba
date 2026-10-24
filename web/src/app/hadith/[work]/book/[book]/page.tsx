@@ -9,7 +9,7 @@ import { ScrollToHash } from "@/components/scroll-to-hash";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getBook, getCollection } from "@/lib/hadith";
+import { bookPageHref, getBook, getCollection } from "@/lib/hadith";
 import { hadithAnchor, refLabel } from "@/lib/hadith-query";
 import { HadithAttribution } from "../../../attribution";
 
@@ -17,11 +17,11 @@ const t = getMessages().hadith;
 
 export const metadata: Metadata = { title: t.title };
 
-export default function BookPage({ params }: PageProps<"/hadith/[work]/book/[book]">) {
+export default function BookPage({ params, searchParams }: PageProps<"/hadith/[work]/book/[book]">) {
   return (
     <Page>
       <Suspense fallback={<p className="mt-8 text-muted-foreground">{t.loading}</p>}>
-        <BookText params={params} />
+        <BookText params={params} searchParams={searchParams} />
       </Suspense>
     </Page>
   );
@@ -40,28 +40,55 @@ function ArabicText({ text, className }: { text: string; className?: string }) {
   );
 }
 
-async function BookText({ params }: { params: PageProps<"/hadith/[work]/book/[book]">["params"] }) {
+async function BookText({
+  params,
+  searchParams,
+}: {
+  params: PageProps<"/hadith/[work]/book/[book]">["params"];
+  searchParams: PageProps<"/hadith/[work]/book/[book]">["searchParams"];
+}) {
   await connection();
-  const { work, book: raw } = await params;
+  const [{ work, book: raw }, { page: rawPage }] = await Promise.all([params, searchParams]);
+  const page = typeof rawPage === "string" && /^\d{1,4}$/.test(rawPage) ? Number(rawPage) : 1;
   if (!/^[a-z][a-z0-9_]*$/.test(work) || !/^\d{1,4}$/.test(raw) || !isDatabaseConfigured()) notFound();
-  const [collection, book] = await Promise.all([getCollection(work), getBook(work, Number(raw))]);
+  const [collection, book] = await Promise.all([getCollection(work), getBook(work, Number(raw), page)]);
   if (!collection || !book) notFound();
 
+  // Pages of a long book, then the books before and after it.
+  const back =
+    book.page > 1
+      ? { href: bookPageHref(work, book.number, book.page - 1), label: t.previousPage }
+      : book.previous !== null
+        ? { href: bookPageHref(work, book.previous), label: t.previous }
+        : null;
+  const forward =
+    book.page < book.pages
+      ? { href: bookPageHref(work, book.number, book.page + 1), label: t.nextPage }
+      : book.next !== null
+        ? { href: bookPageHref(work, book.next), label: t.next }
+        : null;
   const nav = (
-    <nav className="flex justify-between gap-4 py-4 text-sm">
-      {book.previous ? (
-        <Link href={`/hadith/${work}/book/${book.previous}`} className="inline-flex items-center gap-1">
+    <nav className="flex items-center justify-between gap-4 py-4 text-sm">
+      {back ? (
+        <Link href={back.href} className="inline-flex items-center gap-1">
           <ArrowLeft className="size-4" />
-          {t.previous}
+          {back.label}
         </Link>
       ) : (
         <span />
       )}
-      {book.next && (
-        <Link href={`/hadith/${work}/book/${book.next}`} className="inline-flex items-center gap-1">
-          {t.next}
+      {book.pages > 1 && (
+        <span className="text-muted-foreground tabular-nums">
+          {t.page} {book.page} {t.of} {book.pages}
+        </span>
+      )}
+      {forward ? (
+        <Link href={forward.href} className="inline-flex items-center gap-1">
+          {forward.label}
           <ArrowRight className="size-4" />
         </Link>
+      ) : (
+        <span />
       )}
     </nav>
   );
@@ -80,6 +107,7 @@ async function BookText({ params }: { params: PageProps<"/hadith/[work]/book/[bo
           {book.title}
         </h1>
       </header>
+      {book.pages > 1 && nav}
 
       {book.chapters.map((chapter) => (
         <section key={chapter.index} className="border-b py-4">
@@ -88,6 +116,7 @@ async function BookText({ params }: { params: PageProps<"/hadith/[work]/book/[bo
               {chapter.title}
             </h2>
           )}
+          {chapter.continued && <p className="text-sm text-muted-foreground">{t.continued}</p>}
           {chapter.intro && <ArabicText text={chapter.intro} className="text-muted-foreground" />}
           <ol>
             {chapter.hadiths.map((hadith) => (

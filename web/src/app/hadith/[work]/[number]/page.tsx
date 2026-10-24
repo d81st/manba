@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getCollection, locateHadith } from "@/lib/hadith";
+import { bookPageHref, getCollection, locateHadith } from "@/lib/hadith";
 import { hadithAnchor, hadithPath, parseRef, schemeOf } from "@/lib/hadith-query";
 
 const t = getMessages().hadith;
@@ -34,7 +34,7 @@ async function Locate({ params }: { params: PageProps<"/hadith/[work]/[number]">
   if (!path || !isDatabaseConfigured()) notFound();
   const [collection, place] = await Promise.all([getCollection(work), locateHadith(work, path)]);
   if (!collection || !place) notFound();
-  if (place.book !== null) redirect(`/hadith/${work}/book/${place.book}#${hadithAnchor(place.path)}`);
+  if (place.book !== null) redirect(bookPageHref(work, place.book, place.page, hadithAnchor(place.path)));
   const number = path.join(".");
 
   const beyond = place.after === null;

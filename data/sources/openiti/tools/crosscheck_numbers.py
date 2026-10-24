@@ -1,4 +1,5 @@
-"""Cross-check of hadith numbers in a loaded JK export against a second
+"""Cross-check of hadith numbers in a loaded file ("# N text" or "# N - text",
+as in the JK exports and the Musnad of Ahmad) against a second
 digitisation of the same edition (a Shamela export where a number stands on
 its own line: "### | 12 - " or "### ||| ١٢ - ", with the text after it).
 
@@ -41,7 +42,7 @@ def loaded(path):
             if pending is not None:
                 number, body = pending, text
             else:
-                m = re.match(r"^(\d{1,4}) (.*)$", text)
+                m = re.match(r"^(?:•\s*)?(\d{1,5})(?:\s*-)? (.*)$", text)
                 if not m or m.group(2).startswith(("باب", "كتاب")):
                     continue
                 number, body = int(m.group(1)), m.group(2)

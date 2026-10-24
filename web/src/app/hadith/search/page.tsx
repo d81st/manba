@@ -74,7 +74,7 @@ async function Results({ words, diacritics }: { words: string[]; diacritics: boo
             className="flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4"
           >
             <Link
-              href={`/hadith/${hit.work}/book/${hit.book}#${hadithAnchor(hit.path)}`}
+              href={hadithPath(hit.work, hit.path)}
               className="min-w-24 shrink-0 text-sm tabular-nums no-underline"
             >
               {hit.workTitle} {refLabel(schemeOf(hit.work), hit.path, hit.variants)}

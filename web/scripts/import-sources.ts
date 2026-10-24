@@ -9,6 +9,7 @@ import { searchKey } from "../src/lib/arabic.ts";
 import { type Numbering, parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
 import { parseOpenitiKafi } from "../src/lib/import/openiti-kafi.ts";
 import { parseOpenitiNarrations } from "../src/lib/import/openiti-narrations.ts";
+import { parseOpenitiRunning } from "../src/lib/import/openiti-running.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
 
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "sources");
@@ -215,7 +216,7 @@ async function importTanzilSimple(client: pg.Client) {
 // A hadith collection from the OpenITI corpus, in one of two layouts.
 type HadithSource = {
   file: string; // in data/sources/openiti, kept byte for byte
-  layout: "shamela" | "narrations" | "kafi";
+  layout: "shamela" | "narrations" | "kafi" | "running";
   key: string;
   sourceId: string;
   sourceTitle: string;
@@ -358,6 +359,29 @@ const IBN_MAJAH = sunan({
   minItems: 4300,
 });
 
+// The Musnad of Ahmad ibn Hanbal in al-Arna'ut's edition, numbered straight
+// through (1-27647); hadiths the editors added are "N/k", address ahmad.N.k.
+// Level 4 for the Sunni canon until a specialist confirms the levels.
+const AHMAD: HadithSource = {
+  file: "0241IbnHanbal.Musnad.Shamela0025794-ara1.mARkdown",
+  layout: "running",
+  key: "openiti:0241IbnHanbal.Musnad.Shamela0025794-ara1:0cc00c0",
+  sourceId: "openiti.ahmad-shamela0025794",
+  sourceTitle: "OpenITI · 0241IbnHanbal.Musnad.Shamela0025794-ara1",
+  sourceVersion: "OpenITI/0250AH 0cc00c0 (2025-11-28)",
+  notice: `${OPENITI_CITATION}. Text: 0241IbnHanbal.Musnad.Shamela0025794-ara1 — Musnad Ahmad ibn Hanbal, ed. Shu'ayb al-Arna'ut, Adil Murshid et al., Mu'assasat al-Risala, Beirut, 1995-2001, with the edition's numbering. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "ahmad",
+    canon: "sunni",
+    titles: { ar: "مسند أحمد", ru: "Муснад Ахмада", "ru-short": "Ахмад" },
+    authoritySunni: 4,
+  },
+  versionId: "ahmad.ar.arnaut",
+  versionTitle: "Арабский текст: изд. Шуайба аль-Арнаута, Адиля Муршида и др. («Муассасат ар-Рисаля», Бейрут, 1995–2001), нумерация издания (OpenITI)",
+  minItems: 27000,
+  retrievedAt: "2026-10-24",
+};
+
 // al-Kafi, the first of the four Shia books: hadiths are numbered inside each
 // chapter, so the address is book.chapter.number (docs/ADDRESSES.md). Level 2
 // for the Shia canon until a specialist confirms the levels (docs/PLAN.md).
@@ -438,6 +462,37 @@ function prepare(src: HadithSource, text: string): PreparedCollection {
         runOn: report.runOn,
       },
       missing: report.gaps.reduce((sum, g) => sum + g.numbers.length, 0),
+    };
+  }
+  if (src.layout === "running") {
+    const data = parseOpenitiRunning(text);
+    const report = data.report;
+    return {
+      books: data.books,
+      chapters: data.chapters,
+      items: data.hadiths.map((h) => ({
+        path: h.part === null ? [h.number] : [h.number, h.part],
+        ordinal: h.ordinal,
+        book: h.book,
+        chapter: h.chapter,
+        paragraphs: h.paragraphs,
+        numbering: "marker",
+      })),
+      containers: [],
+      unnumbered: [],
+      levels: [HADITH_LEVEL],
+      summary: {
+        books: data.books.length,
+        chapters: data.chapters.length,
+        hadiths: report.hadiths,
+        inline: report.inline,
+        missing: report.missing,
+        ignored: report.ignored.length,
+        parts: report.parts,
+        bullets: report.bullets,
+        footnotes: report.footnotes,
+      },
+      missing: report.missing.length,
     };
   }
   if (src.layout === "shamela") {
@@ -654,7 +709,7 @@ async function main() {
     await importTanzilSimple(client);
     await importOpenitiHadith(client, BUKHARI);
     await importOpenitiHadith(client, MUSLIM);
-    for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH, KAFI]) await importOpenitiHadith(client, src);
+    for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH, AHMAD, KAFI]) await importOpenitiHadith(client, src);
   } finally {
     await client.end();
   }

@@ -84,9 +84,8 @@ export async function getCollection(workId: string): Promise<Collection | null> 
   const version = await primaryVersion(workId);
   if (!work.rows[0] || !version) return null;
   const scheme = schemeOf(workId);
-  // A hadith is the first level of the address, except in collections
-  // numbered inside chapters, where every text is one.
-  const hadith = scheme === "chapter" ? "i.address::text" : "split_part(i.address::text, '.', 2)";
+  // Every text is a hadith, except where narrations share a number.
+  const hadith = scheme === "narration" ? "split_part(i.address::text, '.', 2)" : "i.address::text";
   // Numbers of the first and last text in reading order: a repeated hadith
   // keeps its earlier number, so min/max would mislead.
   const books = await db().query(
@@ -147,14 +146,27 @@ export type BookChapter = {
   title: string;
   intro: string;
   unnumbered: string;
+  continued: boolean; // began on an earlier page: its heading is repeated, its intro is not
   hadiths: BookHadith[];
 };
-export type Book = { number: number; title: string; chapters: BookChapter[]; previous: number | null; next: number | null };
+export type Book = {
+  number: number;
+  title: string;
+  chapters: BookChapter[];
+  previous: number | null;
+  next: number | null;
+  page: number;
+  pages: number;
+};
+
+// Long books are read in pages of this many texts (the largest part of the
+// Musnad has over eleven thousand).
+export const BOOK_PAGE_SIZE = 200;
 
 // The address after the work id, as numbers.
 const PATH = (column: string) => `string_to_array(subpath(${column}, 1)::text, '.')::int[]`;
 
-export async function getBook(workId: string, book: number): Promise<Book | null> {
+export async function getBook(workId: string, book: number, page = 1): Promise<Book | null> {
   "use cache";
   cacheTag(HADITH_TAG);
   cacheLife("hours");
@@ -163,62 +175,95 @@ export async function getBook(workId: string, book: number): Promise<Book | null
   const head = await db().query(
     `SELECT title,
             (SELECT max(book) FROM work_sections WHERE version_id = $1 AND kind = 'book' AND book < $2) AS previous,
-            (SELECT min(book) FROM work_sections WHERE version_id = $1 AND kind = 'book' AND book > $2) AS next
+            (SELECT min(book) FROM work_sections WHERE version_id = $1 AND kind = 'book' AND book > $2) AS next,
+            (SELECT count(*)::int FROM section_items WHERE version_id = $1 AND book = $2) AS texts
      FROM work_sections WHERE version_id = $1 AND kind = 'book' AND book = $2`,
     [version.id, book],
   );
   if (!head.rows[0]) return null;
-  const chapters = await db().query(
+  const pages = Math.max(1, Math.ceil(head.rows[0].texts / BOOK_PAGE_SIZE));
+  if (page < 1 || page > pages) return null;
+  const chapters = await db().query<Omit<BookChapter, "continued" | "hadiths">>(
     `SELECT chapter AS index, title, intro, unnumbered FROM work_sections
      WHERE version_id = $1 AND kind = 'chapter' AND book = $2 ORDER BY chapter`,
     [version.id, book],
   );
   const hadiths = await db().query<BookHadith & { chapter: number }>(
-    `WITH counts AS (
-       SELECT subpath(address, 0, 2) AS head, count(*)::int AS variants
-       FROM section_items WHERE version_id = $1 GROUP BY 1
+    `WITH page AS (
+       SELECT i.address, i.chapter, i.numbering, a.ordinal
+       FROM section_items i JOIN addresses a ON a.address = i.address
+       WHERE i.version_id = $1 AND i.book = $2
+       ORDER BY a.ordinal LIMIT $3 OFFSET $4
+     ),
+     counts AS (
+       SELECT subpath(s.address, 0, 2) AS head, count(*)::int AS variants
+       FROM section_items s
+       WHERE s.version_id = $1 AND subpath(s.address, 0, 2) IN (SELECT subpath(address, 0, 2) FROM page)
+       GROUP BY 1
      )
-     SELECT i.chapter, ${PATH("i.address")} AS path, c.variants, t.content AS text, i.numbering
-     FROM section_items i
-     JOIN counts c ON c.head = subpath(i.address, 0, 2)
-     JOIN addresses a ON a.address = i.address
-     JOIN texts t ON t.address = i.address AND t.version_id = i.version_id
-     WHERE i.version_id = $1 AND i.book = $2
-     ORDER BY a.ordinal`,
-    [version.id, book],
+     SELECT p.chapter, ${PATH("p.address")} AS path, c.variants, t.content AS text, p.numbering
+     FROM page p
+     JOIN counts c ON c.head = subpath(p.address, 0, 2)
+     JOIN texts t ON t.address = p.address AND t.version_id = $1
+     ORDER BY p.ordinal`,
+    [version.id, book, BOOK_PAGE_SIZE, (page - 1) * BOOK_PAGE_SIZE],
   );
+  // Chapters on this page: those of its texts and the empty ones between
+  // them; on the first and last pages also the empty ones before and after.
+  const rows = hadiths.rows;
+  const first = rows[0]?.chapter ?? 1;
+  const last = rows[rows.length - 1]?.chapter ?? Number.MAX_SAFE_INTEGER;
+  const startedBefore = page > 1 && rows.length > 0;
   return {
     number: book,
     title: head.rows[0].title,
     previous: head.rows[0].previous,
     next: head.rows[0].next,
-    chapters: chapters.rows.map((c) => ({
-      ...c,
-      hadiths: hadiths.rows
-        .filter((h) => h.chapter === c.index)
-        .map((h) => ({ path: h.path, variants: h.variants, text: h.text, numbering: h.numbering })),
-    })),
+    page,
+    pages,
+    chapters: chapters.rows
+      .filter((c) => (c.index >= first || page === 1) && (c.index <= last || page === pages))
+      .map((c) => {
+        const continued = startedBefore && c.index === first;
+        const goesOn = page < pages && c.index === last;
+        return {
+          ...c,
+          intro: continued ? "" : c.intro,
+          unnumbered: goesOn ? "" : c.unnumbered,
+          continued,
+          hadiths: rows
+            .filter((h) => h.chapter === c.index)
+            .map((h) => ({ path: h.path, variants: h.variants, text: h.text, numbering: h.numbering })),
+        };
+      }),
   };
 }
 
 // Where a hadith is: the first text at or under its address (a hadith's
-// first narration, a chapter's first hadith). A narration the hadith does
-// not have leads to the hadith; for a lone number with no text, the nearest
-// numbers.
+// first narration, a chapter's first hadith), with the page of its book.
+// A narration the hadith does not have leads to the hadith; for a lone
+// number with no text, the nearest numbers.
 export async function locateHadith(
   workId: string,
   path: number[],
-): Promise<{ book: number; path: number[] } | { book: null; before: number | null; after: number | null } | null> {
+): Promise<
+  | { book: number; page: number; path: number[] }
+  | { book: null; before: number | null; after: number | null }
+  | null
+> {
   const version = await primaryVersion(workId);
   if (!version) return null;
-  const found = await db().query<{ book: number; path: number[] }>(
-    `SELECT i.book, ${PATH("i.address")} AS path
+  const found = await db().query<{ book: number; path: number[]; rank: number }>(
+    `SELECT i.book, ${PATH("i.address")} AS path,
+            (SELECT count(*)::int FROM section_items s JOIN addresses b ON b.address = s.address
+             WHERE s.version_id = i.version_id AND s.book = i.book AND b.ordinal < a.ordinal) AS rank
      FROM section_items i JOIN addresses a ON a.address = i.address
      WHERE i.version_id = $1 AND i.address <@ $2::extensions.ltree
      ORDER BY a.ordinal LIMIT 1`,
     [version.id, [workId, ...path].join(".")],
   );
-  if (found.rows[0]) return found.rows[0];
+  const hit = found.rows[0];
+  if (hit) return { book: hit.book, page: Math.floor(hit.rank / BOOK_PAGE_SIZE) + 1, path: hit.path };
   if (schemeOf(workId) === "narration" && path.length === 2) return locateHadith(workId, path.slice(0, 1));
   if (schemeOf(workId) === "chapter" || path.length > 1) return { book: null, before: null, after: null };
   const near = await db().query<{ before: number | null; after: number | null }>(
@@ -227,6 +272,11 @@ export async function locateHadith(
     [version.id, path[0]],
   );
   return { book: null, ...near.rows[0] };
+}
+
+// Link to a page of a book, with the anchor of a hadith on it.
+export function bookPageHref(work: string, book: number, page = 1, anchor?: string) {
+  return `/hadith/${work}/book/${book}${page > 1 ? `?page=${page}` : ""}${anchor ? `#${anchor}` : ""}`;
 }
 
 export type HadithHit = {

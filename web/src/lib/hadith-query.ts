@@ -6,7 +6,8 @@ import { MAX_QUERY_LENGTH } from "./quran-query.ts";
 // How collections are named in references and how their addresses are
 // built; only loaded collections are listed: the six Sunni books in their
 // traditional order, then the Shia ones.
-//   number    — bukhari.3951: one text per number
+//   number    — bukhari.3951: one text per number (in the Musnad, ahmad.24009.2
+//               is "24009/2", a hadith the editors added after 24009)
 //   narration — muslim.8.2: narrations of one number, "Муслим 8b"
 //   chapter   — kafi.4.60.3: book, chapter, number in the chapter, "аль-Кафи 4.60.3"
 export type Scheme = "number" | "narration" | "chapter";
@@ -17,6 +18,7 @@ export const COLLECTIONS: Record<string, { names: string[]; scheme: Scheme }> = 
   tirmidhi: { names: ["тирмизи", "tirmidhi"], scheme: "narration" },
   nasai: { names: ["насаи", "nasai"], scheme: "narration" },
   ibn_majah: { names: ["ибн маджа", "ибн маджи", "ибн маджах", "ibn majah", "ibn maja"], scheme: "number" },
+  ahmad: { names: ["ахмад", "ахмада", "ahmad", "муснад ахмада", "musnad ahmad"], scheme: "number" },
   kafi: { names: ["кафи", "kafi"], scheme: "chapter" },
 };
 export const COLLECTION_ORDER = Object.keys(COLLECTIONS);
@@ -71,12 +73,13 @@ export function parseVariant(letters: string): number | null {
 // [4, 60, 3]. Read from its written form: "3951", "8b" or "8.2", "4.60.3";
 // shorter forms ("8", "4.60") name the whole hadith or chapter.
 export function parseRef(scheme: Scheme, text: string): number[] | null {
-  const m = text.match(/^(\d{1,5})((?:\.\d{1,4}){0,2})\s?(\p{L}{1,2})?$/u);
+  const m = text.match(/^(\d{1,5})((?:\.\d{1,4}){0,2}|\/\d{1,3})\s?(\p{L}{1,2})?$/u);
   if (!m) return null;
-  const path = [Number(m[1]), ...m[2].split(".").filter(Boolean).map(Number)];
+  const path = [Number(m[1]), ...m[2].split(/[./]/).filter(Boolean).map(Number)];
   if (path.some((n) => n < 1)) return null;
-  if (scheme === "chapter") return m[3] ? null : path;
-  if (scheme === "number") return path.length === 1 ? path : null; // a letter after it is ignored
+  if (scheme === "chapter") return m[3] || m[2].startsWith("/") ? null : path;
+  if (scheme === "number") return path.length <= 2 ? path : null; // a letter after it is ignored
+  if (m[2].startsWith("/")) return null;
   if (m[3]) {
     const variant = parseVariant(m[3]);
     return variant && path.length === 1 ? [path[0], variant] : null;
@@ -90,12 +93,14 @@ export function refLabel(scheme: Scheme, path: number[], variants = 2) {
   if (scheme === "narration" && path.length === 2) {
     return variants > 1 ? `${path[0]}${variantLetters(path[1])}` : String(path[0]);
   }
-  return path.join(".");
+  return path.join(scheme === "number" ? "/" : ".");
 }
 
-// Permanent link of a hadith: /hadith/bukhari/3951, /hadith/muslim/8b, /hadith/kafi/4.60.3.
+// Permanent link of a hadith: /hadith/bukhari/3951, /hadith/muslim/8b,
+// /hadith/kafi/4.60.3, /hadith/ahmad/24009.2 (no slash inside a link).
 export function hadithPath(work: string, path: number[]) {
-  return `/hadith/${work}/${refLabel(schemeOf(work), path)}`;
+  const scheme = schemeOf(work);
+  return `/hadith/${work}/${scheme === "number" ? path.join(".") : refLabel(scheme, path)}`;
 }
 
 // Anchor of a hadith on its book page.
@@ -116,8 +121,8 @@ export function parseHadithQuery(input: string, work = DEFAULT_COLLECTION): Hadi
   if (!query) return { kind: "empty" };
 
   // "3951", "Бухари 3951", "аль-Бухари № 3951", "bukhari.3951", "Муслим 8b",
-  // "muslim.8.2", "аль-Кафи 4.60.3"
-  const ref = query.match(/^(?:([\p{L}-]+(?:\s+[\p{L}-]+)?)\s*[.\s]\s*(?:№\s*)?)?(\d[\d.]*(?:\s?\p{L}{1,2})?)$/u);
+  // "muslim.8.2", "аль-Кафи 4.60.3", "Ахмад 24009/2"
+  const ref = query.match(/^(?:([\p{L}-]+(?:\s+[\p{L}-]+)?)\s*[.\s]\s*(?:№\s*)?)?(\d[\d./]*(?:\s?\p{L}{1,2})?)$/u);
   if (ref) {
     const named = ref[1] ? workOf(ref[1]) : work;
     const path = named ? parseRef(schemeOf(named), ref[2]) : null;
@@ -138,14 +143,15 @@ export function parseHadithQuery(input: string, work = DEFAULT_COLLECTION): Hadi
   return { kind: "text", words, diacritics };
 }
 
-// "Сахих аль-Бухари 3951", "Бухари № 3951", "Муслим 8b", "аль-Кафи 4.60.3":
+// "Сахих аль-Бухари 3951", "Бухари № 3951", "Муслим 8b", "аль-Кафи 4.60.3",
+// "Ахмад 24009/2":
 // a collection name, then the hadith as written.
 const NAMES = Object.values(COLLECTIONS)
   .flatMap((c) => c.names)
   .map((name) => name.replace(/ /g, "\\s+"))
   .join("|");
 export const HADITH_REFERENCE = new RegExp(
-  `(?<![\\p{L}])(?:${ARTICLE})?(${NAMES})\\s*(?:№\\s*)?(\\d{1,5}(?:\\.\\d{1,4}){0,2}(?:[a-z]{1,2}|[а-я])?)(?![\\p{L}\\d:])`,
+  `(?<![\\p{L}])(?:${ARTICLE})?(${NAMES})\\s*(?:№\\s*)?(\\d{1,5}(?:(?:\\.\\d{1,4}){1,2}|\\/\\d{1,3})?(?:[a-z]{1,2}|[а-я])?)(?![\\p{L}\\d:/])`,
   "giu",
 );
 

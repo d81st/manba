@@ -32,7 +32,12 @@ describe("parseHadithQuery", () => {
     expect(parseHadithQuery("Абу Дауд 4297")).toEqual(ref("abu_dawud", 4297));
     expect(parseHadithQuery("ан-Насаи 1")).toEqual(ref("nasai", 1));
     expect(parseHadithQuery("Ибн Маджа 224")).toEqual(ref("ibn_majah", 224));
-    expect(parseHadithQuery("Ахмад 12")).toEqual({ kind: "unsupported" });
+    expect(parseHadithQuery("Дарими 12")).toEqual({ kind: "unsupported" });
+  });
+
+  it("reads the Musnad of Ahmad with the editors' added hadiths", () => {
+    expect(parseHadithQuery("Ахмад 7")).toEqual(ref("ahmad", 7));
+    expect(parseHadithQuery("Муснад Ахмада 24009/2")).toEqual(ref("ahmad", 24009, 2));
   });
 
   it("reads al-Kafi by book, chapter and number", () => {
@@ -87,6 +92,11 @@ describe("linkAddresses with hadith references", () => {
       { work: "kafi", path: [4, 60, 3], text: "аль-Кафи 4.60.3" },
       { text: "." },
     ]);
+    expect(linkAddresses("Ахмад 16663 и Ахмад 24009/2")).toEqual([
+      { work: "ahmad", path: [16663], text: "Ахмад 16663" },
+      { text: " и " },
+      { work: "ahmad", path: [24009, 2], text: "Ахмад 24009/2" },
+    ]);
   });
 });
 
@@ -100,7 +110,9 @@ describe("hadith addresses", () => {
 
   it("reads each collection's written form", () => {
     expect(parseRef("number", "3951")).toEqual([3951]);
-    expect(parseRef("number", "3951.2")).toBeNull();
+    expect(parseRef("number", "24009/2")).toEqual([24009, 2]);
+    expect(parseRef("number", "24009.2")).toEqual([24009, 2]);
+    expect(parseRef("chapter", "4/60")).toBeNull();
     expect(parseRef("narration", "8b")).toEqual([8, 2]);
     expect(parseRef("narration", "8.2")).toEqual([8, 2]);
     expect(parseRef("narration", "8.2.1")).toBeNull();
@@ -116,6 +128,8 @@ describe("hadith addresses", () => {
     expect(hadithPath("muslim", [8, 2])).toBe("/hadith/muslim/8b");
     expect(hadithPath("bukhari", [3951])).toBe("/hadith/bukhari/3951");
     expect(hadithPath("kafi", [4, 60, 3])).toBe("/hadith/kafi/4.60.3");
+    expect(refLabel("number", [24009, 2])).toBe("24009/2");
+    expect(hadithPath("ahmad", [24009, 2])).toBe("/hadith/ahmad/24009.2");
     expect(hadithAnchor([8, 2])).toBe("h-8-2");
     expect(hadithAnchor([3951])).toBe("h-3951");
   });
