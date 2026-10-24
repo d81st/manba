@@ -351,19 +351,25 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
     text: string;
     total: number;
   }>(
-    `SELECT * FROM (
-       SELECT r.ref, w.titles->>'ru' AS title, w.titles->>'ru-short' AS short,
-              ${PATH("a.address")} AS path, t.content AS text,
-              (SELECT count(*)::int FROM section_items s
-               WHERE s.version_id = t.version_id AND s.address <@ subpath(a.address, 0, 2)) AS variants,
-              row_number() OVER (PARTITION BY r.ref ORDER BY a.ordinal) AS n,
-              count(*) OVER (PARTITION BY r.ref)::int AS total
-       FROM unnest($1::text[]) AS r(ref)
-       JOIN addresses a ON a.address <@ r.ref::extensions.ltree
+    // One lookup per reference: joined as a whole, the planner scanned every
+    // hadith text (seconds for a topic with a hundred references).
+    `SELECT r.ref, w.titles->>'ru' AS title, w.titles->>'ru-short' AS short,
+            ${PATH("x.address")} AS path, x.content AS text, x.total,
+            CASE WHEN x.level = 'narration' THEN (
+              SELECT count(*)::int FROM addresses n
+              WHERE n.address <@ subpath(x.address, 0, 2) AND n.level = 'narration'
+            ) ELSE 1 END AS variants
+     FROM unnest($1::text[]) AS r(ref)
+     CROSS JOIN LATERAL (
+       SELECT a.address, a.level, a.ordinal, t.content, v.work_id, count(*) OVER ()::int AS total
+       FROM addresses a
        JOIN texts t ON t.address = a.address
        JOIN text_versions v ON v.id = t.version_id AND v.is_primary AND v.status = 'published' AND v.language = 'ar'
-       JOIN works w ON w.id = v.work_id AND w.category = 'hadith'
-     ) x WHERE n <= ${REF_ITEMS} ORDER BY ref, n`,
+       WHERE a.address <@ r.ref::extensions.ltree
+       ORDER BY a.ordinal LIMIT ${REF_ITEMS}
+     ) x
+     JOIN works w ON w.id = x.work_id AND w.category = 'hadith'
+     ORDER BY r.ref, x.ordinal`,
     [addresses],
   );
   for (const row of rows) {
