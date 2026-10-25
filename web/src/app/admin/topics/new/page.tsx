@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
+import { listChoices } from "@/lib/sira-events";
 import { listTermChoices } from "@/lib/glossary";
 import { listSides, listTopicChoices } from "@/lib/topics";
 import { TopicForm } from "../topic-form";
@@ -30,8 +31,14 @@ export default function NewTopicPage() {
 async function NewTopic() {
   await connection();
   await requireSession();
-  const [sides, terms, topics] = await Promise.all([listSides(), listTermChoices(), listTopicChoices()]);
+  const [sides, terms, topics, choices] = await Promise.all([
+    listSides(),
+    listTermChoices(),
+    listTopicChoices(),
+    listChoices(),
+  ]);
   return (
-    <TopicForm id={null} initial={null} sides={sides} termChoices={terms} topicChoices={topics} saved={false} t={t} />
+    <TopicForm id={null} initial={null} sides={sides}
+        places={choices.places} termChoices={terms} topicChoices={topics} saved={false} t={t} />
   );
 }

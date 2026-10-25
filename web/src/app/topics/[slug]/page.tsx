@@ -11,6 +11,7 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
+import { getSiraData } from "@/lib/sira-events";
 import { getPublishedTopic, type MainPassage } from "@/lib/topics";
 
 const messages = getMessages();
@@ -61,9 +62,16 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
               <Badge variant="outline">{t.siraBadge}</Badge>
             </Link>
           )}
+          {topic.category === "cities" && (
+            <Link href="/cities" className="no-underline">
+              <Badge variant="outline">{t.citiesBadge}</Badge>
+            </Link>
+          )}
         </div>
         <p className="text-lg text-muted-foreground">{topic.question}</p>
       </header>
+
+      {topic.place && <TopicPlace slug={topic.place} />}
 
       {(topic.main.length > 0 || topic.mainHadiths.length > 0) && (
         <section>
@@ -202,5 +210,43 @@ function Chips({ items }: { items: { href: string; label: string }[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+// The place of a topic (a city): where it is on the map and the published
+// events of the Prophet's life there.
+async function TopicPlace({ slug }: { slug: string }) {
+  const { places, events } = await getSiraData(false);
+  const place = places.find((p) => p.slug === slug);
+  if (!place) return null;
+  const here = events.filter((e) => e.place === slug);
+  return (
+    <section>
+      <Heading>{t.place}</Heading>
+      <p>
+        {place.name}{" "}
+        <span className="ar text-lg" lang="ar" dir="rtl">
+          {place.nameAr}
+        </span>
+        {place.lat !== null && (
+          <>
+            {" · "}
+            <Link href={`/cities#${place.slug}`}>{t.onMap}</Link>
+          </>
+        )}
+      </p>
+      {here.length > 0 && (
+        <>
+          <p className="mt-3 text-sm text-muted-foreground">{t.placeEvents}</p>
+          <ul className="mt-1 list-disc space-y-0.5 ps-5 text-sm">
+            {here.map((event) => (
+              <li key={event.id}>
+                <Link href={`/sira/events/${event.slug}`}>{event.title}</Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
   );
 }

@@ -12,6 +12,7 @@ import type { Messages } from "@/i18n";
 import { RECOGNITIONS, slugify, type InputProblem } from "@/lib/glossary-input";
 import { TOPIC_CATEGORIES, TOPIC_STATUSES, type TopicInput } from "@/lib/topics-input";
 import { Field } from "../field";
+import { ChoiceSelect } from "../sira/form-kit";
 import { deleteTopicAction, saveTopicAction, type TopicFormState } from "./actions";
 
 type Position = TopicInput["positions"][number] & { key: number };
@@ -21,6 +22,7 @@ const EMPTY: TopicInput = {
   slug: "",
   category: "general",
   status: "draft",
+  place: "",
   title: "",
   question: "",
   mainRefs: "",
@@ -40,6 +42,7 @@ export function TopicForm({
   id,
   initial,
   sides,
+  places,
   termChoices,
   topicChoices,
   saved,
@@ -48,6 +51,7 @@ export function TopicForm({
   id: number | null;
   initial: TopicInput | null;
   sides: { id: number; title: string }[];
+  places: { slug: string; name: string }[];
   termChoices: Choice[];
   topicChoices: Choice[];
   saved: boolean;
@@ -169,6 +173,16 @@ export function TopicForm({
                 ))}
               </SelectContent>
             </Select>
+          </Field>
+          <Field id="place" label={f.place} hint={f.placeHint} error={message(problemFor("place"))} wide>
+            <ChoiceSelect
+              id="place"
+              value={form.place}
+              none={f.noPlace}
+              choices={places.map((p) => ({ value: p.slug, label: p.name }))}
+              onChange={(value) => set("place", value ?? "")}
+              className="sm:w-72"
+            />
           </Field>
           <Field id="mainRefs" label={f.mainRefs} hint={f.mainRefsHint} error={message(problemFor("mainRefs"))} wide>
             <Input id="mainRefs" value={form.mainRefs} onChange={(e) => set("mainRefs", e.target.value)} />

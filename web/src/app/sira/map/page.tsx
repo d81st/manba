@@ -3,9 +3,9 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
+import { type MapView, RegionMap } from "@/components/region-map";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import land from "@/lib/geo/arabia-land.json";
 import { getSiraData, type SiraEvent, type SiraPlace } from "@/lib/sira-events";
 import { isPreview, PreviewNote, SiraNav } from "../shared";
 
@@ -24,17 +24,7 @@ export default function MapPage({ searchParams }: PageProps<"/sira/map">) {
   );
 }
 
-// Equirectangular view of the region, stretched by the cosine of its middle latitude.
-const VIEW = { west: 32.5, east: 46, south: 13.5, north: 32.5 };
-const SCALE = 46;
-const STRETCH = Math.cos((22.5 * Math.PI) / 180);
-const WIDTH = (VIEW.east - VIEW.west) * STRETCH * SCALE;
-const HEIGHT = (VIEW.north - VIEW.south) * SCALE;
-const project = (lon: number, lat: number) => [(lon - VIEW.west) * STRETCH * SCALE, (VIEW.north - lat) * SCALE] as const;
-
-const LAND = land.rings
-  .map((ring) => `M${ring.map(([lon, lat]) => project(lon, lat).map((v) => v.toFixed(1)).join(",")).join("L")}Z`)
-  .join("");
+const VIEW: MapView = { west: 32.5, east: 46, south: 13.5, north: 32.5, scale: 46 };
 
 // Places close to each other get their names on another side: [dx, dy, anchor].
 const LABELS: Record<string, [number, number, "start" | "end" | "middle"]> = {
@@ -69,31 +59,22 @@ async function SiraMap({ searchParams }: Pick<PageProps<"/sira/map">, "searchPar
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="self-start overflow-hidden rounded-xl border bg-sira-sea lg:sticky lg:top-4">
-          <svg viewBox={`0 0 ${WIDTH.toFixed(0)} ${HEIGHT}`} className="block h-auto w-full" role="img" aria-label={t.mapPage.title}>
-            <path d={LAND} className="fill-sira-land stroke-border" strokeWidth={1} />
-            {drawn.map((place) => {
-              const [x, y] = project(place.lon!, place.lat!);
+          <RegionMap
+            view={VIEW}
+            label={t.mapPage.title}
+            points={drawn.map((place) => {
               const count = eventsAt.get(place.slug)?.length ?? 0;
-              const [dx, dy, anchor] = LABELS[place.slug] ?? [10, 4, "start"];
-              return (
-                <a key={place.slug} href={`#${place.slug}`}>
-                  <circle cx={x} cy={y} r={4 + Math.min(count, 12) * 0.7} className="fill-primary stroke-card" strokeWidth={1.5}>
-                    <title>{`${place.name} — ${plural(count, t.mapPage.events)}`}</title>
-                  </circle>
-                  <text
-                    x={x + dx}
-                    y={y + dy}
-                    textAnchor={anchor}
-                    className="fill-foreground stroke-sira-land text-[13px] font-medium"
-                    strokeWidth={3}
-                    paintOrder="stroke"
-                  >
-                    {place.name}
-                  </text>
-                </a>
-              );
+              return {
+                slug: place.slug,
+                name: place.name,
+                lat: place.lat!,
+                lon: place.lon!,
+                size: 4 + Math.min(count, 12) * 0.7,
+                title: `${place.name} — ${plural(count, t.mapPage.events)}`,
+                label: LABELS[place.slug],
+              };
             })}
-          </svg>
+          />
         </div>
         <div className="space-y-3">
           {drawn.map((place) => (

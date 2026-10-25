@@ -201,5 +201,71 @@
   "slug": "hunayn",
   "name": "Хунайн",
   "name_ar": "حنين"
+ },
+ {
+  "slug": "jerusalem",
+  "name": "Иерусалим (Байт аль-Макдис)",
+  "name_ar": "بيت المقدس",
+  "thurayya": "BAYTMAQDIS_352E317N_S",
+  "toponym": "بيت المقدس",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 35.20345,
+  "lat": 31.77768
+ },
+ {
+  "slug": "najaf",
+  "name": "Неджеф",
+  "name_ar": "النجف",
+  "thurayya": "NAJAF_443E319N_S",
+  "toponym": "نجاف",
+  "type": "villages",
+  "certainty": "certain",
+  "lon": 44.33826,
+  "lat": 31.98379
+ },
+ {
+  "slug": "kufa",
+  "name": "Куфа",
+  "name_ar": "الكوفة",
+  "thurayya": "KUFA_443E320N_S",
+  "toponym": "الكوفة",
+  "type": "capitals",
+  "certainty": "certain",
+  "lon": 44.39355,
+  "lat": 32.03808
+ },
+ {
+  "slug": "karbala",
+  "name": "Кербела",
+  "name_ar": "كربلاء",
+  "thurayya": "KARBALA_440E326N_S",
+  "toponym": "كربلاء",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 44.03706,
+  "lat": 32.61792
+ },
+ {
+  "slug": "mashhad",
+  "name": "Мешхед (ан-Нукан, Тус)",
+  "name_ar": "مشهد",
+  "thurayya": "NUQAN_595E362N_S",
+  "toponym": "النوقان",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 59.59168,
+  "lat": 36.20578
+ },
+ {
+  "slug": "qum",
+  "name": "Кум",
+  "name_ar": "قم",
+  "thurayya": "QUMM_509E346N_S",
+  "toponym": "قم",
+  "type": "capitals",
+  "certainty": "certain",
+  "lon": 50.90695,
+  "lat": 34.63354
  }
 ]

@@ -8,6 +8,7 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
+import { listChoices } from "@/lib/sira-events";
 import { listTermChoices } from "@/lib/glossary";
 import { getTopicForEdit, listSides, listTopicChoices } from "@/lib/topics";
 import { StatusBadge } from "../../status-badge";
@@ -43,7 +44,12 @@ async function EditTopic({
   if (!/^\d+$/.test(raw)) notFound();
   const topic = await getTopicForEdit(Number(raw));
   if (!topic) notFound();
-  const [sides, terms, topics] = await Promise.all([listSides(), listTermChoices(), listTopicChoices()]);
+  const [sides, terms, topics, choices] = await Promise.all([
+    listSides(),
+    listTermChoices(),
+    listTopicChoices(),
+    listChoices(),
+  ]);
   const saved = (await searchParams).saved === "1";
   const { id, ...initial } = topic;
 
@@ -65,6 +71,7 @@ async function EditTopic({
         id={id}
         initial={initial}
         sides={sides}
+        places={choices.places}
         termChoices={terms}
         topicChoices={topics.filter((choice) => choice.id !== id)}
         saved={saved}

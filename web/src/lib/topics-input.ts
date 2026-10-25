@@ -5,8 +5,8 @@ import { parseRefs, RECOGNITIONS, TERM_STATUSES, type InputProblem } from "./glo
 export const TOPIC_STATUSES = TERM_STATUSES;
 // Topics of the section «История текста Корана» (quran_text) are also listed
 // on its own page, /quran-text; cards of people and events of «Жизнеописание
-// пророка» (sira), on /sira.
-export const TOPIC_CATEGORIES = ["general", "hard", "quran_text", "sira"] as const;
+// пророка» (sira), on /sira; the cities of «Священные города» (cities), on /cities.
+export const TOPIC_CATEGORIES = ["general", "hard", "quran_text", "sira", "cities"] as const;
 // Ayahs shown before and after each main passage.
 export const CONTEXT_AYAHS = 3;
 
@@ -25,6 +25,8 @@ export const topicSchema = z.object({
   slug: trimmed(80).regex(/^[a-z][a-z0-9-]*$/, "slug"),
   category: z.enum(TOPIC_CATEGORIES),
   status: z.enum(TOPIC_STATUSES),
+  // The place on the map (a city), by its permanent id.
+  place: z.union([trimmed(80).regex(/^[a-z][a-z0-9-]*$/, "place"), z.literal("")]).default(""),
   title: trimmed(200).min(1, "title"),
   question: trimmed(1000).min(1, "question"),
   mainRefs: trimmed(2000).default(""),

@@ -100,12 +100,14 @@ export type TopicSummary = {
   question: string;
   updatedAt: string;
   updatedBy: string;
+  place: string | null; // the place on the map (cities)
 };
 
 const SUMMARY = `
   SELECT t.id::int, t.slug, t.category, t.status, x.title, x.question,
-         t.updated_at::text AS "updatedAt", t.updated_by AS "updatedBy"
-  FROM topics t JOIN topic_texts x ON x.topic_id = t.id AND x.locale = '${LOCALE}'`;
+         t.updated_at::text AS "updatedAt", t.updated_by AS "updatedBy", pl.slug AS place
+  FROM topics t JOIN topic_texts x ON x.topic_id = t.id AND x.locale = '${LOCALE}'
+  LEFT JOIN places pl ON pl.id = t.place_id`;
 
 export async function listTopicsForAdmin(status?: string, category?: string): Promise<TopicSummary[]> {
   const { rows } = await db().query<TopicSummary>(
@@ -120,7 +122,8 @@ export type TopicForEdit = TopicInput & { id: number };
 
 export async function getTopicForEdit(id: number): Promise<TopicForEdit | null> {
   const topic = await db().query(
-    `SELECT t.*, x.title, x.question, x.circumstances, x.circumstances_note FROM topics t
+    `SELECT t.*, x.title, x.question, x.circumstances, x.circumstances_note,
+            (SELECT slug FROM places WHERE id = t.place_id) AS place_slug FROM topics t
      JOIN topic_texts x ON x.topic_id = t.id AND x.locale = $2 WHERE t.id = $1`,
     [id, LOCALE],
   );
@@ -149,6 +152,7 @@ export async function getTopicForEdit(id: number): Promise<TopicForEdit | null> 
     slug: row.slug,
     category: row.category,
     status: row.status,
+    place: row.place_slug ?? "",
     title: row.title,
     question: row.question,
     mainRefs: refsOf("main"),
@@ -253,6 +257,10 @@ export async function saveTopic(id: number | null, input: TopicInput, actor: str
     if ((await countExisting(client, "topics", relatedIds)) !== relatedIds.length) {
       problems.push({ field: "related", code: "related" });
     }
+    const placeId = input.place
+      ? ((await client.query<{ id: number }>("SELECT id::int FROM places WHERE slug = $1", [input.place])).rows[0]?.id ?? null)
+      : null;
+    if (input.place && !placeId) problems.push({ field: "place", code: "place" });
     if (problems.length) {
       await client.query("ROLLBACK");
       return { problems };
@@ -261,14 +269,15 @@ export async function saveTopic(id: number | null, input: TopicInput, actor: str
     let topicId = id;
     if (topicId) {
       await client.query(
-        `UPDATE topics SET slug = $2, category = $3, status = $4, updated_by = $5, updated_at = now() WHERE id = $1`,
-        [topicId, input.slug, input.category, input.status, actor],
+        `UPDATE topics SET slug = $2, category = $3, status = $4, place_id = $6, updated_by = $5, updated_at = now()
+         WHERE id = $1`,
+        [topicId, input.slug, input.category, input.status, actor, placeId],
       );
     } else {
       const created = await client.query<{ id: number }>(
-        `INSERT INTO topics (slug, category, status, created_by, updated_by)
-         VALUES ($1, $2, $3, $4, $4) RETURNING id::int`,
-        [input.slug, input.category, input.status, actor],
+        `INSERT INTO topics (slug, category, status, place_id, created_by, updated_by)
+         VALUES ($1, $2, $3, $5, $4, $4) RETURNING id::int`,
+        [input.slug, input.category, input.status, actor, placeId],
       );
       topicId = created.rows[0].id;
     }
