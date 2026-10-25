@@ -1,7 +1,7 @@
 // Validation of the glossary form and text helpers. No database access here,
 // so everything is unit-tested.
 import { z } from "zod";
-import { BOOK_REFERENCE, formatBookRef, isBook, parseBookRef, parsePageRef, referencedBook } from "./book-query.ts";
+import { BOOK_REFERENCE, formatBookRef, isBook, parseBookPath, parseBookRef, referencedBook } from "./book-query.ts";
 import { formatHadithRef, HADITH_REFERENCE, parseHadithRef, parseRef, referencedWork, schemeOf } from "./hadith-query.ts";
 import { parseQuery } from "./quran-query.ts";
 
@@ -115,7 +115,7 @@ export function linkAddresses(text: string): TextPiece[] {
   }
   for (const match of text.matchAll(BOOK_REFERENCE)) {
     const book = referencedBook(match[1]);
-    const path = book ? parsePageRef(match[2]) : null;
+    const path = book ? parseBookPath(book, match[2]) : null;
     if (!book || !path) continue;
     found.push({ index: match.index, length: match[0].length, piece: { book, path, text: match[0] } });
   }

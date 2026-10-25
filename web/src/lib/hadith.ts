@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { bookPath, isBook, pageLabel } from "@/lib/book-query";
+import { bookLabel, bookPath, isBook } from "@/lib/book-query";
 import { db } from "@/lib/db";
 import { COLLECTION_ORDER, hadithPath, refLabel, type Scheme, schemeOf } from "@/lib/hadith-query";
 
@@ -416,6 +416,7 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
     variants: number;
     text: string;
     total: number;
+    last_ayah: number | null;
   }>(
     // One lookup per reference: joined as a whole, the planner scanned every
     // hadith text (seconds for a topic with a hundred references).
@@ -431,7 +432,9 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
                 WHERE n.address <@ subpath(x.address, 0, 3) AND n.level = 'passage'
               )
               ELSE 1
-            END AS variants
+            END AS variants,
+            (SELECT max(split_part(c.ayah::text, '.', 3)::int) FROM commentary_ayahs c
+             WHERE c.comment = x.address) AS last_ayah
      FROM unnest($1::text[]) AS r(ref)
      CROSS JOIN LATERAL (
        SELECT a.address, a.level, a.ordinal, t.content, v.work_id, count(*) OVER ()::int AS total
@@ -441,7 +444,7 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
        WHERE a.address <@ r.ref::extensions.ltree
        ORDER BY a.ordinal LIMIT ${REF_ITEMS}
      ) x
-     JOIN works w ON w.id = x.work_id AND w.category IN ('hadith', 'sira')
+     JOIN works w ON w.id = x.work_id AND w.category IN ('hadith', 'sira', 'tafsir')
      ORDER BY r.ref, x.ordinal`,
     [addresses],
   );
@@ -450,14 +453,17 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
     const scheme = schemeOf(work);
     // Books cited by volume and page (the Sira) have their own labels and pages.
     const label = (path: number[], variants?: number) =>
-      isBook(work) ? pageLabel(path, variants) : refLabel(scheme, path, variants);
+      isBook(work) ? bookLabel(work, path, variants) : refLabel(scheme, path, variants);
     let ref = refs.get(row.ref);
     if (!ref) {
       const path = rest.map(Number);
       ref = {
         address: row.ref,
         // A reference to one text knows how many share its number or page.
-        title: `${shortTitle(row.title, row.short)} ${label(path, row.total === 1 && row.path.length === path.length ? row.variants : undefined)}`,
+        // A tafsir comment on several ayahs: "Ибн Касир 2:63–64".
+        title: `${shortTitle(row.title, row.short)} ${label(path, row.total === 1 && row.path.length === path.length ? row.variants : undefined)}${
+          row.last_ayah && row.total === 1 && row.last_ayah > (path[1] ?? 0) ? `–${row.last_ayah}` : ""
+        }`,
         href: isBook(work) ? bookPath(work, path) : hadithPath(work, path),
         items: [],
         more: row.total - Math.min(row.total, REF_ITEMS),

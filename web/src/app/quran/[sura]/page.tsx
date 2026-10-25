@@ -6,11 +6,15 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
+import { bookPath } from "@/lib/book-query";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSura } from "@/lib/quran";
 import { QuranNav } from "../nav";
 import { SuraMeta } from "../sura-meta";
 import { ScrollToHash } from "@/components/scroll-to-hash";
+
+// The commentary each ayah links to.
+const TAFSIR = "tafsir_ibn_kathir";
 
 const t = getMessages().quran;
 
@@ -63,12 +67,17 @@ async function SuraText({ params }: { params: PageProps<"/quran/[sura]">["params
               id={`${sura.number}-${segment.number}`}
               className="flex scroll-mt-4 flex-col gap-1 border-b py-4 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
             >
-              <a
-                href={`#${sura.number}-${segment.number}`}
-                className="min-w-16 shrink-0 text-xs tabular-nums text-muted-foreground no-underline"
-              >
-                {sura.number}:{segment.number}
-              </a>
+              <span className="flex min-w-16 shrink-0 gap-3 text-xs sm:flex-col sm:gap-1">
+                <a
+                  href={`#${sura.number}-${segment.number}`}
+                  className="tabular-nums text-muted-foreground no-underline"
+                >
+                  {sura.number}:{segment.number}
+                </a>
+                <Link href={bookPath(TAFSIR, [sura.number, segment.number])} title={t.tafsirHint}>
+                  {t.tafsir}
+                </Link>
+              </span>
               <p className="quran flex-1 text-[1.55rem] leading-[2.3] sm:text-[1.75rem]" lang="ar" dir="rtl">
                 {segment.text}
               </p>

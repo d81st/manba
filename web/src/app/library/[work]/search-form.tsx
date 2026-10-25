@@ -6,7 +6,8 @@ import { MAX_QUERY_LENGTH } from "@/lib/quran-query";
 
 const t = getMessages().library.book.search;
 
-export function BookSearchForm({ work, query = "" }: { work: string; query?: string }) {
+// A tafsir is searched by ayah ("2:255"), the Sira by page ("1:235").
+export function BookSearchForm({ work, query = "", tafsir = false }: { work: string; query?: string; tafsir?: boolean }) {
   return (
     <form action={`/library/${work}/search`} className="mt-5 mb-1.5 flex gap-2" role="search">
       <label htmlFor="q" className="sr-only">
@@ -18,7 +19,7 @@ export function BookSearchForm({ work, query = "" }: { work: string; query?: str
         type="search"
         dir="auto"
         defaultValue={query}
-        placeholder={t.placeholder}
+        placeholder={tafsir ? t.placeholderTafsir : t.placeholder}
         maxLength={MAX_QUERY_LENGTH}
         autoComplete="off"
         className="h-10 text-base"

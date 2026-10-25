@@ -1,22 +1,26 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { bookAnchor, pageLabel } from "@/lib/book-query";
+import { bookAnchor, bookLabel, bookScheme } from "@/lib/book-query";
 import { db } from "@/lib/db";
 import { type Attribution, primaryVersion, shortTitle } from "@/lib/hadith";
 
-// Books cited by volume and page of their edition (the Sira of Ibn Hisham):
-// sections and chapters for reading, pieces of pages as texts.
+// Books with their own references (docs/ADDRESSES.md): the Sira of Ibn Hisham
+// by volume and page, the Tafsir of Ibn Kathir by surah and ayah. Sections
+// and chapters for reading; pieces of pages or comments on ayahs as texts.
 export const BOOKS_TAG = "books";
 
 const PATH = (column: string) => `string_to_array(subpath(${column}, 1)::text, '.')::int[]`;
 
-export async function listBookWorks(): Promise<{ id: string; title: string; titleAr: string }[]> {
+export const BOOK_CATEGORIES = ["sira", "tafsir"] as const;
+export type BookCategory = (typeof BOOK_CATEGORIES)[number];
+
+export async function listBookWorks(): Promise<{ id: string; title: string; titleAr: string; category: BookCategory }[]> {
   "use cache";
   cacheTag(BOOKS_TAG);
   cacheLife("hours");
   const { rows } = await db().query(
-    `SELECT w.id, w.titles->>'ru' AS title, w.titles->>'ar' AS "titleAr" FROM works w
-     WHERE w.category = 'sira' AND w.status = 'published'
+    `SELECT w.id, w.titles->>'ru' AS title, w.titles->>'ar' AS "titleAr", w.category FROM works w
+     WHERE w.category IN ('sira', 'tafsir') AND w.status = 'published'
        AND EXISTS (SELECT 1 FROM text_versions v WHERE v.work_id = w.id AND v.is_primary AND v.status = 'published')
      ORDER BY w.id`,
   );
@@ -25,6 +29,7 @@ export async function listBookWorks(): Promise<{ id: string; title: string; titl
 
 export type BookWork = {
   id: string;
+  category: BookCategory;
   title: string;
   shortTitle: string;
   titleAr: string;
@@ -41,8 +46,8 @@ export async function getBookWork(workId: string): Promise<BookWork | null> {
   cacheTag(BOOKS_TAG);
   cacheLife("hours");
   const work = await db().query(
-    `SELECT id, titles->>'ru' AS title, titles->>'ru-short' AS short, titles->>'ar' AS title_ar FROM works
-     WHERE id = $1 AND category = 'sira' AND status = 'published'`,
+    `SELECT id, category, titles->>'ru' AS title, titles->>'ru-short' AS short, titles->>'ar' AS title_ar FROM works
+     WHERE id = $1 AND category IN ('sira', 'tafsir') AND status = 'published'`,
     [workId],
   );
   const version = await primaryVersion(workId);
@@ -50,7 +55,11 @@ export async function getBookWork(workId: string): Promise<BookWork | null> {
   // Pages a section spans: those of its first and last piece in reading order.
   // (An array of arrays cannot be indexed into one array: addresses as text.)
   const sections = await db().query<{ number: number; title: string; first: string; last: string; chapters: number }>(
-    `SELECT b.book AS number, b.title,
+    // A surah whose heading the export lost takes its name from the Quran.
+    `SELECT b.book AS number,
+            CASE WHEN b.title = '' AND $2 = 'tafsir' AND b.book > 0
+              THEN (SELECT q.names->>'ar' FROM addresses q WHERE q.address = ('quran.' || b.book)::extensions.ltree)
+              ELSE b.title END AS title,
             (array_agg(i.address::text ORDER BY a.ordinal))[1] AS first,
             (array_agg(i.address::text ORDER BY a.ordinal DESC))[1] AS last,
             (SELECT count(*)::int FROM work_sections c
@@ -60,7 +69,7 @@ export async function getBookWork(workId: string): Promise<BookWork | null> {
      JOIN addresses a ON a.address = i.address
      WHERE b.version_id = $1 AND b.kind = 'book'
      GROUP BY b.version_id, b.book, b.title ORDER BY b.book`,
-    [version.id],
+    [version.id, work.rows[0].category],
   );
   const volumes = await db().query<{ volume: number; first: number; last: number; pages: number }>(
     `SELECT split_part(address::text, '.', 2)::int AS volume,
@@ -68,9 +77,12 @@ export async function getBookWork(workId: string): Promise<BookWork | null> {
      FROM addresses WHERE work_id = $1 AND level = 'page' GROUP BY 1 ORDER BY 1`,
     [workId],
   );
-  const page = (address: string) => pageLabel(address.split(".").slice(1, 3).map(Number));
+  // A section of the Sira spans pages; a surah of a tafsir, comments.
+  const page = (address: string) =>
+    bookLabel(workId, address.split(".").slice(1, bookScheme(workId) === "page" ? 3 : 2).map(Number));
   return {
     id: work.rows[0].id,
+    category: work.rows[0].category,
     title: work.rows[0].title,
     shortTitle: shortTitle(work.rows[0].title, work.rows[0].short),
     titleAr: work.rows[0].title_ar,
@@ -95,16 +107,46 @@ export async function getBookWork(workId: string): Promise<BookWork | null> {
   };
 }
 
-export type BookPiece = { path: number[]; label: string; anchor: string; text: string };
+// ayahs: in a tafsir, the ayahs the comment covers (empty elsewhere).
+export type BookPiece = { path: number[]; label: string; anchor: string; text: string; ayahs: number[] };
 export type BookSection = {
   number: number;
   title: string;
   previous: number | null;
   next: number | null;
+  page: number;
+  pages: number;
   chapters: { index: number; title: string; pieces: BookPiece[] }[];
 };
 
-export async function getBookSection(workId: string, section: number): Promise<BookSection | null> {
+// Long sections (a surah of a tafsir runs to a million letters) are read in
+// pages of about this many letters; a text is never cut.
+const PAGE_LETTERS = 80_000;
+
+// The page of each text of a section, in reading order.
+async function sectionLayout(versionId: string, section: number) {
+  const { rows } = await db().query<{ address: string; letters: number }>(
+    `SELECT i.address::text, length(t.content) AS letters
+     FROM section_items i
+     JOIN addresses a ON a.address = i.address
+     JOIN texts t ON t.address = i.address AND t.version_id = i.version_id
+     WHERE i.version_id = $1 AND i.book = $2
+     ORDER BY a.ordinal`,
+    [versionId, section],
+  );
+  let page = 1;
+  let used = 0;
+  return rows.map((r) => {
+    if (used > 0 && used + r.letters > PAGE_LETTERS) {
+      page += 1;
+      used = 0;
+    }
+    used += r.letters;
+    return { address: r.address, page };
+  });
+}
+
+export async function getBookSection(workId: string, section: number, page = 1): Promise<BookSection | null> {
   "use cache";
   cacheTag(BOOKS_TAG);
   cacheLife("hours");
@@ -118,49 +160,103 @@ export async function getBookSection(workId: string, section: number): Promise<B
     [version.id, section],
   );
   if (!head.rows[0]) return null;
+  const layout = await sectionLayout(version.id, section);
+  const pages = Math.max(1, layout[layout.length - 1]?.page ?? 1);
+  if (page < 1 || page > pages) return null;
+  const onPage = layout.filter((l) => l.page === page).map((l) => l.address);
   const chapters = await db().query<{ index: number; title: string }>(
     `SELECT chapter AS index, title FROM work_sections
      WHERE version_id = $1 AND kind = 'chapter' AND book = $2 ORDER BY chapter`,
     [version.id, section],
   );
   // Pieces in reading order, with how many pieces their page has (for the letter).
-  const pieces = await db().query<{ chapter: number; path: number[]; text: string; pieces: number }>(
+  const pieces = await db().query<{ chapter: number; path: number[]; text: string; pieces: number; ayahs: number[] }>(
     `SELECT i.chapter, ${PATH("i.address")} AS path, t.content AS text,
             (SELECT count(*)::int FROM addresses n
-             WHERE n.address <@ subpath(i.address, 0, 3) AND n.level = 'passage') AS pieces
+             WHERE n.address <@ subpath(i.address, 0, 3) AND n.level = 'passage') AS pieces,
+            coalesce((SELECT array_agg(split_part(c.ayah::text, '.', 3)::int ORDER BY split_part(c.ayah::text, '.', 3)::int)
+                      FROM commentary_ayahs c WHERE c.comment = i.address), '{}') AS ayahs
      FROM section_items i
      JOIN addresses a ON a.address = i.address
      JOIN texts t ON t.address = i.address AND t.version_id = i.version_id
-     WHERE i.version_id = $1 AND i.book = $2
+     WHERE i.version_id = $1 AND i.book = $2 AND i.address::text = ANY($3::text[])
      ORDER BY a.ordinal`,
-    [version.id, section],
+    [version.id, section, onPage],
   );
+  const shown = new Set(pieces.rows.map((p) => p.chapter));
   return {
     number: section,
     title: head.rows[0].title,
     previous: head.rows[0].previous,
     next: head.rows[0].next,
-    chapters: chapters.rows.map((c) => ({
+    page,
+    pages,
+    chapters: chapters.rows.filter((c) => shown.has(c.index)).map((c) => ({
       ...c,
       pieces: pieces.rows
         .filter((p) => p.chapter === c.index)
-        .map((p) => ({ path: p.path, label: pageLabel(p.path, p.pieces), anchor: bookAnchor(p.path), text: p.text })),
+        .map((p) => ({
+          path: p.path,
+          label: bookLabel(workId, p.path, p.pieces),
+          anchor: bookAnchor(p.path),
+          text: p.text,
+          ayahs: p.ayahs,
+        })),
     })),
   };
 }
 
-// The section of the first piece at or under a page or piece address.
-export async function locatePage(workId: string, path: number[]): Promise<{ section: number; path: number[] } | null> {
+// The section of the first text at or under an address; in a tafsir, an
+// ayah inside a comment's range leads to that comment.
+export async function locatePage(
+  workId: string,
+  path: number[],
+): Promise<{ section: number; page: number; path: number[] } | null> {
   const version = await primaryVersion(workId);
   if (!version) return null;
-  const { rows } = await db().query<{ section: number; path: number[] }>(
-    `SELECT i.book AS section, ${PATH("i.address")} AS path
+  const [address] = await resolveBookRefs(db(), [[workId, ...path].join(".")]);
+  const { rows } = await db().query<{ section: number; path: number[]; address: string }>(
+    `SELECT i.book AS section, ${PATH("i.address")} AS path, i.address::text
      FROM section_items i JOIN addresses a ON a.address = i.address
      WHERE i.version_id = $1 AND i.address <@ $2::extensions.ltree
      ORDER BY a.ordinal LIMIT 1`,
-    [version.id, [workId, ...path].join(".")],
+    [version.id, address],
   );
-  return rows[0] ?? null;
+  const found = rows[0];
+  if (!found) return null;
+  const layout = await sectionLayout(version.id, found.section);
+  return { section: found.section, path: found.path, page: layout.find((l) => l.address === found.address)?.page ?? 1 };
+}
+
+// A section page: /library/tafsir_ibn_kathir/s/2?page=3#p-2-255
+export function sectionHref(work: string, section: number, page = 1, anchor?: string) {
+  return `/library/${work}/s/${section}${page > 1 ? `?page=${page}` : ""}${anchor ? `#${anchor}` : ""}`;
+}
+
+// "Ибн Касир 2:64" names an ayah that the comment 2:63 covers: such
+// references become the comment's address. Others are left as they are.
+export async function resolveBookRefs(
+  client: { query: (sql: string, params: unknown[]) => Promise<{ rows: { a: string; to: string }[] }> },
+  addresses: string[],
+): Promise<string[]> {
+  const ayahRefs = addresses.filter((a) => {
+    const [work, ...path] = a.split(".");
+    return bookScheme(work) === "ayah" && path.length === 2 && Number(path[0]) > 0 && Number(path[1]) > 0;
+  });
+  if (ayahRefs.length === 0) return addresses;
+  const { rows } = await client.query(
+    `SELECT r.a, (
+       SELECT c.comment::text FROM commentary_ayahs c JOIN addresses k ON k.address = c.comment
+       WHERE c.comment <@ subpath(r.a::extensions.ltree, 0, 1)
+         AND c.ayah = ('quran.' || subpath(r.a::extensions.ltree, 1)::text)::extensions.ltree
+       ORDER BY k.ordinal LIMIT 1
+     ) AS to
+     FROM unnest($1::text[]) AS r(a)
+     WHERE NOT EXISTS (SELECT 1 FROM addresses x WHERE x.address = r.a::extensions.ltree)`,
+    [ayahRefs],
+  );
+  const map = new Map(rows.filter((r) => r.to).map((r) => [r.a, r.to]));
+  return [...new Set(addresses.map((a) => map.get(a) ?? a))];
 }
 
 export const BOOK_SEARCH_LIMIT = 100;
@@ -205,7 +301,7 @@ export async function searchBook(
     total: rows[0]?.total ?? 0,
     hits: rows.map((r) => ({
       path: r.path,
-      label: pageLabel(r.path, r.pieces),
+      label: bookLabel(workId, r.path, r.pieces),
       section: r.section,
       sectionTitle: r.section_title,
       text: r.text,

@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
 import { defaultLocale } from "@/i18n";
+import { resolveBookRefs } from "@/lib/books";
 import { db } from "@/lib/db";
 import { getHadithRefs, type HadithRef } from "@/lib/hadith";
 import { formatRefs, parseRefs, type InputProblem } from "@/lib/glossary-input";
@@ -186,7 +187,7 @@ async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
     `SELECT a AS address FROM unnest($1::text[]) AS a
      WHERE NOT EXISTS (
        SELECT 1 FROM addresses x
-       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration', 'page', 'passage')
+       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration', 'page', 'passage', 'comment')
      )`,
     [addresses],
   );
@@ -226,15 +227,19 @@ export async function saveTopic(id: number | null, input: TopicInput, actor: str
     if (taken.rowCount) problems.push({ field: "slug", code: "slugTaken" });
 
     const refFields = { main: "mainRefs", circumstances: "circumstancesRefs", related: "relatedRefs" } as const;
-    const refs = Object.fromEntries(
-      Object.entries(refFields).map(([role, field]) => [role, parseRefs(input[field]).addresses]),
-    ) as Record<keyof typeof refFields, string[]>;
+    // "Ибн Касир 2:64" is kept as the tafsir comment that covers the ayah.
+    const refsIn = (text: string) => resolveBookRefs(client, parseRefs(text).addresses);
+    const refs = {} as Record<keyof typeof refFields, string[]>;
+    for (const [role, field] of Object.entries(refFields) as [keyof typeof refFields, keyof TopicInput][]) {
+      refs[role] = await refsIn(input[field] as string);
+    }
+    const positionRefs = await Promise.all(input.positions.map((p) => refsIn(p.refs)));
     for (const [role, field] of Object.entries(refFields) as [keyof typeof refFields, string][]) {
       const missing = await missingAddresses(client, refs[role]);
       if (missing.length) problems.push({ field, code: "refsMissing", detail: formatRefs(missing) });
     }
-    for (const [i, position] of input.positions.entries()) {
-      const lost = await missingAddresses(client, parseRefs(position.refs).addresses);
+    for (const i of input.positions.keys()) {
+      const lost = await missingAddresses(client, positionRefs[i]);
       if (lost.length) problems.push({ field: `positions.${i}.refs`, code: "refsMissing", detail: formatRefs(lost) });
     }
     const sideIds = [...new Set(input.positions.map((p) => p.sideId))];
@@ -298,7 +303,7 @@ export async function saveTopic(id: number | null, input: TopicInput, actor: str
           order,
         ],
       );
-      await insertRefs(client, topicId, "position", created.rows[0].id, parseRefs(position.refs).addresses);
+      await insertRefs(client, topicId, "position", created.rows[0].id, positionRefs[order]);
     }
 
     await client.query("DELETE FROM topic_terms WHERE topic_id = $1", [topicId]);

@@ -37,7 +37,6 @@ export default function LibraryPage() {
       <Suspense fallback={<p className="text-muted-foreground">…</p>}>
         <Collections />
       </Suspense>
-      <h2 className="mt-8 mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.sira}</h2>
       <Suspense fallback={<p className="text-muted-foreground">…</p>}>
         <Books />
       </Suspense>
@@ -73,22 +72,29 @@ async function Books() {
   await connection();
   if (!isDatabaseConfigured()) return null;
   const books = await listBookWorks();
-  return (
-    <ul className="grid gap-3 sm:grid-cols-2">
-      {books.map((b) => (
-        <li key={b.id}>
-          <Link href={`/library/${b.id}`} className={card}>
-            <BookText className="size-5 shrink-0 text-primary" />
-            <span className="flex-1">
-              <span className="block font-medium">{b.title}</span>
-              <span className="text-sm text-muted-foreground">{t.siraHint}</span>
-            </span>
-            <span className="ar text-xl" lang="ar" dir="rtl">
-              {b.titleAr}
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
+  return (["sira", "tafsir"] as const).map((category) => {
+    const group = books.filter((b) => b.category === category);
+    if (group.length === 0) return null;
+    return (
+      <section key={category}>
+        <h2 className="mt-8 mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t[category]}</h2>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {group.map((b) => (
+            <li key={b.id}>
+              <Link href={`/library/${b.id}`} className={card}>
+                <BookText className="size-5 shrink-0 text-primary" />
+                <span className="flex-1">
+                  <span className="block font-medium">{b.title}</span>
+                  <span className="text-sm text-muted-foreground">{t[`${category}Hint`]}</span>
+                </span>
+                <span className="ar text-xl" lang="ar" dir="rtl">
+                  {b.titleAr}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  });
 }

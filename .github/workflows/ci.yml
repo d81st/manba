@@ -81,3 +81,6 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ibn_hisham.ar.saqqa'")" = 3302
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'ibn_hisham' AND level = 'page'")" = 1385
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM work_sections WHERE version_id = 'ibn_hisham.ar.saqqa' AND kind = 'book'")" = 264
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tafsir_ibn_kathir.ar.salama'")" = 2062
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(DISTINCT ayah) FROM commentary_ayahs WHERE comment <@ 'tafsir_ibn_kathir'")" = 6228
+          ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q TRUNCATE commentary_ayahs"

@@ -10,6 +10,7 @@ import { type Numbering, parseOpenitiHadith } from "../src/lib/import/openiti-ha
 import { parseOpenitiKafi } from "../src/lib/import/openiti-kafi.ts";
 import { parseOpenitiNarrations } from "../src/lib/import/openiti-narrations.ts";
 import { parseOpenitiPages } from "../src/lib/import/openiti-pages.ts";
+import { parseOpenitiTafsir } from "../src/lib/import/openiti-tafsir.ts";
 import { parseOpenitiRunning } from "../src/lib/import/openiti-running.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
 
@@ -217,7 +218,7 @@ async function importTanzilSimple(client: pg.Client) {
 // A hadith collection from the OpenITI corpus, in one of two layouts.
 type HadithSource = {
   file: string; // in data/sources/openiti, kept byte for byte
-  layout: "shamela" | "narrations" | "kafi" | "running" | "pages";
+  layout: "shamela" | "narrations" | "kafi" | "running" | "pages" | "tafsir";
   key: string;
   sourceId: string;
   sourceTitle: string;
@@ -226,7 +227,7 @@ type HadithSource = {
   sourceUrl?: string; // the OpenITI repository, when not 0275AH
   work: {
     id: string;
-    category?: "hadith" | "sira"; // hadith by default
+    category?: "hadith" | "sira" | "tafsir"; // hadith by default
     canon: "sunni" | "shia";
     titles: Record<string, string>;
     authoritySunni: number | null;
@@ -427,6 +428,8 @@ type PreparedCollection = {
   levels: { key: string; names: Record<string, string> }[];
   summary: Record<string, unknown>;
   missing: number;
+  // A commentary: the ayahs each of its texts comments on (quran addresses).
+  commentary?: { path: number[]; ayahs: string[] }[];
 };
 
 const HADITH_LEVEL = { key: "hadith", names: { ar: "حديث", ru: "хадис" } };
@@ -436,8 +439,43 @@ const CHAPTER_LEVEL = { key: "chapter", names: { ar: "باب", ru: "глава" 
 const VOLUME_LEVEL = { key: "volume", names: { ar: "جزء", ru: "том" } };
 const PAGE_LEVEL = { key: "page", names: { ar: "صفحة", ru: "страница" } };
 const PASSAGE_LEVEL = { key: "passage", names: { ar: "مقطع", ru: "отрывок" } };
+const SURA_LEVEL = { key: "sura", names: { ar: "سورة", ru: "сура" } };
+const COMMENT_LEVEL = { key: "comment", names: { ar: "تفسير", ru: "толкование" } };
 
-function prepare(src: HadithSource, text: string): PreparedCollection {
+function prepare(src: HadithSource, text: string, ayahCounts: number[] = []): PreparedCollection {
+  if (src.layout === "tafsir") {
+    // Surahs as books (0: the author's introduction), each comment its own
+    // chapter, headed by the ayahs it quotes. A comment is surah.first-ayah;
+    // a second comment on the same ayah (the commentator splits it) is surah.ayah.2.
+    const data = parseOpenitiTafsir(text, ayahCounts);
+    const items: HadithItem[] = [];
+    const chapters: PreparedCollection["chapters"] = [];
+    const commentary: { path: number[]; ayahs: string[] }[] = [];
+    data.intro.forEach((part) => {
+      chapters.push({ book: 0, index: part.index, title: part.title, intro: [] });
+      items.push({ path: [0, part.index], ordinal: items.length + 1, book: 0, chapter: part.index, paragraphs: part.paragraphs, numbering: "marker" });
+    });
+    const used = new Set<string>();
+    for (const c of data.comments) {
+      const index = chapters.filter((ch) => ch.book === c.sura).length + 1;
+      const path = used.has(`${c.sura}.${c.from}`) ? [c.sura, c.from, 2] : [c.sura, c.from];
+      used.add(`${c.sura}.${c.from}`);
+      chapters.push({ book: c.sura, index, title: c.heading, intro: [] });
+      items.push({ path, ordinal: items.length + 1, book: c.sura, chapter: index, paragraphs: c.paragraphs, numbering: "marker" });
+      if (c.ayahs.length) commentary.push({ path, ayahs: c.ayahs.map((a) => `quran.${c.sura}.${a}`) });
+    }
+    return {
+      books: [{ number: 0, title: "" }, ...data.surahs.map((s) => ({ number: s.sura, title: s.title }))],
+      chapters,
+      items,
+      containers: [{ path: [0], level: "intro" }, ...data.surahs.map((s) => ({ path: [s.sura], level: "sura" }))],
+      unnumbered: [],
+      levels: [SURA_LEVEL, COMMENT_LEVEL],
+      summary: { ...data.report, intro: data.intro.length },
+      missing: data.report.uncovered.reduce((n, u) => n + u.ayahs.length, 0),
+      commentary,
+    };
+  }
   if (src.layout === "pages") {
     // Sections of the book as books, its chapters as chapters; a text is a
     // piece of a printed page: volume.page.piece.
@@ -593,7 +631,15 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
     console.log(`Import skipped: ${src.key} is already loaded.`);
     return;
   }
-  const data = prepare(src, readFileSync(join(DATA_DIR, "openiti", src.file), "utf8"));
+  // A commentary is checked against the surahs' ayah counts of the loaded Quran.
+  const counts = src.layout === "tafsir"
+    ? await client.query<{ sura: number; ayahs: number }>(
+        `SELECT split_part(address::text, '.', 2)::int AS sura, count(*)::int AS ayahs
+         FROM addresses WHERE work_id = 'quran' AND level = 'ayah' GROUP BY 1 ORDER BY 1`,
+      )
+    : null;
+  const ayahCounts = counts ? [0, ...counts.rows.map((r) => r.ayahs)] : [];
+  const data = prepare(src, readFileSync(join(DATA_DIR, "openiti", src.file), "utf8"), ayahCounts);
   if (data.items.length < src.minItems) {
     throw new Error(`${src.file}: only ${data.items.length} texts recognised`);
   }
@@ -716,6 +762,17 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
         batchId,
       ],
     );
+    if (data.commentary) {
+      await client.query(
+        `INSERT INTO commentary_ayahs (comment, ayah, batch_id)
+         SELECT c::extensions.ltree, a::extensions.ltree, $3 FROM unnest($1::text[], $2::text[]) AS t(c, a)`,
+        [
+          data.commentary.flatMap((c) => c.ayahs.map(() => address(c.path))),
+          data.commentary.flatMap((c) => c.ayahs),
+          batchId,
+        ],
+      );
+    }
     await client.query("UPDATE text_versions SET status = 'published' WHERE id = $1", [src.versionId]);
     await client.query(
       `INSERT INTO change_log (entity, entity_id, action, new_value, reason, actor)
@@ -757,6 +814,31 @@ const IBN_HISHAM: HadithSource = {
   versionTitle: "Арабский текст: изд. Мустафы ас-Сакка, Ибрахима аль-Абьяри и Абд аль-Хафиза аш-Шальби (Мустафа аль-Баби аль-Халяби, Каир, 2-е изд., 1955), страницы издания (OpenITI)",
   minItems: 3000,
   retrievedAt: "2026-10-24",
+};
+
+// The Tafsir of Ibn Kathir (ed. Sami Salama, Dar Tayba, 1999), a separate
+// work commenting on ayahs: a comment is addressed by its surah and first
+// ayah (docs/ADDRESSES.md). No authority level until a specialist sets one.
+const IBN_KATHIR: HadithSource = {
+  file: "0774IbnKathir.TafsirQuran.Shamela0008473-ara1.mARkdown",
+  layout: "tafsir",
+  key: "openiti:0774IbnKathir.TafsirQuran.Shamela0008473-ara1:61b0c78",
+  sourceId: "openiti.ibn-kathir-shamela0008473",
+  sourceTitle: "OpenITI · 0774IbnKathir.TafsirQuran.Shamela0008473-ara1",
+  sourceVersion: "OpenITI/0775AH 61b0c78 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0775AH",
+  notice: `${OPENITI_CITATION}. Text: 0774IbnKathir.TafsirQuran.Shamela0008473-ara1 — Tafsir al-Qur'an al-'Azim of Ibn Kathir, ed. Sami ibn Muhammad Salama, 2nd ed., Dar Tayba, Riyadh, 1999 (8 vols). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "tafsir_ibn_kathir",
+    category: "tafsir",
+    canon: "sunni",
+    titles: { ar: "تفسير القرآن العظيم", ru: "Тафсир Ибн Касира", "ru-short": "Ибн Касир" },
+    authoritySunni: null,
+  },
+  versionId: "tafsir_ibn_kathir.ar.salama",
+  versionTitle: "Арабский текст: изд. Сами ибн Мухаммада Салямы («Дар Тайба», Эр-Рияд, 2-е изд., 1999), деление по аятам (OpenITI)",
+  minItems: 2000,
+  retrievedAt: "2026-10-25",
 };
 
 // Pairs of hadiths of different collections with shared wording
@@ -852,6 +934,7 @@ async function main() {
     for (const src of [ABU_DAWUD, TIRMIDHI, NASAI, IBN_MAJAH, AHMAD, KAFI]) await importOpenitiHadith(client, src);
     await importSimilarTexts(client);
     await importOpenitiHadith(client, IBN_HISHAM);
+    await importOpenitiHadith(client, IBN_KATHIR);
   } finally {
     await client.end();
   }

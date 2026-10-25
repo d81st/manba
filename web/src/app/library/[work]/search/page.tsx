@@ -7,8 +7,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getMessages, plural } from "@/i18n";
-import { bookAnchor, bookPath, parseBookQuery } from "@/lib/book-query";
-import { BOOK_SEARCH_LIMIT, getBookWork, searchBook } from "@/lib/books";
+import { bookPath, parseBookQuery } from "@/lib/book-query";
+import { BOOK_SEARCH_LIMIT, type BookWork, getBookWork, searchBook } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 import { searchKey } from "@/lib/arabic";
 import { highlight, likePatterns } from "@/lib/quran-query";
@@ -53,27 +53,29 @@ async function Search({
       <h1 className="mt-3 text-2xl font-semibold">
         {t.search.title}: {book.title}
       </h1>
-      <BookSearchForm work={work} query={query} />
-      <p className="mb-2 text-sm text-muted-foreground">{t.search.hint}</p>
+      <BookSearchForm work={work} query={query} tafsir={book.category === "tafsir"} />
+      <p className="mb-2 text-sm text-muted-foreground">
+        {book.category === "tafsir" ? t.search.hintTafsir : t.search.hint}
+      </p>
       {parsed.kind === "unsupported" && <Notice>{t.search.unsupported}</Notice>}
       {parsed.kind === "text" && (
-        <Results work={work} title={book.shortTitle} words={parsed.words} diacritics={parsed.diacritics} />
+        <Results book={book} words={parsed.words} diacritics={parsed.diacritics} />
       )}
     </>
   );
 }
 
 async function Results({
-  work,
-  title,
+  book,
   words: asked,
   diacritics: vocalized,
 }: {
-  work: string;
-  title: string;
+  book: BookWork;
   words: string[];
   diacritics: boolean;
 }) {
+  const work = book.id;
+  const title = book.shortTitle;
   let words = asked;
   let diacritics = vocalized;
   let result = await searchBook(work, likePatterns(words), diacritics);
@@ -104,13 +106,13 @@ async function Results({
           <li key={hit.label} className="flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4">
             <span className="flex min-w-24 shrink-0 flex-col gap-0.5">
               <Link
-                href={`/library/${work}/s/${hit.section}#${bookAnchor(hit.path)}`}
+                href={bookPath(work, hit.path)}
                 className="text-sm tabular-nums no-underline"
               >
                 {title} {hit.label}
               </Link>
               <span className="text-xs text-muted-foreground">
-                {t.section} {hit.section}
+                {book.category === "tafsir" ? (hit.section === 0 ? t.introduction : `${t.surah} ${hit.section}`) : `${t.section} ${hit.section}`}
               </span>
             </span>
             <div className="flex-1" lang="ar" dir="rtl">

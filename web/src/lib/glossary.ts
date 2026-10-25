@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
 import { defaultLocale } from "@/i18n";
+import { resolveBookRefs } from "@/lib/books";
 import { db } from "@/lib/db";
 import { getHadithRefs, type HadithRef } from "@/lib/hadith";
 import {
@@ -126,7 +127,7 @@ async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
     `SELECT a AS address FROM unnest($1::text[]) AS a
      WHERE NOT EXISTS (
        SELECT 1 FROM addresses x
-       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration', 'page', 'passage')
+       WHERE x.address = a::extensions.ltree AND x.level IN ('ayah', 'hadith', 'narration', 'page', 'passage', 'comment')
      )`,
     [addresses],
   );
@@ -159,11 +160,15 @@ export async function saveTerm(id: number | null, input: TermInput, actor: strin
     ]);
     if (taken.rowCount) problems.push({ field: "slug", code: "slugTaken" });
 
-    const termRefs = parseRefs(input.refs).addresses;
+    // "Ибн Касир 2:64" is kept as the tafsir comment that covers the ayah.
+    const termRefs = await resolveBookRefs(client, parseRefs(input.refs).addresses);
+    const definitionRefs = await Promise.all(
+      input.definitions.map((d) => resolveBookRefs(client, parseRefs(d.refs).addresses)),
+    );
     const missing = await missingAddresses(client, termRefs);
     if (missing.length) problems.push({ field: "refs", code: "refsMissing", detail: formatRefs(missing) });
-    for (const [i, definition] of input.definitions.entries()) {
-      const lost = await missingAddresses(client, parseRefs(definition.refs).addresses);
+    for (const i of input.definitions.keys()) {
+      const lost = await missingAddresses(client, definitionRefs[i]);
       if (lost.length) {
         problems.push({ field: `definitions.${i}.refs`, code: "refsMissing", detail: formatRefs(lost) });
       }
@@ -213,7 +218,7 @@ export async function saveTerm(id: number | null, input: TermInput, actor: strin
          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
         [termId, LOCALE, definition.holder, definition.recognition, definition.text, definition.sourceNote, position],
       );
-      await insertRefs(client, termId, created.rows[0].id, parseRefs(definition.refs).addresses);
+      await insertRefs(client, termId, created.rows[0].id, definitionRefs[position]);
     }
 
     // Relations are kept in both directions.

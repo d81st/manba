@@ -6,17 +6,18 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { bookAnchor, parsePageRef } from "@/lib/book-query";
-import { getBookWork, locatePage } from "@/lib/books";
+import { bookAnchor, bookLabel, parseBookPath } from "@/lib/book-query";
+import { getBookWork, locatePage, sectionHref } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 
 const messages = getMessages();
 const t = messages.library;
 
-export const metadata: Metadata = { title: t.sira };
+export const metadata: Metadata = { title: t.title };
 
-// A permanent link to a page or a piece of a page: /library/ibn_hisham/1.235
-// opens its section at that page; /library/ibn_hisham/1.235.2 at its second piece.
+// A permanent link: /library/ibn_hisham/1.235 opens the Sira's section at that
+// page (1.235.2 at its second piece); /library/tafsir_ibn_kathir/2.64 the
+// tafsir at the comment on ayah 2:64.
 export default function BookPageLink({ params }: PageProps<"/library/[work]/[ref]">) {
   return (
     <Page>
@@ -34,11 +35,11 @@ async function Locate({ params }: { params: PageProps<"/library/[work]/[ref]">["
   try {
     decoded = decodeURIComponent(ref);
   } catch {}
-  const path = /^[a-z][a-z0-9_]*$/.test(work) ? parsePageRef(decoded) : null;
+  const path = /^[a-z][a-z0-9_]*$/.test(work) ? parseBookPath(work, decoded) : null;
   if (!path || !isDatabaseConfigured()) notFound();
   const [book, place] = await Promise.all([getBookWork(work), locatePage(work, path)]);
   if (!book) notFound();
-  if (place) redirect(`/library/${work}/s/${place.section}#${bookAnchor(place.path)}`);
+  if (place) redirect(sectionHref(work, place.section, place.page, bookAnchor(place.path)));
   return (
     <>
       <nav className="mt-6 text-sm">
@@ -48,9 +49,9 @@ async function Locate({ params }: { params: PageProps<"/library/[work]/[ref]">["
         </Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">
-        {t.book.pageTitle} {path.slice(0, 2).join(":")}
+        {book.shortTitle} {bookLabel(work, path)}
       </h1>
-      <p className="mt-3 text-muted-foreground">{t.book.noPage}</p>
+      <p className="mt-3 text-muted-foreground">{book.category === "tafsir" ? t.book.noComment : t.book.noPage}</p>
     </>
   );
 }

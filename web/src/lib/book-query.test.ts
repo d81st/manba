@@ -59,3 +59,20 @@ describe("the book search box", () => {
     expect(parseBookQuery("  ", "ibn_hisham")).toEqual({ kind: "empty" });
   });
 });
+
+describe("tafsir references by surah and ayah", () => {
+  it("reads, writes and links them", () => {
+    expect(parseBookRef("Ибн Касир 2:255")).toBe("tafsir_ibn_kathir.2.255");
+    expect(parseBookRef("Тафсир Ибн Касира 2:125b")).toBe("tafsir_ibn_kathir.2.125.2");
+    expect(parseBookRef("Ибн Касир 2:0")).toBe("tafsir_ibn_kathir.2.0");
+    expect(parseBookRef("Ибн Касир 0:12")).toBe("tafsir_ibn_kathir.0.12");
+    expect(parseBookRef("Ибн Касир 115:1")).toBeNull();
+    expect(formatBookRef("tafsir_ibn_kathir.2.125.2")).toBe("Ибн Касир 2:125b");
+    expect(parseBookQuery("2:255", "tafsir_ibn_kathir")).toEqual({ kind: "ref", path: [2, 255] });
+    expect(linkAddresses("Ибн Касир 2:255 и Ибн Хишам 1:235")).toEqual([
+      { book: "tafsir_ibn_kathir", path: [2, 255], text: "Ибн Касир 2:255" },
+      { text: " и " },
+      { book: "ibn_hisham", path: [1, 235], text: "Ибн Хишам 1:235" },
+    ]);
+  });
+});
