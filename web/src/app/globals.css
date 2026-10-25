@@ -42,6 +42,14 @@
   --map-label: #52514e;
   --map-focus: #0b0b0b;
 
+  /* Life of the Prophet: one categorical slot per source, land and sea of the map. */
+  --sira-ibn-hisham: #2a78d6;
+  --sira-waqidi: #eb6834;
+  --sira-khalifa: #22936b;
+  --sira-tabari: #8a4fc7;
+  --sira-land: #ece8dc;
+  --sira-sea: #e4edf2;
+
   --font-ui: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   /* Placeholder stack for Arabic outside the Quran pages; to be vetted. */
   --font-arabic: "Amiri Quran", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif;
@@ -81,6 +89,13 @@
     --map-ramp: #0d366b, #184f95, #256abf, #3987e5, #6da7ec, #9ec5f4, #cde2fb;
     --map-label: #c3c2b7;
     --map-focus: #f0efec;
+
+    --sira-ibn-hisham: #3987e5;
+    --sira-waqidi: #d95926;
+    --sira-khalifa: #3bb88a;
+    --sira-tabari: #a77de0;
+    --sira-land: #2b2a25;
+    --sira-sea: #172027;
   }
 }
 
@@ -109,6 +124,12 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-highlight: var(--highlight);
+  --color-sira-ibn-hisham: var(--sira-ibn-hisham);
+  --color-sira-waqidi: var(--sira-waqidi);
+  --color-sira-khalifa: var(--sira-khalifa);
+  --color-sira-tabari: var(--sira-tabari);
+  --color-sira-land: var(--sira-land);
+  --color-sira-sea: var(--sira-sea);
   --font-sans: var(--font-ui);
 }
 

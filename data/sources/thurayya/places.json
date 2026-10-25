@@ -1,0 +1,205 @@
+[
+ {
+  "slug": "makka",
+  "name": "Мекка",
+  "name_ar": "مكة",
+  "thurayya": "MAKKA_398E213N_S",
+  "toponym": "مكة",
+  "type": "metropoles",
+  "certainty": "certain",
+  "lon": 39.83612,
+  "lat": 21.39132
+ },
+ {
+  "slug": "madina",
+  "name": "Медина",
+  "name_ar": "المدينة",
+  "thurayya": "MADINA_396E244N_S",
+  "toponym": "المدينة",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 39.60908,
+  "lat": 24.47782
+ },
+ {
+  "slug": "taif",
+  "name": "Таиф",
+  "name_ar": "الطائف",
+  "thurayya": "TAIF_404E212N_S",
+  "toponym": "الطائف",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 40.40566,
+  "lat": 21.21629
+ },
+ {
+  "slug": "mina",
+  "name": "Мина",
+  "name_ar": "منى",
+  "thurayya": "MINA_399E213N_S",
+  "toponym": "منى",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 39.93206,
+  "lat": 21.35325
+ },
+ {
+  "slug": "abwa",
+  "name": "аль-Абва",
+  "name_ar": "الأبواء",
+  "thurayya": "ABWA_390E232N_S",
+  "toponym": "الأبواء",
+  "type": "waystations",
+  "certainty": "certain",
+  "lon": 39.09484,
+  "lat": 23.22814
+ },
+ {
+  "slug": "badr",
+  "name": "Бадр",
+  "name_ar": "بدر",
+  "thurayya": "BADR_388E237N_S",
+  "toponym": "بدر",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 38.80098,
+  "lat": 23.72676
+ },
+ {
+  "slug": "uhud",
+  "name": "гора Ухуд",
+  "name_ar": "أحد",
+  "thurayya": "JABALUHUD_395E246N_O",
+  "toponym": "جبل أحد",
+  "type": "sites",
+  "certainty": "certain",
+  "lon": 39.59145,
+  "lat": 24.64886
+ },
+ {
+  "slug": "usfan",
+  "name": "Усфан",
+  "name_ar": "عسفان",
+  "thurayya": "USFAN_394E218N_S",
+  "toponym": "عسفان",
+  "type": "waystations",
+  "certainty": "certain",
+  "lon": 39.46144,
+  "lat": 21.88079
+ },
+ {
+  "slug": "khaybar",
+  "name": "Хайбар",
+  "name_ar": "خيبر",
+  "thurayya": "KHAYBAR_392E257N_S",
+  "toponym": "خيبر",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 39.26821,
+  "lat": 25.78667
+ },
+ {
+  "slug": "muta",
+  "name": "Мута",
+  "name_ar": "مؤتة",
+  "thurayya": "MUTA_356E310N_S",
+  "toponym": "مؤتة",
+  "type": "villages",
+  "certainty": "certain",
+  "lon": 35.68544,
+  "lat": 31.06466
+ },
+ {
+  "slug": "tabuk",
+  "name": "Табук",
+  "name_ar": "تبوك",
+  "thurayya": "TABUK_365E283N_S",
+  "toponym": "تبوك",
+  "type": "towns",
+  "certainty": "certain",
+  "lon": 36.5062,
+  "lat": 28.37114
+ },
+ {
+  "slug": "dumat-al-jandal",
+  "name": "Думат аль-Джандаль",
+  "name_ar": "دومة الجندل",
+  "thurayya": "DAWMAJANDAL_398E297N_S",
+  "toponym": "دومة الجندل",
+  "type": "villages",
+  "certainty": "certain",
+  "lon": 39.87767,
+  "lat": 29.75959
+ },
+ {
+  "slug": "habasha",
+  "name": "Абиссиния (аль-Хабаша)",
+  "name_ar": "الحبشة",
+  "thurayya": "BILADHABASHA_341E149N_R",
+  "toponym": "بلاد الحبشة",
+  "type": "regions",
+  "certainty": "certain",
+  "lon": 34.14753,
+  "lat": 14.94825
+ },
+ {
+  "slug": "hira",
+  "name": "пещера Хира",
+  "name_ar": "حراء"
+ },
+ {
+  "slug": "buwat",
+  "name": "Бувват",
+  "name_ar": "بواط"
+ },
+ {
+  "slug": "ushayra",
+  "name": "зу-ль-Ушайра",
+  "name_ar": "العشيرة"
+ },
+ {
+  "slug": "nakhla",
+  "name": "Нахла",
+  "name_ar": "نخلة"
+ },
+ {
+  "slug": "najd",
+  "name": "Наджд",
+  "name_ar": "نجد"
+ },
+ {
+  "slug": "hamra-al-asad",
+  "name": "Хамра аль-Асад",
+  "name_ar": "حمراء الأسد"
+ },
+ {
+  "slug": "raji",
+  "name": "ар-Раджи",
+  "name_ar": "الرجيع"
+ },
+ {
+  "slug": "bir-mauna",
+  "name": "Бир Мауна",
+  "name_ar": "بئر معونة"
+ },
+ {
+  "slug": "muraysi",
+  "name": "аль-Мурайси",
+  "name_ar": "المريسيع"
+ },
+ {
+  "slug": "ghaba",
+  "name": "аль-Габа (зу-Карад)",
+  "name_ar": "الغابة"
+ },
+ {
+  "slug": "hudaybiya",
+  "name": "аль-Худайбия",
+  "name_ar": "الحديبية"
+ },
+ {
+  "slug": "hunayn",
+  "name": "Хунайн",
+  "name_ar": "حنين"
+ }
+]

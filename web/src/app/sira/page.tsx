@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { CalendarRange, ChevronDown, Map as MapIcon, Network } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -19,11 +19,35 @@ export const metadata: Metadata = { title: t.title };
 // The section «Жизнеописание пророка» (docs/PLAN.md): the cards of people and
 // events, then the life of the prophet in the order of the Sira of Ibn Hisham,
 // its sections grouped in periods (lib/sira.ts).
+const VIEWS = [
+  { href: "/sira/timeline", icon: CalendarRange, title: t.views.timeline, hint: t.views.timelineHint },
+  { href: "/sira/map", icon: MapIcon, title: t.views.map, hint: t.views.mapHint },
+  { href: "/sira/people", icon: Network, title: t.views.people, hint: t.views.peopleHint },
+];
+
+const BOOKS = ["ibn_hisham", "maghazi_waqidi", "tarikh_khalifa", "tarikh_tabari"] as const;
+
 export default function SiraPage() {
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
       <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+        {VIEWS.map(({ href, icon: Icon, title, hint }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              className="flex h-full gap-3 rounded-xl border bg-card p-4 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent"
+            >
+              <Icon className="size-5 shrink-0 text-primary" />
+              <span>
+                <span className="block font-medium">{title}</span>
+                <span className="text-sm text-muted-foreground">{hint}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
       <BookSearchForm work={SIRA_WORK} />
       <p className="text-sm text-muted-foreground">{t.searchHint}</p>
       <Suspense
@@ -146,7 +170,16 @@ async function Periods() {
           );
         })}
       </ol>
-      <p className="mt-6 mb-8 text-xs text-muted-foreground">{t.source}</p>
+      <p className="mt-6 text-xs text-muted-foreground">{t.source}</p>
+      <h2 className="mt-8 mb-1 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.books}</h2>
+      <p className="mb-2 text-sm text-muted-foreground">{t.booksHint}</p>
+      <ul className="mb-8 list-disc space-y-1 ps-5 text-sm">
+        {BOOKS.map((work) => (
+          <li key={work}>
+            <Link href={`/library/${work}`}>{t.bookTitles[work]}</Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
