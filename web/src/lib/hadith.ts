@@ -361,7 +361,7 @@ export async function searchHadith(
   patterns: string[],
   diacritics: boolean,
 ): Promise<{ hits: HadithHit[]; total: number }> {
-  const match = matchConditions("t", patterns, diacritics, 1);
+  const match = matchConditions("t", patterns, diacritics, 1, true);
   const conditions = match.sql;
   const order = `$${match.params.length + 1}::text[]`;
   const { rows } = await db().query<HadithHit & { total: number; workShort: string | null }>(

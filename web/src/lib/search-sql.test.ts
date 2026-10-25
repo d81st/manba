@@ -9,9 +9,9 @@ describe("matchConditions", () => {
     });
   });
 
-  it("finds candidates by letters, then checks the vowels", () => {
-    expect(matchConditions("m", ["%قَالَ%"], true, 1)).toEqual({
-      sql: "m.search_plain LIKE $1 AND m.search_vocalized LIKE $2",
+  it("finds candidates by letters, then checks the vowels on the text", () => {
+    expect(matchConditions("m", ["%قَالَ%"], true, 1, true)).toEqual({
+      sql: "m.search_plain LIKE $1 AND search_key(m.content, true) LIKE $2 AND search_indexed(m.version_id)",
       params: ["%قال%", "%قَالَ%"],
     });
   });

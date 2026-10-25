@@ -128,7 +128,7 @@ function toResult(rows: HitRow[]): SearchResult {
 // Arabic version (Uthmani or standard spelling). "diacritics" picks the
 // vocalized search column.
 export async function searchText(patterns: string[], diacritics: boolean): Promise<SearchResult> {
-  const match = matchConditions("m", patterns, diacritics, 1);
+  const match = matchConditions("m", patterns, diacritics, 1, true);
   const { rows } = await db().query<HitRow>(
     `${HITS} AND a.address IN (
        SELECT m.address FROM texts m JOIN text_versions mv ON mv.id = m.version_id
@@ -226,7 +226,7 @@ export async function getMapData(): Promise<MapSura[]> {
 
 // Addresses ("2:255") of every ayah matching a text search, without a limit.
 export async function searchAddresses(patterns: string[], diacritics: boolean): Promise<string[]> {
-  const match = matchConditions("m", patterns, diacritics, 1);
+  const match = matchConditions("m", patterns, diacritics, 1, true);
   const { rows } = await db().query<{ address: string }>(
     `SELECT DISTINCT a.address::text AS address, a.ordinal
      FROM texts m

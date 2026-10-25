@@ -97,14 +97,13 @@ async function importTanzil(client: pg.Client) {
       [`Хафс от Асима, письмо усмани (Tanzil ${data.textVersion})`, batchId],
     );
     await client.query(
-      `INSERT INTO texts (address, version_id, content, search_plain, search_vocalized, batch_id)
-       SELECT a::extensions.ltree, 'quran.ar.hafs', c, p, v, $5
-       FROM unnest($1::text[], $2::text[], $3::text[], $4::text[]) AS t(a, c, p, v)`,
+      `INSERT INTO texts (address, version_id, content, search_plain, batch_id)
+       SELECT a::extensions.ltree, 'quran.ar.hafs', c, p, $4
+       FROM unnest($1::text[], $2::text[], $3::text[]) AS t(a, c, p)`,
       [
         data.segments.map((s) => s.address),
         data.segments.map((s) => s.text),
         data.segments.map((s) => searchKey(s.text)),
-        data.segments.map((s) => searchKey(s.text, { diacritics: true })),
         batchId,
       ],
     );
@@ -191,14 +190,13 @@ async function importTanzilSimple(client: pg.Client) {
     );
     // Addresses come from the Uthmani load; a missing one fails the foreign key.
     await client.query(
-      `INSERT INTO texts (address, version_id, content, search_plain, search_vocalized, batch_id)
-       SELECT a::extensions.ltree, 'quran.ar.hafs-simple', c, p, v, $5
-       FROM unnest($1::text[], $2::text[], $3::text[], $4::text[]) AS t(a, c, p, v)`,
+      `INSERT INTO texts (address, version_id, content, search_plain, batch_id)
+       SELECT a::extensions.ltree, 'quran.ar.hafs-simple', c, p, $4
+       FROM unnest($1::text[], $2::text[], $3::text[]) AS t(a, c, p)`,
       [
         data.segments.map((s) => s.address),
         data.segments.map((s) => s.text),
         data.segments.map((s) => searchKey(s.text)),
-        data.segments.map((s) => searchKey(s.text, { diacritics: true })),
         batchId,
       ],
     );
@@ -708,14 +706,13 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
     );
     const texts = items.map((h) => content(h.paragraphs));
     await client.query(
-      `INSERT INTO texts (address, version_id, content, search_plain, search_vocalized, batch_id)
-       SELECT a::extensions.ltree, $5, c, p, v, $6
-       FROM unnest($1::text[], $2::text[], $3::text[], $4::text[]) AS t(a, c, p, v)`,
+      `INSERT INTO texts (address, version_id, content, search_plain, batch_id)
+       SELECT a::extensions.ltree, $4, c, p, $5
+       FROM unnest($1::text[], $2::text[], $3::text[]) AS t(a, c, p)`,
       [
         items.map((h) => address(h.path)),
         texts,
         texts.map((t) => searchKey(t)),
-        texts.map((t) => searchKey(t, { diacritics: true })),
         src.versionId,
         batchId,
       ],
