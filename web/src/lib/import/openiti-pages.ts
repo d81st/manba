@@ -9,7 +9,10 @@
 // a Shamela export with other line types (Ansab al-ashraf): "### $" and
 // "### @" entries, "#~:section:" and lines without the space after "#" are
 // text, and a page marker may stand inside a heading or on a line of its own;
-// "gaps" — pages the export lacks are allowed and reported.
+// "gaps" — pages the export lacks are allowed and reported; "repair" — slips
+// in the page markers are read as the pages they plainly mean and reported
+// (the History of al-Tabari): a marker repeating the one before it is
+// dropped, and one out of sequence between pages n and n + 2 is read as n + 1.
 import { cleanLine } from "./openiti-hadith.ts";
 
 export type PagesSection = { number: number; title: string };
@@ -30,8 +33,9 @@ export type PagesReport = {
   empty: number; // pages with no text of their own (a heading only)
   volumes: { volume: number; first: number }[]; // first page of each volume in the export
   gaps: { after: string; next: string }[]; // pages the export lacks (with the "gaps" option)
+  repairs: { marker: string; read: string }[]; // slipped markers (with the "repair" option); "" read — dropped
 };
-export type PagesOptions = { jk?: boolean; loose?: boolean; gaps?: boolean };
+export type PagesOptions = { jk?: boolean; loose?: boolean; gaps?: boolean; repair?: boolean };
 export type PagesBook = {
   sections: PagesSection[];
   chapters: PagesChapter[];
@@ -41,6 +45,37 @@ export type PagesBook = {
 
 const PAGE = /PageV(\d+)P(\d+)/g;
 
+const marker = (volume: number, page: number) =>
+  `PageV${String(volume).padStart(2, "0")}P${String(page).padStart(3, "0")}`;
+
+// Rewrites slipped page markers in the text, in the order they stand.
+export function repairPageMarkers(source: string) {
+  const found = [...source.matchAll(PAGE)]
+    .filter((m) => m[1] !== "00")
+    .map((m) => ({ at: m.index, text: m[0], volume: Number(m[1]), page: Number(m[2]) }));
+  const repairs: PagesReport["repairs"] = [];
+  const read = found.map((m) => ({ ...m, keep: true }));
+  let a = read[0];
+  for (let i = 1; i < read.length; i++) {
+    const [b, c] = [read[i], read[i + 1]];
+    if (c && a.volume === b.volume && b.volume === c.volume && b.page !== a.page + 1 && c.page === a.page + 2) {
+      repairs.push({ marker: `${b.volume}:${b.page}`, read: `${b.volume}:${a.page + 1}` });
+      b.page = a.page + 1;
+    } else if (b.volume === a.volume && b.page === a.page) {
+      b.keep = false;
+      repairs.push({ marker: `${b.volume}:${b.page}`, read: "" });
+    }
+    if (b.keep) a = b;
+  }
+  let text = "";
+  let pos = 0;
+  for (const m of read) {
+    text += source.slice(pos, m.at) + (m.keep ? marker(m.volume, m.page) : "");
+    pos = m.at + m.text.length;
+  }
+  return { text: text + source.slice(pos), repairs };
+}
+
 // "(نهج ابن هشام في هذا الكتاب) :" -> "نهج ابن هشام في هذا الكتاب"
 function headingText(text: string) {
   return cleanLine(text)
@@ -49,7 +84,9 @@ function headingText(text: string) {
     .trim();
 }
 
-export function parseOpenitiPages(source: string, options: PagesOptions = {}): PagesBook {
+export function parseOpenitiPages(input: string, options: PagesOptions = {}): PagesBook {
+  const repaired = options.repair ? repairPageMarkers(input) : { text: input, repairs: [] };
+  const source = repaired.text;
   const lines = source.replace(/\r\n?/g, "\n").split("\n");
   const end = lines.findIndex((l) => l.startsWith("#META#Header#End#"));
   if (end < 0) throw new Error("OpenITI: header end not found");
@@ -57,7 +94,15 @@ export function parseOpenitiPages(source: string, options: PagesOptions = {}): P
   const sections: PagesSection[] = [];
   const chapters: PagesChapter[] = [];
   const pieces: PagesPiece[] = [];
-  const report: PagesReport = { pages: 0, pieces: 0, split: 0, empty: 0, volumes: [], gaps: [] };
+  const report: PagesReport = {
+    pages: 0,
+    pieces: 0,
+    split: 0,
+    empty: 0,
+    volumes: [],
+    gaps: [],
+    repairs: repaired.repairs,
+  };
 
   let section = 0;
   let chapter = 0;
@@ -178,7 +223,7 @@ export function parseOpenitiPages(source: string, options: PagesOptions = {}): P
           addText(entry[1]);
           continue;
         }
-        if (/^\s+\S|^PageV\d+P\d+\s*$/.test(raw)) {
+        if (/^\s+\S|^PageV\d+P\d+(?:\s+ms\d+)?\s*$/.test(raw)) {
           addText(raw);
           continue;
         }

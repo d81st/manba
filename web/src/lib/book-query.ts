@@ -5,7 +5,8 @@
 // 2:0 what is said of the surah before its first ayah, 0:12 a part of the
 // introduction, 2:125b the second comment on one ayah). Kitab al-Sab'a of Ibn
 // Mujahid and Ansab al-ashraf of al-Baladhuri are cited by volume and page as
-// the Sira ("Ибн Муджахид 1:120", "Ансаб 5:175"). No database here.
+// the Sira ("Ибн Муджахид 1:120", "Ансаб 5:175"), and so are the books on the
+// Prophet's life: "Вакиди 1:2", "Халифа 1:64", "Табари 2:412". No database here.
 import { parseHadithQuery, parseVariant, variantLetters } from "./hadith-query.ts";
 
 export type BookScheme = "page" | "ayah";
@@ -27,6 +28,13 @@ export const BOOKS: Record<string, { names: string[]; label: string; scheme: Boo
     label: "Ансаб",
     scheme: "page",
   },
+  maghazi_waqidi: { names: ["вакиди", "аль-вакиди", "магази", "waqidi"], label: "Вакиди", scheme: "page" },
+  tarikh_khalifa: {
+    names: ["халифа", "халифа ибн хаййат", "тарих халифы", "khalifa"],
+    label: "Халифа",
+    scheme: "page",
+  },
+  tarikh_tabari: { names: ["табари", "ат-табари", "тарих ат-табари", "tabari"], label: "Табари", scheme: "page" },
 };
 export const BOOK_IDS = Object.keys(BOOKS);
 

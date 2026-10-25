@@ -500,7 +500,7 @@ function prepare(src: HadithSource, text: string, ayahCounts: number[] = []): Pr
       ],
       unnumbered: [],
       levels: [VOLUME_LEVEL, PAGE_LEVEL, PASSAGE_LEVEL],
-      summary: { sections: data.sections.length, chapters: data.chapters.length, ...data.report, gaps: data.report.gaps.length },
+      summary: { sections: data.sections.length, chapters: data.chapters.length, ...data.report, gaps: data.report.gaps.length, repairs: data.report.repairs },
       missing: 0,
     };
   }
@@ -940,6 +940,79 @@ const ANSAB_BALADHURI: HadithSource = {
   retrievedAt: "2026-10-25",
 };
 
+// Early books with the dates and places of the Prophet's life (docs/PLAN.md,
+// «Жизнеописание пророка»): the Maghazi of al-Waqidi, the History of Khalifa
+// ibn Khayyat and the History of al-Tabari, cited by volume and page like the
+// Sira (decision of the author, 25.10.2026). No authority levels until a
+// specialist sets them.
+const MAGHAZI_WAQIDI: HadithSource = {
+  file: "0207Waqidi.Maghazi.Shamela0023680-ara1.mARkdown",
+  layout: "pages",
+  key: "openiti:0207Waqidi.Maghazi.Shamela0023680-ara1:2cfdc8c",
+  sourceId: "openiti.waqidi-maghazi-shamela0023680",
+  sourceTitle: "OpenITI · 0207Waqidi.Maghazi.Shamela0023680-ara1",
+  sourceVersion: "OpenITI/0225AH 2cfdc8c (2026-03-23)",
+  sourceUrl: "https://github.com/OpenITI/0225AH",
+  notice: `${OPENITI_CITATION}. Text: 0207Waqidi.Maghazi.Shamela0023680-ara1 — Kitab al-Maghazi of al-Waqidi, ed. Marsden Jones, Dar al-A'lami, Beirut, 3rd ed., 1989 (3 vols), with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "maghazi_waqidi",
+    category: "sira",
+    canon: "sunni",
+    titles: { ar: "المغازي", ru: "аль-Вакиди, «аль-Магази»", "ru-short": "Вакиди" },
+    authoritySunni: null,
+  },
+  versionId: "maghazi_waqidi.ar.jones",
+  versionTitle: "Арабский текст: изд. Марсдена Джонса («Дар аль-Аълями», Бейрут, 3-е изд., 1989), страницы издания (OpenITI)",
+  minItems: 1200,
+  retrievedAt: "2026-10-25",
+};
+
+const TARIKH_KHALIFA: HadithSource = {
+  file: "0240IbnKhayyatCusfuri.Tarikh.JK000412-ara1.completed",
+  layout: "pages",
+  pages: { gaps: true },
+  key: "openiti:0240IbnKhayyatCusfuri.Tarikh.JK000412-ara1:0cc00c0",
+  sourceId: "openiti.khalifa-tarikh-jk000412",
+  sourceTitle: "OpenITI · 0240IbnKhayyatCusfuri.Tarikh.JK000412-ara1",
+  sourceVersion: "OpenITI/0250AH 0cc00c0 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0250AH",
+  notice: `${OPENITI_CITATION}. Text: 0240IbnKhayyatCusfuri.Tarikh.JK000412-ara1 — Tarikh of Khalifa ibn Khayyat, ed. Akram Diya' al-'Umari, Dar al-Qalam and Mu'assasat al-Risala, Damascus and Beirut, 2nd ed., 1397 AH, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "tarikh_khalifa",
+    category: "history",
+    canon: "sunni",
+    titles: { ar: "تاريخ خليفة بن خياط", ru: "Халифа ибн Хаййат, «Тарих»", "ru-short": "Халифа" },
+    authoritySunni: null,
+  },
+  versionId: "tarikh_khalifa.ar.umari",
+  versionTitle: "Арабский текст: изд. Акрама Дыя аль-Умари («Дар аль-Калам» и «Муассасат ар-Рисаля», Дамаск — Бейрут, 2-е изд., 1397 г. х.), страницы издания (OpenITI)",
+  minItems: 1200,
+  retrievedAt: "2026-10-25",
+};
+
+const TARIKH_TABARI: HadithSource = {
+  file: "0310Tabari.Tarikh.Shamela0009783BK1-ara1.mARkdown",
+  layout: "pages",
+  pages: { loose: true, gaps: true, repair: true },
+  key: "openiti:0310Tabari.Tarikh.Shamela0009783BK1-ara1:089e665",
+  sourceId: "openiti.tabari-tarikh-shamela0009783",
+  sourceTitle: "OpenITI · 0310Tabari.Tarikh.Shamela0009783BK1-ara1",
+  sourceVersion: "OpenITI/0325AH 089e665 (2025-12-01)",
+  sourceUrl: "https://github.com/OpenITI/0325AH",
+  notice: `${OPENITI_CITATION}. Text: 0310Tabari.Tarikh.Shamela0009783BK1-ara1 — Tarikh al-rusul wa-l-muluk of al-Tabari, Dar al-Turath, Beirut, 2nd ed., 1387 AH (vols. 1-10), whose pages, by the OpenITI note, match the Cairo edition of Dar al-Ma'arif; slips in the page markers of the export are read as the pages they mean (data/sources/openiti/README.md). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "tarikh_tabari",
+    category: "history",
+    canon: "sunni",
+    titles: { ar: "تاريخ الرسل والملوك", ru: "ат-Табари, «Тарих ар-русуль ва-ль-мулюк»", "ru-short": "Табари" },
+    authoritySunni: null,
+  },
+  versionId: "tarikh_tabari.ar.turath",
+  versionTitle: "Арабский текст: изд. «Дар ат-Турас» (Бейрут, 2-е изд., 1387 г. х.), т. 1–10; страницы, по примечанию OpenITI, совпадают с каирским изд. «Дар аль-Маариф» (OpenITI)",
+  minItems: 7500,
+  retrievedAt: "2026-10-25",
+};
+
 // Pairs of hadiths of different collections with shared wording
 // (data/sources/links/README.md): a measure shown as such, not a claim.
 const SIMILAR_TEXTS = {
@@ -1035,6 +1108,7 @@ async function main() {
     await importOpenitiHadith(client, IBN_HISHAM);
     await importOpenitiHadith(client, IBN_KATHIR);
     for (const src of [MASAHIF, FADAIL_ABU_UBAYD, SABAA_IBN_MUJAHID, ANSAB_BALADHURI]) await importOpenitiHadith(client, src);
+    for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
   } finally {
     await client.end();
   }

@@ -90,3 +90,9 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ansab_baladhuri.ar.zakkar'")" = 5990
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'ansab_baladhuri' AND level = 'page'")" = 5447
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'sabaa_ibn_mujahid' AND level = 'page'")" = 595
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'maghazi_waqidi.ar.jones'")" = 1226
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'maghazi_waqidi' AND level = 'page'")" = 1125
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tarikh_khalifa.ar.umari'")" = 1274
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'tarikh_khalifa' AND level = 'page'")" = 433
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tarikh_tabari.ar.turath'")" = 7688
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'tarikh_tabari' AND level = 'page'")" = 5822

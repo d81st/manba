@@ -57,6 +57,7 @@ describe("parseOpenitiPages", () => {
         { volume: 2, first: 3 },
       ],
       gaps: [],
+      repairs: [],
     });
   });
 
@@ -107,5 +108,28 @@ describe("parseOpenitiPages, rough exports", () => {
     ]);
     expect(book.chapters.at(-1)?.title).toBe("باب يبدأ في صفحة");
     expect(book.report.empty).toBe(1);
+  });
+
+  it("with the repair option reads slipped page markers as the pages they mean", () => {
+    const source = [
+      "#META#Header#End#",
+      "# نص أول PageV01P001",
+      "# نص ثان PageV01P004",
+      "# نص ثالث PageV01P003",
+      "# نص رابع PageV01P003",
+      "PageV01P004 ms12",
+    ].join("\n");
+    expect(() => parseOpenitiPages(source, { loose: true })).toThrow(/follows/);
+    const book = parseOpenitiPages(source, { loose: true, repair: true });
+    expect(book.report.repairs).toEqual([
+      { marker: "1:4", read: "1:2" },
+      { marker: "1:3", read: "" },
+    ]);
+    expect(book.pieces.map((p) => [p.page, p.paragraphs])).toEqual([
+      [1, ["نص أول"]],
+      [2, ["نص ثان"]],
+      [3, ["نص ثالث"]],
+      [4, ["نص رابع"]],
+    ]);
   });
 });
