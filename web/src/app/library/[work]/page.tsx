@@ -9,6 +9,7 @@ import { getMessages, plural } from "@/i18n";
 import { getBookWork } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 import { HadithAttribution } from "../../hadith/attribution";
+import { BookSearchForm } from "./search-form";
 
 const messages = getMessages();
 const t = messages.library;
@@ -54,6 +55,7 @@ async function Contents({ params }: { params: PageProps<"/library/[work]">["para
           {book.titleAr}
         </span>
       </header>
+      <BookSearchForm work={book.id} />
       <p className="mt-3 max-w-3xl text-sm text-muted-foreground">{t.book.intro}</p>
       <h2 className="mt-6 mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.book.sections}</h2>
       <ol className="mb-8 grid gap-2.5 sm:grid-cols-2">

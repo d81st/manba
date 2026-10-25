@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { linkAddresses, parseRefs, formatRefs } from "./glossary-input.ts";
-import { bookAnchor, bookPath, formatBookRef, pageLabel, parseBookRef, parsePageRef } from "./book-query.ts";
+import { bookAnchor, bookPath, formatBookRef, pageLabel, parseBookQuery, parseBookRef, parsePageRef } from "./book-query.ts";
 
 describe("book references by volume and page", () => {
   it("reads pages and pieces of a page", () => {
@@ -46,5 +46,16 @@ describe("book references in forms and text", () => {
       { sura: 2, from: 255, to: 255, text: "2:255" },
       { text: "." },
     ]);
+  });
+});
+
+describe("the book search box", () => {
+  it("opens a page or searches Arabic words", () => {
+    expect(parseBookQuery("1:235", "ibn_hisham")).toEqual({ kind: "ref", path: [1, 235] });
+    expect(parseBookQuery("Ибн Хишам 2:58b", "ibn_hisham")).toEqual({ kind: "ref", path: [2, 58, 2] });
+    expect(parseBookQuery("غار حراء", "ibn_hisham")).toEqual({ kind: "text", words: ["غار", "حراء"], diacritics: false });
+    expect(parseBookQuery("235", "ibn_hisham")).toEqual({ kind: "unsupported" });
+    expect(parseBookQuery("пещера", "ibn_hisham")).toEqual({ kind: "unsupported" });
+    expect(parseBookQuery("  ", "ibn_hisham")).toEqual({ kind: "empty" });
   });
 });

@@ -10,6 +10,7 @@ import { getMessages } from "@/i18n";
 import { getBookSection, getBookWork } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 import { HadithAttribution } from "../../../../hadith/attribution";
+import { BookSearchForm } from "../../search-form";
 
 const messages = getMessages();
 const t = messages.library;
@@ -75,6 +76,7 @@ async function SectionText({ params }: { params: PageProps<"/library/[work]/s/[s
           {book.title} · {t.book.allSections}
         </Link>
       </nav>
+      <BookSearchForm work={work} />
       <header className="flex flex-col gap-1 border-b pt-3 pb-4">
         <p className="text-sm text-muted-foreground">
           {t.book.section} {section.number}

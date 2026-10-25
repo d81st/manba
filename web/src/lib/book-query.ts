@@ -1,7 +1,7 @@
 // References to books cited by volume and page of their edition, such as the
 // Sira of Ibn Hisham: "Ибн Хишам 1:235", a piece of a page "1:235b" (a page
 // is cut into pieces only where a chapter starts on it). No database here.
-import { variantLetters, parseVariant } from "./hadith-query.ts";
+import { parseHadithQuery, parseVariant, variantLetters } from "./hadith-query.ts";
 
 // label — how a reference is written back in forms.
 export const BOOKS: Record<string, { names: string[]; label: string }> = {
@@ -72,4 +72,26 @@ export const BOOK_REFERENCE = new RegExp(
 export function referencedBook(name: string) {
   const lower = name.toLowerCase().replace(/\s+/g, " ");
   return NAMES.find((n) => n.name === lower)?.work ?? null;
+}
+
+export type BookQuery =
+  | { kind: "empty" }
+  | { kind: "unsupported" }
+  | { kind: "ref"; path: number[] }
+  | { kind: "text"; words: string[]; diacritics: boolean };
+
+// The search box of a book: a page ("1:235", "1:235b", "Ибн Хишам 1:235")
+// or Arabic words, read the same way as in the hadith search.
+export function parseBookQuery(input: string, work: string): BookQuery {
+  const query = input.trim();
+  if (!query) return { kind: "empty" };
+  const named = parseBookRef(query);
+  if (named) {
+    const [book, ...path] = named.split(".");
+    return book === work ? { kind: "ref", path: path.map(Number) } : { kind: "unsupported" };
+  }
+  const page = parsePageRef(query);
+  if (page) return { kind: "ref", path: page };
+  const parsed = parseHadithQuery(query);
+  return parsed.kind === "text" || parsed.kind === "empty" ? parsed : { kind: "unsupported" };
 }
