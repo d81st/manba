@@ -56,6 +56,11 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
               <Badge variant="outline">{t.quranTextBadge}</Badge>
             </Link>
           )}
+          {topic.category === "sira" && (
+            <Link href="/sira" className="no-underline">
+              <Badge variant="outline">{t.siraBadge}</Badge>
+            </Link>
+          )}
         </div>
         <p className="text-lg text-muted-foreground">{topic.question}</p>
       </header>

@@ -30,13 +30,14 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
   await connection();
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const { category } = await searchParams;
-  const only = category === "hard" || category === "quran_text" ? category : null;
+  const only = category === "hard" || category === "quran_text" || category === "sira" ? category : null;
   const topics = (await listPublishedTopics()).filter((topic) => !only || topic.category === only);
 
   const filters = [
     { href: "/topics", label: t.allCategories, active: !only },
     { href: "/topics?category=hard", label: t.hardOnly, active: only === "hard" },
     { href: "/topics?category=quran_text", label: t.quranTextOnly, active: only === "quran_text" },
+    { href: "/topics?category=sira", label: t.siraOnly, active: only === "sira" },
   ];
 
   return (
@@ -69,6 +70,7 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
                   {topic.title}
                   {topic.category === "hard" && <Badge variant="secondary">{t.hardBadge}</Badge>}
                   {topic.category === "quran_text" && <Badge variant="outline">{t.quranTextBadge}</Badge>}
+                  {topic.category === "sira" && <Badge variant="outline">{t.siraBadge}</Badge>}
                 </span>
                 <span className="text-sm text-muted-foreground">{topic.question}</span>
               </Link>
