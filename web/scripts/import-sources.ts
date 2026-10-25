@@ -9,8 +9,9 @@ import { searchKey } from "../src/lib/arabic.ts";
 import { type Numbering, parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
 import { parseOpenitiKafi } from "../src/lib/import/openiti-kafi.ts";
 import { parseOpenitiNarrations } from "../src/lib/import/openiti-narrations.ts";
-import { parseOpenitiPages } from "../src/lib/import/openiti-pages.ts";
+import { type PagesOptions, parseOpenitiPages } from "../src/lib/import/openiti-pages.ts";
 import { parseOpenitiTafsir } from "../src/lib/import/openiti-tafsir.ts";
+import { fadailToAnnotated, masahifToAnnotated } from "../src/lib/import/openiti-jk.ts";
 import { parseOpenitiRunning } from "../src/lib/import/openiti-running.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
 
@@ -219,6 +220,9 @@ async function importTanzilSimple(client: pg.Client) {
 type HadithSource = {
   file: string; // in data/sources/openiti, kept byte for byte
   layout: "shamela" | "narrations" | "kafi" | "running" | "pages" | "tafsir";
+  // A rough JK export is first rewritten into the annotated layout (openiti-jk.ts).
+  transform?: (text: string) => string;
+  pages?: PagesOptions; // options of the "pages" layout
   key: string;
   sourceId: string;
   sourceTitle: string;
@@ -227,7 +231,7 @@ type HadithSource = {
   sourceUrl?: string; // the OpenITI repository, when not 0275AH
   work: {
     id: string;
-    category?: "hadith" | "sira" | "tafsir"; // hadith by default
+    category?: "hadith" | "sira" | "tafsir" | "qiraat" | "history"; // hadith by default
     canon: "sunni" | "shia";
     titles: Record<string, string>;
     authoritySunni: number | null;
@@ -479,7 +483,7 @@ function prepare(src: HadithSource, text: string, ayahCounts: number[] = []): Pr
   if (src.layout === "pages") {
     // Sections of the book as books, its chapters as chapters; a text is a
     // piece of a printed page: volume.page.piece.
-    const data = parseOpenitiPages(text);
+    const data = parseOpenitiPages(text, src.pages);
     const pages = [...new Set(data.pieces.map((p) => `${p.volume}.${p.page}`))].map((k) => k.split(".").map(Number));
     return {
       books: data.sections,
@@ -498,7 +502,7 @@ function prepare(src: HadithSource, text: string, ayahCounts: number[] = []): Pr
       ],
       unnumbered: [],
       levels: [VOLUME_LEVEL, PAGE_LEVEL, PASSAGE_LEVEL],
-      summary: { sections: data.sections.length, chapters: data.chapters.length, ...data.report },
+      summary: { sections: data.sections.length, chapters: data.chapters.length, ...data.report, gaps: data.report.gaps.length },
       missing: 0,
     };
   }
@@ -639,7 +643,8 @@ async function importOpenitiHadith(client: pg.Client, src: HadithSource) {
       )
     : null;
   const ayahCounts = counts ? [0, ...counts.rows.map((r) => r.ayahs)] : [];
-  const data = prepare(src, readFileSync(join(DATA_DIR, "openiti", src.file), "utf8"), ayahCounts);
+  const raw = readFileSync(join(DATA_DIR, "openiti", src.file), "utf8");
+  const data = prepare(src, src.transform ? src.transform(raw) : raw, ayahCounts);
   if (data.items.length < src.minItems) {
     throw new Error(`${src.file}: only ${data.items.length} texts recognised`);
   }
@@ -841,6 +846,103 @@ const IBN_KATHIR: HadithSource = {
   retrievedAt: "2026-10-25",
 };
 
+// Books on the history of the Quran's text (docs/PLAN.md, «История текста
+// Корана»). Kitab al-Masahif and Fada'il al-Qur'an are reports with chains,
+// cited by the edition's report number like a hadith collection; the JK
+// exports are rewritten into the annotated layout first (openiti-jk.ts).
+// Kitab al-Sab'a and Ansab al-ashraf are cited by volume and page, like the
+// Sira (decision of the author, 25.10.2026). No authority levels until a
+// specialist sets them.
+const MASAHIF: HadithSource = {
+  file: "0316IbnAbiDawudSijistani.Masahif.JK009180-ara1",
+  layout: "running",
+  transform: masahifToAnnotated,
+  key: "openiti:0316IbnAbiDawudSijistani.Masahif.JK009180-ara1:089e665",
+  sourceId: "openiti.masahif-jk009180",
+  sourceTitle: "OpenITI · 0316IbnAbiDawudSijistani.Masahif.JK009180-ara1",
+  sourceVersion: "OpenITI/0325AH 089e665 (2025-12-01)",
+  sourceUrl: "https://github.com/OpenITI/0325AH",
+  notice: `${OPENITI_CITATION}. Text: 0316IbnAbiDawudSijistani.Masahif.JK009180-ara1 — Kitab al-Masahif of Abu Bakr ibn Abi Dawud al-Sijistani, ed. Muhammad ibn Abduh, al-Faruq al-Haditha, Cairo, 1st ed., 2002, with the edition's report numbers. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "masahif_ibn_abi_dawud",
+    canon: "sunni",
+    titles: { ar: "كتاب المصاحف", ru: "Ибн Абу Дауд, «Китаб аль-масахиф»", "ru-short": "Масахиф" },
+    authoritySunni: null,
+  },
+  versionId: "masahif_ibn_abi_dawud.ar.abduh",
+  versionTitle: "Арабский текст: изд. Мухаммада ибн Абдо («аль-Фарук аль-Хадиса», Каир, 1-е изд., 2002), нумерация издания (OpenITI)",
+  minItems: 800,
+  retrievedAt: "2026-10-25",
+};
+
+const FADAIL_ABU_UBAYD: HadithSource = {
+  file: "0224QasimIbnSallam.FadailQuran.JK011565-ara1",
+  layout: "running",
+  transform: fadailToAnnotated,
+  key: "openiti:0224QasimIbnSallam.FadailQuran.JK011565-ara1:2cfdc8c",
+  sourceId: "openiti.fadail-abu-ubayd-jk011565",
+  sourceTitle: "OpenITI · 0224QasimIbnSallam.FadailQuran.JK011565-ara1",
+  sourceVersion: "OpenITI/0225AH 2cfdc8c (2026-03-23)",
+  sourceUrl: "https://github.com/OpenITI/0225AH",
+  notice: `${OPENITI_CITATION}. Text: 0224QasimIbnSallam.FadailQuran.JK011565-ara1 — Fada'il al-Qur'an of Abu 'Ubayd al-Qasim ibn Sallam, export of the al-Jami' al-Kabir library (the edition is not named in the file), with its report numbers; the editor's footnotes are left out. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "fadail_abu_ubayd",
+    canon: "sunni",
+    titles: { ar: "فضائل القرآن", ru: "Абу Убайд, «Фадаиль аль-Куран»", "ru-short": "Абу Убайд" },
+    authoritySunni: null,
+  },
+  versionId: "fadail_abu_ubayd.ar.jk",
+  versionTitle: "Арабский текст: выгрузка библиотеки «аль-Джами аль-Кабир» (издание в файле не указано), нумерация выгрузки (OpenITI)",
+  minItems: 750,
+  retrievedAt: "2026-10-25",
+};
+
+const SABAA_IBN_MUJAHID: HadithSource = {
+  file: "0324IbnMujahid.SabcaFiQiraat.JK000912-ara1",
+  layout: "pages",
+  pages: { jk: true, gaps: true },
+  key: "openiti:0324IbnMujahid.SabcaFiQiraat.JK000912-ara1:089e665",
+  sourceId: "openiti.sabaa-jk000912",
+  sourceTitle: "OpenITI · 0324IbnMujahid.SabcaFiQiraat.JK000912-ara1",
+  sourceVersion: "OpenITI/0325AH 089e665 (2025-12-01)",
+  sourceUrl: "https://github.com/OpenITI/0325AH",
+  notice: `${OPENITI_CITATION}. Text: 0324IbnMujahid.SabcaFiQiraat.JK000912-ara1 — Kitab al-Sab'a fi al-qira'at of Ibn Mujahid, ed. Shawqi Dayf, Dar al-Ma'arif, Cairo, 2nd ed., 1400 AH, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "sabaa_ibn_mujahid",
+    category: "qiraat",
+    canon: "sunni",
+    titles: { ar: "كتاب السبعة في القراءات", ru: "Ибн Муджахид, «Китаб ас-саба»", "ru-short": "Ибн Муджахид" },
+    authoritySunni: null,
+  },
+  versionId: "sabaa_ibn_mujahid.ar.dayf",
+  versionTitle: "Арабский текст: изд. Шауки Дайфа («Дар аль-Маариф», Каир, 2-е изд., 1400 г. х.), страницы издания (OpenITI)",
+  minItems: 600,
+  retrievedAt: "2026-10-25",
+};
+
+const ANSAB_BALADHURI: HadithSource = {
+  file: "0279Baladhuri.AnsabAshraf.Shamela0009773-ara1.mARkdown",
+  layout: "pages",
+  pages: { loose: true, gaps: true },
+  key: "openiti:0279Baladhuri.AnsabAshraf.Shamela0009773-ara1:01a1544",
+  sourceId: "openiti.ansab-shamela0009773",
+  sourceTitle: "OpenITI · 0279Baladhuri.AnsabAshraf.Shamela0009773-ara1",
+  sourceVersion: "OpenITI/0300AH 01a1544 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0300AH",
+  notice: `${OPENITI_CITATION}. Text: 0279Baladhuri.AnsabAshraf.Shamela0009773-ara1 — Jumal min Ansab al-ashraf of al-Baladhuri, ed. Suhayl Zakkar and Riyad al-Zirikli, Dar al-Fikr, Beirut, 1996 (13 vols); by the OpenITI note, vols. 1-5 follow the Mu'assasat al-A'lami edition and vols. 6-13 the Dar al-Fikr edition (vol. 6 from p. 255). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "ansab_baladhuri",
+    category: "history",
+    canon: "sunni",
+    titles: { ar: "جمل من أنساب الأشراف", ru: "аль-Балазури, «Ансаб аль-ашраф»", "ru-short": "Ансаб" },
+    authoritySunni: null,
+  },
+  versionId: "ansab_baladhuri.ar.zakkar",
+  versionTitle: "Арабский текст: т. 1–5 — изд. «Муассасат аль-Аълями», т. 6–13 — изд. Сухайля Заккара и Рияда аз-Зирикли («Дар аль-Фикр», Бейрут, 1996), страницы изданий (OpenITI)",
+  minItems: 5500,
+  retrievedAt: "2026-10-25",
+};
+
 // Pairs of hadiths of different collections with shared wording
 // (data/sources/links/README.md): a measure shown as such, not a claim.
 const SIMILAR_TEXTS = {
@@ -935,6 +1037,7 @@ async function main() {
     await importSimilarTexts(client);
     await importOpenitiHadith(client, IBN_HISHAM);
     await importOpenitiHadith(client, IBN_KATHIR);
+    for (const src of [MASAHIF, FADAIL_ABU_UBAYD, SABAA_IBN_MUJAHID, ANSAB_BALADHURI]) await importOpenitiHadith(client, src);
   } finally {
     await client.end();
   }

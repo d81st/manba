@@ -84,3 +84,9 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tafsir_ibn_kathir.ar.salama'")" = 2062
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(DISTINCT ayah) FROM commentary_ayahs WHERE comment <@ 'tafsir_ibn_kathir'")" = 6228
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "$Q TRUNCATE commentary_ayahs"
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'masahif_ibn_abi_dawud.ar.abduh'")" = 818
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'fadail_abu_ubayd.ar.jk'")" = 760
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'sabaa_ibn_mujahid.ar.dayf'")" = 638
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ansab_baladhuri.ar.zakkar'")" = 5990
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'ansab_baladhuri' AND level = 'page'")" = 5447
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE work_id = 'sabaa_ibn_mujahid' AND level = 'page'")" = 595

@@ -10,9 +10,11 @@ import { MAX_QUERY_LENGTH } from "./quran-query.ts";
 //               is "24009/2", a hadith the editors added after 24009)
 //   narration — muslim.8.2: narrations of one number, "Муслим 8b"
 //   chapter   — kafi.4.60.3: book, chapter, number in the chapter, "аль-Кафи 4.60.3"
+// After them, early books of reports on the Quran (group "quran"), numbered
+// like a collection: "Масахиф 79" (docs/ADDRESSES.md).
 export type Scheme = "number" | "narration" | "chapter";
 // label — how a reference is written back in forms: "Муслим 8b".
-export const COLLECTIONS: Record<string, { names: string[]; scheme: Scheme; label: string }> = {
+export const COLLECTIONS: Record<string, { names: string[]; scheme: Scheme; label: string; group?: "quran" }> = {
   bukhari: { names: ["бухари", "bukhari"], scheme: "number", label: "Бухари" },
   muslim: { names: ["муслим", "муслима", "muslim"], scheme: "narration", label: "Муслим" },
   abu_dawud: {
@@ -29,6 +31,18 @@ export const COLLECTIONS: Record<string, { names: string[]; scheme: Scheme; labe
   },
   ahmad: { names: ["ахмад", "ахмада", "ahmad", "муснад ахмада", "musnad ahmad"], scheme: "number", label: "Ахмад" },
   kafi: { names: ["кафи", "kafi"], scheme: "chapter", label: "аль-Кафи" },
+  masahif_ibn_abi_dawud: {
+    names: ["масахиф", "китаб аль-масахиф", "ибн абу дауд", "ибн аби дауд", "masahif"],
+    scheme: "number",
+    label: "Масахиф",
+    group: "quran",
+  },
+  fadail_abu_ubayd: {
+    names: ["абу убайд", "абу убайда", "фадаиль абу убайда", "abu ubayd"],
+    scheme: "number",
+    label: "Абу Убайд",
+    group: "quran",
+  },
 };
 export const COLLECTION_ORDER = Object.keys(COLLECTIONS);
 

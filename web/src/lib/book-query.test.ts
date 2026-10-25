@@ -76,3 +76,16 @@ describe("tafsir references by surah and ayah", () => {
     ]);
   });
 });
+
+describe("Kitab al-Sab'a and Ansab al-ashraf by volume and page", () => {
+  it("reads and writes them like the Sira", () => {
+    expect(parseBookRef("Ибн Муджахид 1:120")).toBe("sabaa_ibn_mujahid.1.120");
+    expect(parseBookRef("Ансаб 5:175b")).toBe("ansab_baladhuri.5.175.2");
+    expect(formatBookRef("ansab_baladhuri.13.12")).toBe("Ансаб 13:12");
+    expect(linkAddresses("Ансаб 5:175 и Масахиф 79")).toEqual([
+      { book: "ansab_baladhuri", path: [5, 175], text: "Ансаб 5:175" },
+      { text: " и " },
+      { work: "masahif_ibn_abi_dawud", path: [79], text: "Масахиф 79" },
+    ]);
+  });
+});

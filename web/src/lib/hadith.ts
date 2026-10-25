@@ -444,7 +444,7 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
        WHERE a.address <@ r.ref::extensions.ltree
        ORDER BY a.ordinal LIMIT ${REF_ITEMS}
      ) x
-     JOIN works w ON w.id = x.work_id AND w.category IN ('hadith', 'sira', 'tafsir')
+     JOIN works w ON w.id = x.work_id AND w.category IN ('hadith', 'sira', 'tafsir', 'qiraat', 'history')
      ORDER BY r.ref, x.ordinal`,
     [addresses],
   );

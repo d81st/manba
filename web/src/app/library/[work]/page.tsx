@@ -6,6 +6,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages, plural } from "@/i18n";
+import { BOOKS } from "@/lib/book-query";
 import { getBookWork } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 import { HadithAttribution } from "../../hadith/attribution";
@@ -57,7 +58,7 @@ async function Contents({ params }: { params: PageProps<"/library/[work]">["para
         </span>
       </header>
       <BookSearchForm work={book.id} tafsir={tafsir} />
-      <p className="mt-3 max-w-3xl text-sm text-muted-foreground">{tafsir ? t.book.tafsirIntro : t.book.intro}</p>
+      <p className="mt-3 max-w-3xl text-sm text-muted-foreground">{tafsir ? t.book.tafsirIntro : t.book.intro.replace("{label}", BOOKS[book.id]?.label ?? book.title)}</p>
       <h2 className="mt-6 mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
         {tafsir ? t.book.surahsTitle : t.book.sections}
       </h2>

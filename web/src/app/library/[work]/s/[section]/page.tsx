@@ -11,6 +11,7 @@ import { getBookSection, getBookWork, sectionHref } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 import { HadithAttribution } from "../../../../hadith/attribution";
 import { BookSearchForm } from "../../search-form";
+import { VerseLine } from "@/components/verse-line";
 
 const messages = getMessages();
 const t = messages.library;
@@ -33,7 +34,7 @@ function ArabicText({ text }: { text: string }) {
     <div className="flex-1" lang="ar" dir="rtl">
       {text.split(/\n\s*\n/).map((paragraph, i) => (
         <p key={i} className="ar text-[1.3rem] leading-[2.1] sm:text-[1.4rem]">
-          {paragraph}
+          <VerseLine text={paragraph} />
         </p>
       ))}
     </div>

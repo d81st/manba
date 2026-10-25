@@ -4,14 +4,15 @@ import { bookAnchor, bookLabel, bookScheme } from "@/lib/book-query";
 import { db } from "@/lib/db";
 import { type Attribution, primaryVersion, shortTitle } from "@/lib/hadith";
 
-// Books with their own references (docs/ADDRESSES.md): the Sira of Ibn Hisham
-// by volume and page, the Tafsir of Ibn Kathir by surah and ayah. Sections
+// Books with their own references (docs/ADDRESSES.md): the Sira of Ibn Hisham,
+// Kitab al-Sab'a and Ansab al-ashraf by volume and page, the Tafsir of Ibn
+// Kathir by surah and ayah. Sections
 // and chapters for reading; pieces of pages or comments on ayahs as texts.
 export const BOOKS_TAG = "books";
 
 const PATH = (column: string) => `string_to_array(subpath(${column}, 1)::text, '.')::int[]`;
 
-export const BOOK_CATEGORIES = ["sira", "tafsir"] as const;
+export const BOOK_CATEGORIES = ["sira", "tafsir", "qiraat", "history"] as const;
 export type BookCategory = (typeof BOOK_CATEGORIES)[number];
 
 export async function listBookWorks(): Promise<{ id: string; title: string; titleAr: string; category: BookCategory }[]> {
@@ -20,9 +21,10 @@ export async function listBookWorks(): Promise<{ id: string; title: string; titl
   cacheLife("hours");
   const { rows } = await db().query(
     `SELECT w.id, w.titles->>'ru' AS title, w.titles->>'ar' AS "titleAr", w.category FROM works w
-     WHERE w.category IN ('sira', 'tafsir') AND w.status = 'published'
+     WHERE w.category = ANY($1::text[]) AND w.status = 'published'
        AND EXISTS (SELECT 1 FROM text_versions v WHERE v.work_id = w.id AND v.is_primary AND v.status = 'published')
      ORDER BY w.id`,
+    [BOOK_CATEGORIES],
   );
   return rows;
 }
@@ -47,8 +49,8 @@ export async function getBookWork(workId: string): Promise<BookWork | null> {
   cacheLife("hours");
   const work = await db().query(
     `SELECT id, category, titles->>'ru' AS title, titles->>'ru-short' AS short, titles->>'ar' AS title_ar FROM works
-     WHERE id = $1 AND category IN ('sira', 'tafsir') AND status = 'published'`,
-    [workId],
+     WHERE id = $1 AND category = ANY($2::text[]) AND status = 'published'`,
+    [workId, BOOK_CATEGORIES],
   );
   const version = await primaryVersion(workId);
   if (!work.rows[0] || !version) return null;

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { listCollections } from "@/lib/hadith";
+import { COLLECTIONS } from "@/lib/hadith-query";
 import { HadithSearchForm } from "./search-form";
 
 const messages = getMessages();
@@ -31,7 +32,23 @@ export default function HadithPage() {
 async function Collections() {
   await connection();
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
-  const collections = await listCollections();
+  const all = await listCollections();
+  const quran = all.filter((c) => COLLECTIONS[c.id]?.group === "quran");
+  return (
+    <>
+      <CollectionList collections={all.filter((c) => !quran.includes(c))} />
+      {quran.length > 0 && (
+        <section>
+          <h2 className="mt-8 text-sm font-medium uppercase tracking-wide text-muted-foreground">{messages.library.quranBooks}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{messages.library.quranBooksHint}</p>
+          <CollectionList collections={quran} />
+        </section>
+      )}
+    </>
+  );
+}
+
+function CollectionList({ collections }: { collections: Awaited<ReturnType<typeof listCollections>> }) {
   return (
     <ul className="mt-6 grid gap-3 sm:grid-cols-2">
       {collections.map((c) => (

@@ -56,11 +56,56 @@ describe("parseOpenitiPages", () => {
         { volume: 1, first: 1 },
         { volume: 2, first: 3 },
       ],
+      gaps: [],
     });
   });
 
   it("refuses pages out of order and text after the last page", () => {
     expect(() => parseOpenitiPages(SOURCE.replace("PageV01P003", "PageV01P005"))).toThrow(/follows/);
     expect(() => parseOpenitiPages(`${SOURCE}\n# نص زائد`)).toThrow(/after the last page/);
+  });
+
+  it("with the gaps option, lets pages be missing and reports them", () => {
+    const gapped = parseOpenitiPages(SOURCE.replace("PageV01P003", "PageV01P005").replace("PageV01P004", "PageV01P006"), { gaps: true });
+    expect(gapped.report.gaps).toEqual([{ after: "1:2", next: "1:5" }]);
+    expect(() => parseOpenitiPages(SOURCE.replace("PageV01P002", "PageV01P009"), { gaps: true })).toThrow(/follows/);
+  });
+});
+
+// Fictional test data in the rougher layouts: not a real text.
+describe("parseOpenitiPages, rough exports", () => {
+  it("reads a JK chapter heading as a paragraph opening with |", () => {
+    const book = parseOpenitiPages(
+      ["#META#Header#End#", "# عنوان الكتاب PageV01P001", "# | باب تجريبي", "# نص الباب", "~~وتتمته PageV01P002"].join("\n"),
+      { jk: true },
+    );
+    expect(book.chapters.map((c) => c.title)).toEqual(["", "باب تجريبي"]);
+    expect(book.pieces.map((p) => [p.page, p.chapter, p.paragraphs])).toEqual([
+      [1, 1, ["عنوان الكتاب"]],
+      [2, 2, ["نص الباب وتتمته"]],
+    ]);
+  });
+
+  it("in the loose layout keeps entries and odd lines as text and reads markers inside headings", () => {
+    const book = parseOpenitiPages(
+      [
+        "#META#Header#End#",
+        "PageV00P000",
+        "### | قسم تجريبي",
+        "### $ فلان بن فلان، ترجمة قصيرة",
+        "#~:section: خبر تجريبي",
+        " سطر يكمل الخبر",
+        "PageV01P001",
+        "### || باب يبدأ PageV01P002 في صفحة",
+        "# نص %~% شعر PageV01P003",
+      ].join("\n"),
+      { loose: true },
+    );
+    expect(book.pieces.map((p) => [p.page, p.chapter, p.paragraphs])).toEqual([
+      [1, 1, ["فلان بن فلان، ترجمة قصيرة", "خبر تجريبي سطر يكمل الخبر"]],
+      [3, 2, ["نص %~% شعر"]],
+    ]);
+    expect(book.chapters.at(-1)?.title).toBe("باب يبدأ في صفحة");
+    expect(book.report.empty).toBe(1);
   });
 });

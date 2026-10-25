@@ -12,6 +12,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { bookPageHref, getBook, getCollection } from "@/lib/hadith";
 import { hadithAnchor, refLabel } from "@/lib/hadith-query";
 import { HadithAttribution } from "../../../attribution";
+import { VerseLine } from "@/components/verse-line";
 
 const t = getMessages().hadith;
 
@@ -33,7 +34,7 @@ function ArabicText({ text, className }: { text: string; className?: string }) {
     <div className={className} lang="ar" dir="rtl">
       {text.split(/\n\s*\n/).map((paragraph, i) => (
         <p key={i} className="ar text-[1.3rem] leading-[2.1] sm:text-[1.4rem]">
-          {paragraph}
+          <VerseLine text={paragraph} />
         </p>
       ))}
     </div>

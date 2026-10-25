@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { linkAddresses } from "./glossary-input.ts";
 import {
+  formatHadithRef,
   hadithAnchor,
   hadithPath,
   parseHadithQuery,
+  parseHadithRef,
   parseRef,
   parseVariant,
   refLabel,
@@ -132,5 +134,16 @@ describe("hadith addresses", () => {
     expect(hadithPath("ahmad", [24009, 2])).toBe("/hadith/ahmad/24009.2");
     expect(hadithAnchor([8, 2])).toBe("h-8-2");
     expect(hadithAnchor([3951])).toBe("h-3951");
+  });
+});
+
+describe("early books of reports on the Quran", () => {
+  it("are cited by report number like a collection", () => {
+    expect(parseHadithRef("Масахиф 79")).toBe("masahif_ibn_abi_dawud.79");
+    expect(parseHadithRef("аль-Масахиф 79")).toBe("masahif_ibn_abi_dawud.79");
+    expect(parseHadithRef("Абу Убайд 342")).toBe("fadail_abu_ubayd.342");
+    expect(parseHadithRef("Абу Дауд 79")).toBe("abu_dawud.79");
+    expect(formatHadithRef("masahif_ibn_abi_dawud.79")).toBe("Масахиф 79");
+    expect(parseHadithQuery("Масахиф 79")).toEqual({ kind: "ref", work: "masahif_ibn_abi_dawud", path: [79] });
   });
 });

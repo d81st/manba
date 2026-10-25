@@ -29,12 +29,14 @@ export default function TopicsPage({ searchParams }: PageProps<"/topics">) {
 async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["searchParams"] }) {
   await connection();
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
-  const hardOnly = (await searchParams).category === "hard";
-  const topics = (await listPublishedTopics()).filter((topic) => !hardOnly || topic.category === "hard");
+  const { category } = await searchParams;
+  const only = category === "hard" || category === "quran_text" ? category : null;
+  const topics = (await listPublishedTopics()).filter((topic) => !only || topic.category === only);
 
   const filters = [
-    { href: "/topics", label: t.allCategories, active: !hardOnly },
-    { href: "/topics?category=hard", label: t.hardOnly, active: hardOnly },
+    { href: "/topics", label: t.allCategories, active: !only },
+    { href: "/topics?category=hard", label: t.hardOnly, active: only === "hard" },
+    { href: "/topics?category=quran_text", label: t.quranTextOnly, active: only === "quran_text" },
   ];
 
   return (
@@ -66,6 +68,7 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
                 <span className="flex flex-wrap items-center gap-2 font-medium">
                   {topic.title}
                   {topic.category === "hard" && <Badge variant="secondary">{t.hardBadge}</Badge>}
+                  {topic.category === "quran_text" && <Badge variant="outline">{t.quranTextBadge}</Badge>}
                 </span>
                 <span className="text-sm text-muted-foreground">{topic.question}</span>
               </Link>

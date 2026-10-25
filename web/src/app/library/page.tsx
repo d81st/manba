@@ -6,7 +6,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listBookWorks } from "@/lib/books";
+import { BOOK_CATEGORIES, listBookWorks } from "@/lib/books";
+import { COLLECTIONS } from "@/lib/hadith-query";
 import { listCollections } from "@/lib/hadith";
 
 const messages = getMessages();
@@ -47,8 +48,9 @@ export default function LibraryPage() {
 async function Collections() {
   await connection();
   if (!isDatabaseConfigured()) return <p className="text-destructive">{messages.quran.noDatabase}</p>;
-  const collections = await listCollections();
-  return (
+  const all = await listCollections();
+  // Early books of reports on the Quran are read like collections but listed apart.
+  const list = (collections: typeof all, hint?: string) => (
     <ul className="grid gap-3 sm:grid-cols-2">
       {collections.map((c) => (
         <li key={c.id}>
@@ -56,7 +58,7 @@ async function Collections() {
             <ScrollText className="size-5 shrink-0 text-primary" />
             <span className="flex-1">
               <span className="block font-medium">{c.title}</span>
-              <span className="text-sm text-muted-foreground">{t[c.canon === "shia" ? "shia" : "sunni"]}</span>
+              <span className="text-sm text-muted-foreground">{hint ?? t[c.canon === "shia" ? "shia" : "sunni"]}</span>
             </span>
             <span className="ar text-xl" lang="ar" dir="rtl">
               {c.titleAr}
@@ -66,13 +68,25 @@ async function Collections() {
       ))}
     </ul>
   );
+  const quran = all.filter((c) => COLLECTIONS[c.id]?.group === "quran");
+  return (
+    <>
+      {list(all.filter((c) => !quran.includes(c)))}
+      {quran.length > 0 && (
+        <section>
+          <h2 className="mt-8 mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.quranBooks}</h2>
+          {list(quran, t.quranBooksHint)}
+        </section>
+      )}
+    </>
+  );
 }
 
 async function Books() {
   await connection();
   if (!isDatabaseConfigured()) return null;
   const books = await listBookWorks();
-  return (["sira", "tafsir"] as const).map((category) => {
+  return BOOK_CATEGORIES.map((category) => {
     const group = books.filter((b) => b.category === category);
     if (group.length === 0) return null;
     return (

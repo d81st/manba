@@ -12,6 +12,7 @@ import {
   Network,
   Scale,
   ScrollText,
+  SquareLibrary,
 } from "lucide-react";
 import Link from "next/link";
 import { Page } from "@/components/page";
@@ -32,6 +33,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
   sira: ScrollText,
   cities: Landmark,
   hardTopics: Scale,
+  quranText: SquareLibrary,
   origins: Network,
   science: FlaskConical,
   timeline: History,
@@ -46,6 +48,7 @@ const LINKS: Partial<Record<SectionKey, string>> = {
   glossary: "/glossary",
   encyclopedia: "/topics",
   hardTopics: "/topics?category=hard",
+  quranText: "/quran-text",
 };
 
 export default function Home() {

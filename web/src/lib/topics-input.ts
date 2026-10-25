@@ -3,8 +3,9 @@ import { z } from "zod";
 import { parseRefs, RECOGNITIONS, TERM_STATUSES, type InputProblem } from "./glossary-input.ts";
 
 export const TOPIC_STATUSES = TERM_STATUSES;
-// One section for now; a new category becomes a separate section later.
-export const TOPIC_CATEGORIES = ["general", "hard"] as const;
+// Topics of the section «История текста Корана» (quran_text) are also listed
+// on its own page, /quran-text.
+export const TOPIC_CATEGORIES = ["general", "hard", "quran_text"] as const;
 // Ayahs shown before and after each main passage.
 export const CONTEXT_AYAHS = 3;
 

@@ -51,6 +51,11 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold">{topic.title}</h1>
           {topic.category === "hard" && <Badge variant="secondary">{t.hardBadge}</Badge>}
+          {topic.category === "quran_text" && (
+            <Link href="/quran-text" className="no-underline">
+              <Badge variant="outline">{t.quranTextBadge}</Badge>
+            </Link>
+          )}
         </div>
         <p className="text-lg text-muted-foreground">{topic.question}</p>
       </header>

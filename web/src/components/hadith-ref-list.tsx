@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getMessages } from "@/i18n";
 import type { HadithRef } from "@/lib/hadith";
 import { cn } from "@/lib/utils";
+import { VerseLine } from "@/components/verse-line";
 
 const t = getMessages().hadith;
 
@@ -23,7 +24,7 @@ export function HadithRefList({ hadiths, className }: { hadiths: HadithRef[]; cl
                 <div lang="ar" dir="rtl">
                   {item.text.split(/\n\s*\n/).map((paragraph, j) => (
                     <p key={j} className="ar text-lg leading-[2.1]">
-                      {paragraph}
+                      <VerseLine text={paragraph} />
                     </p>
                   ))}
                 </div>

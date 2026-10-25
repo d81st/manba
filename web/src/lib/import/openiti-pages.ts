@@ -4,6 +4,12 @@
 // of volume 1 ends. Used for the Sira of Ibn Hisham (docs/ADDRESSES.md):
 // the address is volume.page.piece, a page being cut into pieces only where
 // a heading starts on it, so that each piece belongs to one chapter.
+// Options for rougher exports: "jk" — the al-Jami' al-Kabir layout, where a
+// chapter heading is a paragraph opening with "|" (Kitab al-Sab'a); "loose" —
+// a Shamela export with other line types (Ansab al-ashraf): "### $" and
+// "### @" entries, "#~:section:" and lines without the space after "#" are
+// text, and a page marker may stand inside a heading or on a line of its own;
+// "gaps" — pages the export lacks are allowed and reported.
 import { cleanLine } from "./openiti-hadith.ts";
 
 export type PagesSection = { number: number; title: string };
@@ -23,7 +29,9 @@ export type PagesReport = {
   split: number; // pages cut by a heading into more than one piece
   empty: number; // pages with no text of their own (a heading only)
   volumes: { volume: number; first: number }[]; // first page of each volume in the export
+  gaps: { after: string; next: string }[]; // pages the export lacks (with the "gaps" option)
 };
+export type PagesOptions = { jk?: boolean; loose?: boolean; gaps?: boolean };
 export type PagesBook = {
   sections: PagesSection[];
   chapters: PagesChapter[];
@@ -41,7 +49,7 @@ function headingText(text: string) {
     .trim();
 }
 
-export function parseOpenitiPages(source: string): PagesBook {
+export function parseOpenitiPages(source: string, options: PagesOptions = {}): PagesBook {
   const lines = source.replace(/\r\n?/g, "\n").split("\n");
   const end = lines.findIndex((l) => l.startsWith("#META#Header#End#"));
   if (end < 0) throw new Error("OpenITI: header end not found");
@@ -49,7 +57,7 @@ export function parseOpenitiPages(source: string): PagesBook {
   const sections: PagesSection[] = [];
   const chapters: PagesChapter[] = [];
   const pieces: PagesPiece[] = [];
-  const report: PagesReport = { pages: 0, pieces: 0, split: 0, empty: 0, volumes: [] };
+  const report: PagesReport = { pages: 0, pieces: 0, split: 0, empty: 0, volumes: [], gaps: [] };
 
   let section = 0;
   let chapter = 0;
@@ -86,7 +94,11 @@ export function parseOpenitiPages(source: string): PagesBook {
     // Inside a volume pages go one by one; a volume may open after its
     // title pages, which the export leaves out.
     const next = last ? (volume === last.volume ? page === last.page + 1 : volume === last.volume + 1) : volume === 1;
-    if (!next) throw new Error(`OpenITI: page ${volume}:${page} follows ${last ? `${last.volume}:${last.page}` : "the start"}`);
+    const forward = last ? (volume === last.volume ? page > last.page : volume > last.volume) : volume >= 1;
+    if (!next && !(options.gaps && forward)) {
+      throw new Error(`OpenITI: page ${volume}:${page} follows ${last ? `${last.volume}:${last.page}` : "the start"}`);
+    }
+    if (!next) report.gaps.push({ after: last ? `${last.volume}:${last.page}` : "", next: `${volume}:${page}` });
     if (!last || volume !== last.volume) report.volumes.push({ volume, first: page });
     last = { volume, page };
     report.pages += 1;
@@ -110,6 +122,8 @@ export function parseOpenitiPages(source: string): PagesBook {
   const addText = (text: string) => {
     let pos = 0;
     for (const m of text.matchAll(PAGE)) {
+      // "PageV00P000" marks the front matter of an export, not a page.
+      if (m[1] === "00") continue;
       const before = text.slice(pos, m.index);
       if (before.trim()) (paragraph ??= []).push(before);
       // A paragraph that goes on over the page break stays open on the next page.
@@ -122,22 +136,58 @@ export function parseOpenitiPages(source: string): PagesBook {
     if (rest.trim()) (paragraph ??= []).push(rest);
   };
 
+  const openHeading = (level: number, title: string) => {
+    if (level === 1) {
+      section += 1;
+      chapter = 0;
+      sections.push({ number: section, title: headingText(title) });
+    } else {
+      if (section === 0) {
+        section = 1;
+        sections.push({ number: 1, title: "" });
+      }
+      chapter += 1;
+      chapters.push({ section, index: chapter, title: headingText(title) });
+    }
+  };
+
   for (const raw of lines.slice(end + 1)) {
+    if (options.jk && /^# \|/.test(raw)) {
+      // A JK chapter heading; a page marker in it ends the page before it.
+      closeParagraph();
+      const title = raw.replace(/^# \|\s*/, "");
+      for (const m of title.matchAll(PAGE)) endPage(Number(m[1]), Number(m[2]));
+      openHeading(2, title);
+      continue;
+    }
+    if (options.loose) {
+      const marked = raw.match(/^### (\|+) (.*)$/);
+      if (marked && /PageV\d+P\d+/.test(marked[2])) {
+        closeParagraph();
+        for (const m of marked[2].matchAll(PAGE)) endPage(Number(m[1]), Number(m[2]));
+        openHeading(marked[1].length, marked[2]);
+        continue;
+      }
+      if (!marked) {
+        // Entries and odd lines are text; a bare page marker or a line
+        // opening with a space goes on with the paragraph.
+        const entry = raw.match(/^(?:### ?[$@]*|#~:section:|#(?=[^#\s~]))\s*(.*)$/);
+        if (entry && !raw.startsWith("# ")) {
+          closeParagraph();
+          paragraph = [];
+          addText(entry[1]);
+          continue;
+        }
+        if (/^\s+\S|^PageV\d+P\d+\s*$/.test(raw)) {
+          addText(raw);
+          continue;
+        }
+      }
+    }
     const heading = raw.match(/^### (\|+) (.*)$/);
     if (heading) {
       closeParagraph();
-      if (heading[1].length === 1) {
-        section += 1;
-        chapter = 0;
-        sections.push({ number: section, title: headingText(heading[2]) });
-      } else {
-        if (section === 0) {
-          section = 1;
-          sections.push({ number: 1, title: "" });
-        }
-        chapter += 1;
-        chapters.push({ section, index: chapter, title: headingText(heading[2]) });
-      }
+      openHeading(heading[1].length, heading[2]);
     } else if (raw.startsWith("# ")) {
       closeParagraph();
       paragraph = [];

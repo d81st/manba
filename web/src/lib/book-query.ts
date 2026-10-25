@@ -3,7 +3,9 @@
 // "1:235b": a page is cut only where a chapter starts on it); the Tafsir of
 // Ibn Kathir by surah and ayah ("Ибн Касир 2:255": the comment on ayah 255,
 // 2:0 what is said of the surah before its first ayah, 0:12 a part of the
-// introduction, 2:125b the second comment on one ayah). No database here.
+// introduction, 2:125b the second comment on one ayah). Kitab al-Sab'a of Ibn
+// Mujahid and Ansab al-ashraf of al-Baladhuri are cited by volume and page as
+// the Sira ("Ибн Муджахид 1:120", "Ансаб 5:175"). No database here.
 import { parseHadithQuery, parseVariant, variantLetters } from "./hadith-query.ts";
 
 export type BookScheme = "page" | "ayah";
@@ -14,6 +16,16 @@ export const BOOKS: Record<string, { names: string[]; label: string; scheme: Boo
     names: ["ибн касир", "ибн касира", "тафсир ибн касира", "ibn kathir"],
     label: "Ибн Касир",
     scheme: "ayah",
+  },
+  sabaa_ibn_mujahid: {
+    names: ["ибн муджахид", "ибн муджахида", "китаб ас-саба", "ibn mujahid"],
+    label: "Ибн Муджахид",
+    scheme: "page",
+  },
+  ansab_baladhuri: {
+    names: ["ансаб", "ансаб аль-ашраф", "балазури ансаб", "ansab"],
+    label: "Ансаб",
+    scheme: "page",
   },
 };
 export const BOOK_IDS = Object.keys(BOOKS);
