@@ -1,6 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
+import { matchConditions } from "@/lib/search-sql";
 
 export type SuraSummary = {
   number: number;
@@ -127,14 +128,14 @@ function toResult(rows: HitRow[]): SearchResult {
 // Arabic version (Uthmani or standard spelling). "diacritics" picks the
 // vocalized search column.
 export async function searchText(patterns: string[], diacritics: boolean): Promise<SearchResult> {
-  const column = diacritics ? "m.search_vocalized" : "m.search_plain";
+  const match = matchConditions("m", patterns, diacritics, 1);
   const { rows } = await db().query<HitRow>(
     `${HITS} AND a.address IN (
        SELECT m.address FROM texts m JOIN text_versions mv ON mv.id = m.version_id
        WHERE mv.work_id = 'quran' AND mv.language = 'ar' AND mv.kind = 'original'
-         AND mv.status = 'published' AND ${column} LIKE ALL ($1::text[]))
+         AND mv.status = 'published' AND ${match.sql})
      ORDER BY a.ordinal LIMIT ${SEARCH_LIMIT}`,
-    [patterns],
+    match.params,
   );
   return toResult(rows);
 }
@@ -225,7 +226,7 @@ export async function getMapData(): Promise<MapSura[]> {
 
 // Addresses ("2:255") of every ayah matching a text search, without a limit.
 export async function searchAddresses(patterns: string[], diacritics: boolean): Promise<string[]> {
-  const column = diacritics ? "m.search_vocalized" : "m.search_plain";
+  const match = matchConditions("m", patterns, diacritics, 1);
   const { rows } = await db().query<{ address: string }>(
     `SELECT DISTINCT a.address::text AS address, a.ordinal
      FROM texts m
@@ -233,9 +234,9 @@ export async function searchAddresses(patterns: string[], diacritics: boolean): 
      JOIN addresses a ON a.address = m.address
      WHERE mv.work_id = 'quran' AND mv.language = 'ar' AND mv.kind = 'original'
        AND mv.status = 'published' AND a.level = 'ayah' AND a.status = 'active'
-       AND ${column} LIKE ALL ($1::text[])
+       AND ${match.sql}
      ORDER BY a.ordinal`,
-    [patterns],
+    match.params,
   );
   return rows.map((row) => row.address.split(".").slice(1).join(":"));
 }

@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { bookAnchor, bookLabel, bookScheme } from "@/lib/book-query";
 import { db } from "@/lib/db";
+import { matchConditions } from "@/lib/search-sql";
 import { type Attribution, primaryVersion, shortTitle } from "@/lib/hadith";
 
 // Books with their own references (docs/ADDRESSES.md): the Sira of Ibn Hisham,
@@ -272,8 +273,8 @@ export async function searchBook(
 ): Promise<{ hits: BookHit[]; total: number }> {
   const version = await primaryVersion(workId);
   if (!version) return { hits: [], total: 0 };
-  const column = diacritics ? "t.search_vocalized" : "t.search_plain";
-  const conditions = patterns.map((_, i) => `${column} LIKE $${i + 2}`).join(" AND ");
+  const match = matchConditions("t", patterns, diacritics, 2);
+  const conditions = match.sql;
   const { rows } = await db().query<{
     path: number[];
     pieces: number;
@@ -297,7 +298,7 @@ export async function searchBook(
        LIMIT ${BOOK_SEARCH_LIMIT}
      ) h
      ORDER BY h.ordinal`,
-    [version.id, ...patterns],
+    [version.id, ...match.params],
   );
   return {
     total: rows[0]?.total ?? 0,

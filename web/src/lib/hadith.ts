@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { bookLabel, bookPath, isBook } from "@/lib/book-query";
 import { db } from "@/lib/db";
+import { matchConditions } from "@/lib/search-sql";
 import { COLLECTION_ORDER, hadithPath, refLabel, type Scheme, schemeOf } from "@/lib/hadith-query";
 
 export const HADITH_TAG = "hadith";
@@ -360,9 +361,9 @@ export async function searchHadith(
   patterns: string[],
   diacritics: boolean,
 ): Promise<{ hits: HadithHit[]; total: number }> {
-  const column = diacritics ? "t.search_vocalized" : "t.search_plain";
-  const conditions = patterns.map((_, i) => `${column} LIKE $${i + 1}`).join(" AND ");
-  const order = `$${patterns.length + 1}::text[]`;
+  const match = matchConditions("t", patterns, diacritics, 1);
+  const conditions = match.sql;
+  const order = `$${match.params.length + 1}::text[]`;
   const { rows } = await db().query<HadithHit & { total: number; workShort: string | null }>(
     `SELECT h.*, ${PATH("h.address")} AS path,
             (SELECT count(*)::int FROM section_items s
@@ -381,7 +382,7 @@ export async function searchHadith(
        LIMIT ${HADITH_SEARCH_LIMIT}
      ) h
      ORDER BY h.authority NULLS LAST, array_position(${order}, h.work) NULLS LAST, h.work, h.ordinal`,
-    [...patterns, COLLECTION_ORDER],
+    [...match.params, COLLECTION_ORDER],
   );
   const hits = rows.map((row) => ({
     work: row.work,
