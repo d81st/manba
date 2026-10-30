@@ -1,0 +1,1055 @@
+{
+ "tanakh": [
+  {
+   "n": 1,
+   "sefaria": "Genesis",
+   "synodal": "Genesis",
+   "ru": "Бытие",
+   "he": "בראשית",
+   "short": "Быт",
+   "aliases": []
+  },
+  {
+   "n": 2,
+   "sefaria": "Exodus",
+   "synodal": "Exodus",
+   "ru": "Исход",
+   "he": "שמות",
+   "short": "Исх",
+   "aliases": []
+  },
+  {
+   "n": 3,
+   "sefaria": "Leviticus",
+   "synodal": "Leviticus",
+   "ru": "Левит",
+   "he": "ויקרא",
+   "short": "Лев",
+   "aliases": []
+  },
+  {
+   "n": 4,
+   "sefaria": "Numbers",
+   "synodal": "Numbers",
+   "ru": "Числа",
+   "he": "במדבר",
+   "short": "Чис",
+   "aliases": []
+  },
+  {
+   "n": 5,
+   "sefaria": "Deuteronomy",
+   "synodal": "Deuteronomy",
+   "ru": "Второзаконие",
+   "he": "דברים",
+   "short": "Втор",
+   "aliases": []
+  },
+  {
+   "n": 6,
+   "sefaria": "Joshua",
+   "synodal": "Joshua",
+   "ru": "Иисус Навин",
+   "he": "יהושע",
+   "short": "Нав",
+   "aliases": []
+  },
+  {
+   "n": 7,
+   "sefaria": "Judges",
+   "synodal": "Judges",
+   "ru": "Судьи",
+   "he": "שופטים",
+   "short": "Суд",
+   "aliases": []
+  },
+  {
+   "n": 8,
+   "sefaria": "I Samuel",
+   "synodal": "I Samuel",
+   "ru": "1 Царств",
+   "he": "שמואל א",
+   "short": "1Цар",
+   "aliases": [
+    "1 Самуила"
+   ]
+  },
+  {
+   "n": 9,
+   "sefaria": "II Samuel",
+   "synodal": "II Samuel",
+   "ru": "2 Царств",
+   "he": "שמואל ב",
+   "short": "2Цар",
+   "aliases": [
+    "2 Самуила"
+   ]
+  },
+  {
+   "n": 10,
+   "sefaria": "I Kings",
+   "synodal": "I Kings",
+   "ru": "3 Царств",
+   "he": "מלכים א",
+   "short": "3Цар",
+   "aliases": [
+    "1 Царей"
+   ]
+  },
+  {
+   "n": 11,
+   "sefaria": "II Kings",
+   "synodal": "II Kings",
+   "ru": "4 Царств",
+   "he": "מלכים ב",
+   "short": "4Цар",
+   "aliases": [
+    "2 Царей"
+   ]
+  },
+  {
+   "n": 12,
+   "sefaria": "Isaiah",
+   "synodal": "Isaiah",
+   "ru": "Исаия",
+   "he": "ישעיהו",
+   "short": "Ис",
+   "aliases": [
+    "Исайя"
+   ]
+  },
+  {
+   "n": 13,
+   "sefaria": "Jeremiah",
+   "synodal": "Jeremiah",
+   "ru": "Иеремия",
+   "he": "ירמיהו",
+   "short": "Иер",
+   "aliases": []
+  },
+  {
+   "n": 14,
+   "sefaria": "Ezekiel",
+   "synodal": "Ezekiel",
+   "ru": "Иезекииль",
+   "he": "יחזקאל",
+   "short": "Иез",
+   "aliases": []
+  },
+  {
+   "n": 15,
+   "sefaria": "Hosea",
+   "synodal": "Hosea",
+   "ru": "Осия",
+   "he": "הושע",
+   "short": "Ос",
+   "aliases": []
+  },
+  {
+   "n": 16,
+   "sefaria": "Joel",
+   "synodal": "Joel",
+   "ru": "Иоиль",
+   "he": "יואל",
+   "short": "Иоил",
+   "aliases": []
+  },
+  {
+   "n": 17,
+   "sefaria": "Amos",
+   "synodal": "Amos",
+   "ru": "Амос",
+   "he": "עמוס",
+   "short": "Ам",
+   "aliases": []
+  },
+  {
+   "n": 18,
+   "sefaria": "Obadiah",
+   "synodal": "Obadiah",
+   "ru": "Авдий",
+   "he": "עובדיה",
+   "short": "Авд",
+   "aliases": []
+  },
+  {
+   "n": 19,
+   "sefaria": "Jonah",
+   "synodal": "Jonah",
+   "ru": "Иона",
+   "he": "יונה",
+   "short": "Ион",
+   "aliases": []
+  },
+  {
+   "n": 20,
+   "sefaria": "Micah",
+   "synodal": "Micah",
+   "ru": "Михей",
+   "he": "מיכה",
+   "short": "Мих",
+   "aliases": []
+  },
+  {
+   "n": 21,
+   "sefaria": "Nahum",
+   "synodal": "Nahum",
+   "ru": "Наум",
+   "he": "נחום",
+   "short": "Наум",
+   "aliases": []
+  },
+  {
+   "n": 22,
+   "sefaria": "Habakkuk",
+   "synodal": "Habakkuk",
+   "ru": "Аввакум",
+   "he": "חבקוק",
+   "short": "Авв",
+   "aliases": []
+  },
+  {
+   "n": 23,
+   "sefaria": "Zephaniah",
+   "synodal": "Zephaniah",
+   "ru": "Софония",
+   "he": "צפניה",
+   "short": "Соф",
+   "aliases": []
+  },
+  {
+   "n": 24,
+   "sefaria": "Haggai",
+   "synodal": "Haggai",
+   "ru": "Аггей",
+   "he": "חגי",
+   "short": "Агг",
+   "aliases": []
+  },
+  {
+   "n": 25,
+   "sefaria": "Zechariah",
+   "synodal": "Zechariah",
+   "ru": "Захария",
+   "he": "זכריה",
+   "short": "Зах",
+   "aliases": []
+  },
+  {
+   "n": 26,
+   "sefaria": "Malachi",
+   "synodal": "Malachi",
+   "ru": "Малахия",
+   "he": "מלאכי",
+   "short": "Мал",
+   "aliases": []
+  },
+  {
+   "n": 27,
+   "sefaria": "Psalms",
+   "synodal": "Psalms",
+   "ru": "Псалтирь",
+   "he": "תהלים",
+   "short": "Пс",
+   "aliases": [
+    "Псалом",
+    "Псалмы",
+    "Тегилим"
+   ]
+  },
+  {
+   "n": 28,
+   "sefaria": "Proverbs",
+   "synodal": "Proverbs",
+   "ru": "Притчи",
+   "he": "משלי",
+   "short": "Притч",
+   "aliases": []
+  },
+  {
+   "n": 29,
+   "sefaria": "Job",
+   "synodal": "Job",
+   "ru": "Иов",
+   "he": "איוב",
+   "short": "Иов",
+   "aliases": []
+  },
+  {
+   "n": 30,
+   "sefaria": "Song of Songs",
+   "synodal": "Song of Solomon",
+   "ru": "Песнь песней",
+   "he": "שיר השירים",
+   "short": "Песн",
+   "aliases": [
+    "Песнь Песней Соломона"
+   ]
+  },
+  {
+   "n": 31,
+   "sefaria": "Ruth",
+   "synodal": "Ruth",
+   "ru": "Руфь",
+   "he": "רות",
+   "short": "Руф",
+   "aliases": []
+  },
+  {
+   "n": 32,
+   "sefaria": "Lamentations",
+   "synodal": "Lamentations",
+   "ru": "Плач Иеремии",
+   "he": "איכה",
+   "short": "Плач",
+   "aliases": []
+  },
+  {
+   "n": 33,
+   "sefaria": "Ecclesiastes",
+   "synodal": "Ecclesiastes",
+   "ru": "Екклесиаст",
+   "he": "קהלת",
+   "short": "Еккл",
+   "aliases": [
+    "Экклезиаст",
+    "Коэлет"
+   ]
+  },
+  {
+   "n": 34,
+   "sefaria": "Esther",
+   "synodal": "Esther",
+   "ru": "Есфирь",
+   "he": "אסתר",
+   "short": "Есф",
+   "aliases": []
+  },
+  {
+   "n": 35,
+   "sefaria": "Daniel",
+   "synodal": "Daniel",
+   "ru": "Даниил",
+   "he": "דניאל",
+   "short": "Дан",
+   "aliases": []
+  },
+  {
+   "n": 36,
+   "sefaria": "Ezra",
+   "synodal": "Ezra",
+   "ru": "Ездра",
+   "he": "עזרא",
+   "short": "Езд",
+   "aliases": []
+  },
+  {
+   "n": 37,
+   "sefaria": "Nehemiah",
+   "synodal": "Nehemiah",
+   "ru": "Неемия",
+   "he": "נחמיה",
+   "short": "Неем",
+   "aliases": []
+  },
+  {
+   "n": 38,
+   "sefaria": "I Chronicles",
+   "synodal": "I Chronicles",
+   "ru": "1 Паралипоменон",
+   "he": "דברי הימים א",
+   "short": "1Пар",
+   "aliases": [
+    "1 Хроник"
+   ]
+  },
+  {
+   "n": 39,
+   "sefaria": "II Chronicles",
+   "synodal": "II Chronicles",
+   "ru": "2 Паралипоменон",
+   "he": "דברי הימים ב",
+   "short": "2Пар",
+   "aliases": [
+    "2 Хроник"
+   ]
+  }
+ ],
+ "nt": [
+  {
+   "n": 1,
+   "sblgnt": "Matt",
+   "synodal": "Matthew",
+   "ru": "От Матфея",
+   "short": "Мф",
+   "aliases": [
+    "Матфей",
+    "Матфея"
+   ]
+  },
+  {
+   "n": 2,
+   "sblgnt": "Mark",
+   "synodal": "Mark",
+   "ru": "От Марка",
+   "short": "Мк",
+   "aliases": [
+    "Марк",
+    "Марка"
+   ]
+  },
+  {
+   "n": 3,
+   "sblgnt": "Luke",
+   "synodal": "Luke",
+   "ru": "От Луки",
+   "short": "Лк",
+   "aliases": [
+    "Лука",
+    "Луки"
+   ]
+  },
+  {
+   "n": 4,
+   "sblgnt": "John",
+   "synodal": "John",
+   "ru": "От Иоанна",
+   "short": "Ин",
+   "aliases": [
+    "Иоанн",
+    "Иоанна"
+   ]
+  },
+  {
+   "n": 5,
+   "sblgnt": "Acts",
+   "synodal": "Acts",
+   "ru": "Деяния",
+   "short": "Деян",
+   "aliases": [
+    "Деяния апостолов"
+   ]
+  },
+  {
+   "n": 6,
+   "sblgnt": "Rom",
+   "synodal": "Romans",
+   "ru": "Римлянам",
+   "short": "Рим",
+   "aliases": []
+  },
+  {
+   "n": 7,
+   "sblgnt": "1Cor",
+   "synodal": "I Corinthians",
+   "ru": "1 Коринфянам",
+   "short": "1Кор",
+   "aliases": []
+  },
+  {
+   "n": 8,
+   "sblgnt": "2Cor",
+   "synodal": "II Corinthians",
+   "ru": "2 Коринфянам",
+   "short": "2Кор",
+   "aliases": []
+  },
+  {
+   "n": 9,
+   "sblgnt": "Gal",
+   "synodal": "Galatians",
+   "ru": "Галатам",
+   "short": "Гал",
+   "aliases": []
+  },
+  {
+   "n": 10,
+   "sblgnt": "Eph",
+   "synodal": "Ephesians",
+   "ru": "Ефесянам",
+   "short": "Еф",
+   "aliases": []
+  },
+  {
+   "n": 11,
+   "sblgnt": "Phil",
+   "synodal": "Philippians",
+   "ru": "Филиппийцам",
+   "short": "Флп",
+   "aliases": []
+  },
+  {
+   "n": 12,
+   "sblgnt": "Col",
+   "synodal": "Colossians",
+   "ru": "Колоссянам",
+   "short": "Кол",
+   "aliases": []
+  },
+  {
+   "n": 13,
+   "sblgnt": "1Thess",
+   "synodal": "I Thessalonians",
+   "ru": "1 Фессалоникийцам",
+   "short": "1Фес",
+   "aliases": []
+  },
+  {
+   "n": 14,
+   "sblgnt": "2Thess",
+   "synodal": "II Thessalonians",
+   "ru": "2 Фессалоникийцам",
+   "short": "2Фес",
+   "aliases": []
+  },
+  {
+   "n": 15,
+   "sblgnt": "1Tim",
+   "synodal": "I Timothy",
+   "ru": "1 Тимофею",
+   "short": "1Тим",
+   "aliases": []
+  },
+  {
+   "n": 16,
+   "sblgnt": "2Tim",
+   "synodal": "II Timothy",
+   "ru": "2 Тимофею",
+   "short": "2Тим",
+   "aliases": []
+  },
+  {
+   "n": 17,
+   "sblgnt": "Titus",
+   "synodal": "Titus",
+   "ru": "Титу",
+   "short": "Тит",
+   "aliases": []
+  },
+  {
+   "n": 18,
+   "sblgnt": "Phlm",
+   "synodal": "Philemon",
+   "ru": "Филимону",
+   "short": "Флм",
+   "aliases": []
+  },
+  {
+   "n": 19,
+   "sblgnt": "Heb",
+   "synodal": "Hebrews",
+   "ru": "Евреям",
+   "short": "Евр",
+   "aliases": []
+  },
+  {
+   "n": 20,
+   "sblgnt": "Jas",
+   "synodal": "James",
+   "ru": "Иакова",
+   "short": "Иак",
+   "aliases": []
+  },
+  {
+   "n": 21,
+   "sblgnt": "1Pet",
+   "synodal": "I Peter",
+   "ru": "1 Петра",
+   "short": "1Пет",
+   "aliases": []
+  },
+  {
+   "n": 22,
+   "sblgnt": "2Pet",
+   "synodal": "II Peter",
+   "ru": "2 Петра",
+   "short": "2Пет",
+   "aliases": []
+  },
+  {
+   "n": 23,
+   "sblgnt": "1John",
+   "synodal": "I John",
+   "ru": "1 Иоанна",
+   "short": "1Ин",
+   "aliases": []
+  },
+  {
+   "n": 24,
+   "sblgnt": "2John",
+   "synodal": "II John",
+   "ru": "2 Иоанна",
+   "short": "2Ин",
+   "aliases": []
+  },
+  {
+   "n": 25,
+   "sblgnt": "3John",
+   "synodal": "III John",
+   "ru": "3 Иоанна",
+   "short": "3Ин",
+   "aliases": []
+  },
+  {
+   "n": 26,
+   "sblgnt": "Jude",
+   "synodal": "Jude",
+   "ru": "Иуды",
+   "short": "Иуд",
+   "aliases": []
+  },
+  {
+   "n": 27,
+   "sblgnt": "Rev",
+   "synodal": "Revelation of John",
+   "ru": "Откровение",
+   "short": "Откр",
+   "aliases": [
+    "Апокалипсис"
+   ]
+  }
+ ],
+ "mishnah": [
+  {
+   "n": 1,
+   "sefaria": "Mishnah Berakhot",
+   "ru": "Брахот",
+   "he": "ברכות",
+   "aliases": []
+  },
+  {
+   "n": 2,
+   "sefaria": "Mishnah Peah",
+   "ru": "Пеа",
+   "he": "פאה",
+   "aliases": []
+  },
+  {
+   "n": 3,
+   "sefaria": "Mishnah Demai",
+   "ru": "Демай",
+   "he": "דמאי",
+   "aliases": []
+  },
+  {
+   "n": 4,
+   "sefaria": "Mishnah Kilayim",
+   "ru": "Килаим",
+   "he": "כלאים",
+   "aliases": []
+  },
+  {
+   "n": 5,
+   "sefaria": "Mishnah Sheviit",
+   "ru": "Швиит",
+   "he": "שביעית",
+   "aliases": []
+  },
+  {
+   "n": 6,
+   "sefaria": "Mishnah Terumot",
+   "ru": "Трумот",
+   "he": "תרומות",
+   "aliases": []
+  },
+  {
+   "n": 7,
+   "sefaria": "Mishnah Maasrot",
+   "ru": "Маасрот",
+   "he": "מעשרות",
+   "aliases": []
+  },
+  {
+   "n": 8,
+   "sefaria": "Mishnah Maaser Sheni",
+   "ru": "Маасер шени",
+   "he": "מעשר שני",
+   "aliases": []
+  },
+  {
+   "n": 9,
+   "sefaria": "Mishnah Challah",
+   "ru": "Хала",
+   "he": "חלה",
+   "aliases": []
+  },
+  {
+   "n": 10,
+   "sefaria": "Mishnah Orlah",
+   "ru": "Орла",
+   "he": "ערלה",
+   "aliases": []
+  },
+  {
+   "n": 11,
+   "sefaria": "Mishnah Bikkurim",
+   "ru": "Бикурим",
+   "he": "ביכורים",
+   "aliases": []
+  },
+  {
+   "n": 12,
+   "sefaria": "Mishnah Shabbat",
+   "ru": "Шабат",
+   "he": "שבת",
+   "aliases": []
+  },
+  {
+   "n": 13,
+   "sefaria": "Mishnah Eruvin",
+   "ru": "Эрувин",
+   "he": "עירובין",
+   "aliases": []
+  },
+  {
+   "n": 14,
+   "sefaria": "Mishnah Pesachim",
+   "ru": "Псахим",
+   "he": "פסחים",
+   "aliases": []
+  },
+  {
+   "n": 15,
+   "sefaria": "Mishnah Shekalim",
+   "ru": "Шкалим",
+   "he": "שקלים",
+   "aliases": []
+  },
+  {
+   "n": 16,
+   "sefaria": "Mishnah Yoma",
+   "ru": "Йома",
+   "he": "יומא",
+   "aliases": []
+  },
+  {
+   "n": 17,
+   "sefaria": "Mishnah Sukkah",
+   "ru": "Сука",
+   "he": "סוכה",
+   "aliases": []
+  },
+  {
+   "n": 18,
+   "sefaria": "Mishnah Beitzah",
+   "ru": "Бейца",
+   "he": "ביצה",
+   "aliases": []
+  },
+  {
+   "n": 19,
+   "sefaria": "Mishnah Rosh Hashanah",
+   "ru": "Рош ха-Шана",
+   "he": "ראש השנה",
+   "aliases": []
+  },
+  {
+   "n": 20,
+   "sefaria": "Mishnah Ta'anit",
+   "ru": "Таанит",
+   "he": "תענית",
+   "aliases": []
+  },
+  {
+   "n": 21,
+   "sefaria": "Mishnah Megillah",
+   "ru": "Мегила",
+   "he": "מגילה",
+   "aliases": []
+  },
+  {
+   "n": 22,
+   "sefaria": "Mishnah Moed Katan",
+   "ru": "Моэд катан",
+   "he": "מועד קטן",
+   "aliases": []
+  },
+  {
+   "n": 23,
+   "sefaria": "Mishnah Chagigah",
+   "ru": "Хагига",
+   "he": "חגיגה",
+   "aliases": []
+  },
+  {
+   "n": 24,
+   "sefaria": "Mishnah Yevamot",
+   "ru": "Йевамот",
+   "he": "יבמות",
+   "aliases": []
+  },
+  {
+   "n": 25,
+   "sefaria": "Mishnah Ketubot",
+   "ru": "Ктубот",
+   "he": "כתובות",
+   "aliases": []
+  },
+  {
+   "n": 26,
+   "sefaria": "Mishnah Nedarim",
+   "ru": "Недарим",
+   "he": "נדרים",
+   "aliases": []
+  },
+  {
+   "n": 27,
+   "sefaria": "Mishnah Nazir",
+   "ru": "Назир",
+   "he": "נזיר",
+   "aliases": []
+  },
+  {
+   "n": 28,
+   "sefaria": "Mishnah Sotah",
+   "ru": "Сота",
+   "he": "סוטה",
+   "aliases": []
+  },
+  {
+   "n": 29,
+   "sefaria": "Mishnah Gittin",
+   "ru": "Гитин",
+   "he": "גיטין",
+   "aliases": []
+  },
+  {
+   "n": 30,
+   "sefaria": "Mishnah Kiddushin",
+   "ru": "Кидушин",
+   "he": "קידושין",
+   "aliases": []
+  },
+  {
+   "n": 31,
+   "sefaria": "Mishnah Bava Kamma",
+   "ru": "Бава кама",
+   "he": "בבא קמא",
+   "aliases": []
+  },
+  {
+   "n": 32,
+   "sefaria": "Mishnah Bava Metzia",
+   "ru": "Бава мециа",
+   "he": "בבא מציעא",
+   "aliases": []
+  },
+  {
+   "n": 33,
+   "sefaria": "Mishnah Bava Batra",
+   "ru": "Бава батра",
+   "he": "בבא בתרא",
+   "aliases": []
+  },
+  {
+   "n": 34,
+   "sefaria": "Mishnah Sanhedrin",
+   "ru": "Санхедрин",
+   "he": "סנהדרין",
+   "aliases": []
+  },
+  {
+   "n": 35,
+   "sefaria": "Mishnah Makkot",
+   "ru": "Макот",
+   "he": "מכות",
+   "aliases": []
+  },
+  {
+   "n": 36,
+   "sefaria": "Mishnah Shevuot",
+   "ru": "Швуот",
+   "he": "שבועות",
+   "aliases": []
+  },
+  {
+   "n": 37,
+   "sefaria": "Mishnah Eduyot",
+   "ru": "Эдуйот",
+   "he": "עדיות",
+   "aliases": []
+  },
+  {
+   "n": 38,
+   "sefaria": "Mishnah Avodah Zarah",
+   "ru": "Авода зара",
+   "he": "עבודה זרה",
+   "aliases": []
+  },
+  {
+   "n": 39,
+   "sefaria": "Pirkei Avot",
+   "ru": "Пиркей авот",
+   "he": "אבות",
+   "aliases": []
+  },
+  {
+   "n": 40,
+   "sefaria": "Mishnah Horayot",
+   "ru": "Орайот",
+   "he": "הוריות",
+   "aliases": []
+  },
+  {
+   "n": 41,
+   "sefaria": "Mishnah Zevachim",
+   "ru": "Зевахим",
+   "he": "זבחים",
+   "aliases": []
+  },
+  {
+   "n": 42,
+   "sefaria": "Mishnah Menachot",
+   "ru": "Менахот",
+   "he": "מנחות",
+   "aliases": []
+  },
+  {
+   "n": 43,
+   "sefaria": "Mishnah Chullin",
+   "ru": "Хулин",
+   "he": "חולין",
+   "aliases": []
+  },
+  {
+   "n": 44,
+   "sefaria": "Mishnah Bekhorot",
+   "ru": "Бехорот",
+   "he": "בכורות",
+   "aliases": []
+  },
+  {
+   "n": 45,
+   "sefaria": "Mishnah Arakhin",
+   "ru": "Арахин",
+   "he": "ערכין",
+   "aliases": []
+  },
+  {
+   "n": 46,
+   "sefaria": "Mishnah Temurah",
+   "ru": "Тмура",
+   "he": "תמורה",
+   "aliases": []
+  },
+  {
+   "n": 47,
+   "sefaria": "Mishnah Keritot",
+   "ru": "Критот",
+   "he": "כריתות",
+   "aliases": []
+  },
+  {
+   "n": 48,
+   "sefaria": "Mishnah Meilah",
+   "ru": "Меила",
+   "he": "מעילה",
+   "aliases": []
+  },
+  {
+   "n": 49,
+   "sefaria": "Mishnah Tamid",
+   "ru": "Тамид",
+   "he": "תמיד",
+   "aliases": []
+  },
+  {
+   "n": 50,
+   "sefaria": "Mishnah Middot",
+   "ru": "Мидот",
+   "he": "מדות",
+   "aliases": []
+  },
+  {
+   "n": 51,
+   "sefaria": "Mishnah Kinnim",
+   "ru": "Киним",
+   "he": "קנים",
+   "aliases": []
+  },
+  {
+   "n": 52,
+   "sefaria": "Mishnah Kelim",
+   "ru": "Келим",
+   "he": "כלים",
+   "aliases": []
+  },
+  {
+   "n": 53,
+   "sefaria": "Mishnah Oholot",
+   "ru": "Оалот",
+   "he": "אהלות",
+   "aliases": []
+  },
+  {
+   "n": 54,
+   "sefaria": "Mishnah Negaim",
+   "ru": "Негаим",
+   "he": "נגעים",
+   "aliases": []
+  },
+  {
+   "n": 55,
+   "sefaria": "Mishnah Parah",
+   "ru": "Пара",
+   "he": "פרה",
+   "aliases": []
+  },
+  {
+   "n": 56,
+   "sefaria": "Mishnah Tahorot",
+   "ru": "Тахорот",
+   "he": "טהרות",
+   "aliases": []
+  },
+  {
+   "n": 57,
+   "sefaria": "Mishnah Mikvaot",
+   "ru": "Микваот",
+   "he": "מקואות",
+   "aliases": []
+  },
+  {
+   "n": 58,
+   "sefaria": "Mishnah Niddah",
+   "ru": "Нида",
+   "he": "נדה",
+   "aliases": []
+  },
+  {
+   "n": 59,
+   "sefaria": "Mishnah Makhshirin",
+   "ru": "Махширин",
+   "he": "מכשירין",
+   "aliases": []
+  },
+  {
+   "n": 60,
+   "sefaria": "Mishnah Zavim",
+   "ru": "Завим",
+   "he": "זבים",
+   "aliases": []
+  },
+  {
+   "n": 61,
+   "sefaria": "Mishnah Tevul Yom",
+   "ru": "Твуль йом",
+   "he": "טבול יום",
+   "aliases": []
+  },
+  {
+   "n": 62,
+   "sefaria": "Mishnah Yadayim",
+   "ru": "Ядаим",
+   "he": "ידים",
+   "aliases": []
+  },
+  {
+   "n": 63,
+   "sefaria": "Mishnah Oktzin",
+   "ru": "Укцин",
+   "he": "עוקצין",
+   "aliases": []
+  }
+ ]
+}

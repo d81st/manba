@@ -51,6 +51,7 @@ const LINKS: Partial<Record<SectionKey, string>> = {
   quranText: "/quran-text",
   sira: "/sira",
   cities: "/cities",
+  origins: "/origins",
 };
 
 export default function Home() {

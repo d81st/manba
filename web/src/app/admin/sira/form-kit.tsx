@@ -8,17 +8,19 @@ import type { Messages } from "@/i18n";
 import type { InputProblem } from "@/lib/glossary-input";
 
 export type SiraStrings = Messages["admin"]["sira"];
+// What FormNotes and messageOf need: the forms of the sira and of «Истоки и связи» share them.
+export type FormStrings = { saved: string; errors: { invalid: string } };
 
 // Radix Select takes no empty value: "none" stands for it.
 const NONE = "__none";
 
-export function messageOf(t: SiraStrings, problem?: InputProblem) {
+export function messageOf(t: FormStrings, problem?: InputProblem) {
   if (!problem) return undefined;
-  const text = t.errors[problem.code as keyof SiraStrings["errors"]] ?? t.errors.invalid;
+  const text = (t.errors as Record<string, string>)[problem.code] ?? t.errors.invalid;
   return `${text}${problem.detail ? `: ${problem.detail}` : ""}`;
 }
 
-export function FormNotes({ problems, saved, pending, t }: { problems: InputProblem[]; saved?: boolean; pending: boolean; t: SiraStrings }) {
+export function FormNotes({ problems, saved, pending, t }: { problems: InputProblem[]; saved?: boolean; pending: boolean; t: FormStrings }) {
   return (
     <>
       {problems.length > 0 && (

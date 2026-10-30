@@ -14,6 +14,7 @@ import { parseOpenitiTafsir } from "../src/lib/import/openiti-tafsir.ts";
 import { fadailToAnnotated, masahifToAnnotated } from "../src/lib/import/openiti-jk.ts";
 import { parseOpenitiRunning } from "../src/lib/import/openiti-running.ts";
 import { parseTanzil } from "../src/lib/import/tanzil.ts";
+import { plainKey } from "../src/lib/plain-key.ts";
 
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "sources");
 const ACTOR = "import:tanzil";
@@ -1087,6 +1088,233 @@ async function importSimilarTexts(client: pg.Client) {
   }
 }
 
+// Texts of other religions («внешние источники», canon external; docs/PLAN.md
+// «Истоки и связи»), prepared by data/sources/external/prepare.py: one TSV
+// per version, "address<TAB>text". The original version of a work creates its
+// books, chapters and verses; a translation adds its text to those addresses.
+type ExternalSource = {
+  key: string;
+  file: string;
+  work: { id: string; category: string; titles: Record<string, string>; levels: { key: string; names: Record<string, string> }[] };
+  versionId: string;
+  language: string;
+  kind: "original" | "translation";
+  versionTitle: string;
+  translator?: string;
+  source: { id: string; title: string; url: string; license: string; notice: string; version: string };
+  minTexts: number;
+};
+
+const EXTERNAL_BOOKS = JSON.parse(readFileSync(join(DATA_DIR, "..", "..", "web", "src", "lib", "external-books.json"), "utf8"));
+const RETRIEVED_EXTERNAL = "2026-10-30";
+const VERSE_LEVELS = [
+  { key: "book", names: { ru: "книга" } },
+  { key: "chapter", names: { ru: "глава" } },
+  { key: "verse", names: { ru: "стих" } },
+];
+const TANAKH_WORK = { id: "tanakh", category: "scripture", titles: { ru: "Еврейская Библия (Танах)", he: "תנ״ך" }, levels: VERSE_LEVELS };
+const NT_WORK = { id: "nt", category: "scripture", titles: { ru: "Новый Завет", grc: "Ἡ Καινὴ Διαθήκη" }, levels: VERSE_LEVELS };
+const MISHNAH_WORK = {
+  id: "mishnah",
+  category: "rabbinic",
+  titles: { ru: "Мишна", he: "משנה" },
+  levels: [
+    { key: "tractate", names: { ru: "трактат" } },
+    { key: "chapter", names: { ru: "глава" } },
+    { key: "mishnah", names: { ru: "мишна" } },
+  ],
+};
+const SYNODAL_SOURCE = {
+  id: "scrollmapper.rus-synodal",
+  title: "Синодальный перевод Библии (1876), scrollmapper/bible_databases, RusSynodal",
+  url: "https://github.com/scrollmapper/bible_databases/tree/master/sources/ru/RusSynodal",
+  license: "Public Domain",
+  notice: "License: Public Domain (sources/ru/RusSynodal/README.md). Нумерация приведена к еврейскому тексту: data/sources/external/README.md.",
+  version: "59b18c5 (2026-10-24)",
+};
+const EXTERNAL_SOURCES: ExternalSource[] = [
+  {
+    key: "external:tanakh-he:v1",
+    file: "tanakh-he.tsv",
+    work: TANAKH_WORK,
+    versionId: "tanakh.he.wlc",
+    language: "he",
+    kind: "original",
+    versionTitle: "Еврейский текст с огласовками (Ленинградский кодекс, tanach.us)",
+    source: {
+      id: "sefaria.tanach-nikkud",
+      title: "Sefaria Export: Tanach with Nikkud (tanach.us, Westminster Leningrad Codex)",
+      url: "https://github.com/Sefaria/Sefaria-Export",
+      license: "Public Domain",
+      notice: "Sefaria: license «Public Domain», versionSource http://www.tanach.us/Tanach.xml",
+      version: "books.json de1d27b (2026-10-02)",
+    },
+    minTexts: 23_000,
+  },
+  {
+    key: "external:tanakh-ru:v1",
+    file: "tanakh-ru.tsv",
+    work: TANAKH_WORK,
+    versionId: "tanakh.ru.synodal",
+    language: "ru",
+    kind: "translation",
+    versionTitle: "Синодальный перевод (1876)",
+    translator: "Синодальный перевод",
+    source: SYNODAL_SOURCE,
+    minTexts: 22_000,
+  },
+  {
+    key: "external:nt-grc:v1",
+    file: "nt-grc.tsv",
+    work: NT_WORK,
+    versionId: "nt.grc.sblgnt",
+    language: "grc",
+    kind: "original",
+    versionTitle: "SBL Greek New Testament",
+    source: {
+      id: "sblgnt",
+      title: "SBL Greek New Testament (SBLGNT)",
+      url: "https://github.com/LogosBible/SBLGNT",
+      license: "CC BY 4.0",
+      notice: "Copyright 2010 by the Society of Biblical Literature and Logos Bible Software. Licensed under CC BY 4.0.",
+      version: "1.2 (2023-07-10)",
+    },
+    minTexts: 7_900,
+  },
+  {
+    key: "external:nt-ru:v1",
+    file: "nt-ru.tsv",
+    work: NT_WORK,
+    versionId: "nt.ru.synodal",
+    language: "ru",
+    kind: "translation",
+    versionTitle: "Синодальный перевод (1876)",
+    translator: "Синодальный перевод",
+    source: SYNODAL_SOURCE,
+    minTexts: 7_900,
+  },
+  {
+    key: "external:mishnah-he:v1",
+    file: "mishnah-he.tsv",
+    work: MISHNAH_WORK,
+    versionId: "mishnah.he.vilna",
+    language: "he",
+    kind: "original",
+    versionTitle: "Мишна, изд. Ромм, Вильна 1913",
+    source: {
+      id: "sefaria.mishnah-vilna",
+      title: "Sefaria Export: Mishnah, ed. Romm, Vilna 1913",
+      url: "https://github.com/Sefaria/Sefaria-Export",
+      license: "Public Domain",
+      notice: "Sefaria: license «Public Domain», versionSource https://www.nli.org.il/he/books/NNL_ALEPH001741739",
+      version: "books.json de1d27b (2026-10-02)",
+    },
+    minTexts: 4_000,
+  },
+];
+
+async function importExternal(client: pg.Client, src: ExternalSource) {
+  const done = await client.query("SELECT 1 FROM import_batches WHERE key = $1", [src.key]);
+  if (done.rowCount) {
+    console.log(`Import skipped: ${src.key} is already loaded.`);
+    return;
+  }
+  const work = src.work.id;
+  const books: { n: number; ru: string; short?: string; he?: string }[] = EXTERNAL_BOOKS[work];
+  const rows = readFileSync(join(DATA_DIR, "external", src.file), "utf8")
+    .split("\n")
+    .filter(Boolean)
+    .map((line, i) => {
+      const [address, text] = line.split("\t");
+      const m = address.match(new RegExp(`^${work}\\.(\\d+)\\.(\\d+)\\.(\\d+)$`));
+      if (!m || !text) throw new Error(`${src.file}:${i + 1}: not "address, text"`);
+      if (!books.some((b) => b.n === Number(m[1]))) throw new Error(`${src.file}:${i + 1}: no book ${m[1]}`);
+      return { address, text, path: m.slice(1).map(Number) };
+    });
+  if (rows.length < src.minTexts) throw new Error(`${src.file}: only ${rows.length} texts`);
+  if (new Set(rows.map((r) => r.address)).size !== rows.length) throw new Error(`${src.file}: repeated addresses`);
+
+  await client.query("BEGIN");
+  try {
+    await client.query(
+      `INSERT INTO sources (id, title, url, license, license_text, version, retrieved_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO NOTHING`,
+      [src.source.id, src.source.title, src.source.url, src.source.license, src.source.notice, src.source.version, RETRIEVED_EXTERNAL],
+    );
+    const batch = await client.query(
+      `INSERT INTO import_batches (key, source_id, actor, summary) VALUES ($1, $2, 'import:external', $3) RETURNING id`,
+      [src.key, src.source.id, json({ texts: rows.length })],
+    );
+    const batchId = batch.rows[0].id;
+    if (src.kind === "original") {
+      await client.query(
+        `INSERT INTO works (id, canon, category, titles, levels, status)
+         VALUES ($1, 'external', $2, $3, $4, 'published') ON CONFLICT (id) DO NOTHING`,
+        [work, src.work.category, json(src.work.titles), json(src.work.levels)],
+      );
+      const [bookLevel, chapterLevel, verseLevel] = src.work.levels.map((l) => l.key);
+      const used = [...new Set(rows.map((r) => r.path[0]))];
+      await client.query(
+        `INSERT INTO addresses (address, work_id, level, names, batch_id)
+         SELECT a::extensions.ltree, $3, $4, n::jsonb, $5 FROM unnest($1::text[], $2::text[]) AS t(a, n)`,
+        [
+          used.map((n) => `${work}.${n}`),
+          used.map((n) => {
+            const b = books.find((x) => x.n === n)!;
+            return json({ ru: b.ru, short: b.short ?? b.ru, [src.language]: b.he ?? "" });
+          }),
+          work,
+          bookLevel,
+          batchId,
+        ],
+      );
+      const chapters = [...new Set(rows.map((r) => `${work}.${r.path[0]}.${r.path[1]}`))];
+      await client.query(
+        `INSERT INTO addresses (address, work_id, level, batch_id)
+         SELECT a::extensions.ltree, $2, $3, $4 FROM unnest($1::text[]) AS a`,
+        [chapters, work, chapterLevel, batchId],
+      );
+      await client.query(
+        `INSERT INTO addresses (address, work_id, level, ordinal, batch_id)
+         SELECT a::extensions.ltree, $3, $4, o, $5 FROM unnest($1::text[], $2::int[]) AS t(a, o)`,
+        [rows.map((r) => r.address), rows.map((_, i) => i + 1), work, verseLevel, batchId],
+      );
+    } else {
+      const missing = await client.query(
+        `SELECT a FROM unnest($1::text[]) AS a
+         WHERE NOT EXISTS (SELECT 1 FROM addresses x WHERE x.address = a::extensions.ltree) LIMIT 5`,
+        [rows.map((r) => r.address)],
+      );
+      if (missing.rowCount) throw new Error(`${src.file}: no address ${missing.rows.map((r) => r.a).join(", ")}`);
+    }
+    await client.query(
+      `INSERT INTO text_versions
+         (id, work_id, language, kind, title, translator, source_id, verification, is_primary, status, batch_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'unverified', true, 'draft', $8)`,
+      [src.versionId, work, src.language, src.kind, src.versionTitle, src.translator ?? null, src.source.id, batchId],
+    );
+    for (let i = 0; i < rows.length; i += 5000) {
+      const part = rows.slice(i, i + 5000);
+      await client.query(
+        `INSERT INTO texts (address, version_id, content, search_plain, batch_id)
+         SELECT a::extensions.ltree, $4, c, p, $5 FROM unnest($1::text[], $2::text[], $3::text[]) AS t(a, c, p)`,
+        [part.map((r) => r.address), part.map((r) => r.text), part.map((r) => plainKey(r.text)), src.versionId, batchId],
+      );
+    }
+    await client.query("UPDATE text_versions SET status = 'published' WHERE id = $1", [src.versionId]);
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, new_value, reason, actor)
+       VALUES ('import_batch', $1, 'created', $2, $3, 'import:external')`,
+      [src.key, json({ batchId, version: src.versionId, texts: rows.length }), `Загрузка внешнего источника: ${src.work.titles.ru}, ${src.versionTitle}`],
+    );
+    await client.query("COMMIT");
+    console.log(`Import done: ${src.key} (${rows.length} texts).`);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  }
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     console.log("Import skipped: DATABASE_URL is not set.");
@@ -1109,6 +1337,7 @@ async function main() {
     await importOpenitiHadith(client, IBN_KATHIR);
     for (const src of [MASAHIF, FADAIL_ABU_UBAYD, SABAA_IBN_MUJAHID, ANSAB_BALADHURI]) await importOpenitiHadith(client, src);
     for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
+    for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
   } finally {
     await client.end();
   }
