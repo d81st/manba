@@ -4,7 +4,7 @@
 // is external-books.json (also read by data/sources/external/prepare.py). No database here.
 import books from "./external-books.json";
 
-export type ExternalWork = "tanakh" | "nt" | "mishnah";
+export type ExternalWork = "tanakh" | "nt" | "mishnah" | "pre";
 export type ExternalBook = { n: number; ru: string; short: string; original: string; aliases: string[] };
 
 const toBook = (b: { n: number; ru: string; short?: string; he?: string; aliases: string[] }): ExternalBook => ({
@@ -19,6 +19,7 @@ export const EXTERNAL_WORKS: Record<ExternalWork, { books: ExternalBook[]; langu
   tanakh: { books: books.tanakh.map(toBook), language: "he", dir: "rtl", prefix: "" },
   nt: { books: books.nt.map(toBook), language: "grc", dir: "ltr", prefix: "" },
   mishnah: { books: books.mishnah.map(toBook), language: "he", dir: "rtl", prefix: "Мишна " },
+  pre: { books: books.pre.map(toBook), language: "he", dir: "rtl", prefix: "" },
 };
 export const EXTERNAL_IDS = Object.keys(EXTERNAL_WORKS) as ExternalWork[];
 
@@ -67,7 +68,7 @@ const MAX_VERSES = 40;
 // or a machine address "tanakh.2.21.24" -> addresses of the verses; null if not a reference.
 export function parseExternalRef(text: string): string[] | null {
   const token = text.trim();
-  const machine = token.match(/^(tanakh|nt|mishnah)\.(\d+)\.(\d+)\.(\d+)(?:-(\d+))?$/);
+  const machine = token.match(/^(tanakh|nt|mishnah|pre)\.(\d+)\.(\d+)\.(\d+)(?:-(\d+))?$/);
   if (machine) {
     const [, work, b, c, from, to] = machine;
     return verses(work as ExternalWork, Number(b), Number(c), Number(from), Number(to ?? from));

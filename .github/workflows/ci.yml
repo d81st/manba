@@ -103,4 +103,5 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'nt.grc.sblgnt'")" = 7939
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'nt.ru.synodal'")" = 7937
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'mishnah.he.vilna'")" = 4187
-          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM works WHERE canon = 'external'")" = 3
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'pre.he.sefaria'")" = 656
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM works WHERE canon = 'external'")" = 4

@@ -1124,6 +1124,16 @@ const MISHNAH_WORK = {
     { key: "mishnah", names: { ru: "мишна" } },
   ],
 };
+const PRE_WORK = {
+  id: "pre",
+  category: "rabbinic",
+  titles: { ru: "Пиркей де-рабби Элиэзер", he: "פרקי דרבי אליעזר" },
+  levels: [
+    { key: "book", names: { ru: "книга" } },
+    { key: "chapter", names: { ru: "глава" } },
+    { key: "paragraph", names: { ru: "абзац" } },
+  ],
+};
 const SYNODAL_SOURCE = {
   id: "scrollmapper.rus-synodal",
   title: "Синодальный перевод Библии (1876), scrollmapper/bible_databases, RusSynodal",
@@ -1210,6 +1220,24 @@ const EXTERNAL_SOURCES: ExternalSource[] = [
       version: "books.json de1d27b (2026-10-02)",
     },
     minTexts: 4_000,
+  },
+  {
+    key: "external:pre-he:v1",
+    file: "pre-he.tsv",
+    work: PRE_WORK,
+    versionId: "pre.he.sefaria",
+    language: "he",
+    kind: "original",
+    versionTitle: "Пиркей де-рабби Элиэзер, огласованное издание Sefaria",
+    source: {
+      id: "sefaria.pre-vocalized",
+      title: "Sefaria Export: Pirke DeRabbi Eliezer, Sefaria Vocalized Edition",
+      url: "https://github.com/Sefaria/Sefaria-Export",
+      license: "Public Domain",
+      notice: "Sefaria: license «Public Domain», versionSource http://sefaria.org.il",
+      version: "books.json de1d27b (2026-10-02)",
+    },
+    minTexts: 600,
   },
 ];
 

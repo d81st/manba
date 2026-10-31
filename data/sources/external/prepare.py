@@ -8,6 +8,7 @@
 #   sefaria-books.json                         index of the Sefaria export
 #   tanakh/<Sefaria title>.json                "Tanach with Nikkud" of each book
 #   mishnah/<Sefaria title>.json               "Mishnah, ed. Romm, Vilna 1913"
+#   pre/pre.json                               "Pirke DeRabbi Eliezer, Sefaria Vocalized Edition"
 #   sblgnt/<code>.txt                          SBLGNT text files
 #   RusSynodal.json                            scrollmapper/bible_databases
 import json
@@ -61,6 +62,18 @@ for tractate in BOOKS["mishnah"]:
             if text:
                 mishnah.append((f"mishnah.{tractate['n']}.{c}.{m}", text))
 write("mishnah-he.tsv", mishnah)
+
+# Pirkei de-Rabbi Eliezer, Sefaria Vocalized Edition, public domain: one
+# book (1), chapters and paragraphs as in that edition.
+pre = []
+data = json.loads((SRC / "pre" / "pre.json").read_text())
+assert data["license"] == "Public Domain"
+for c, chapter in enumerate(data["text"], 1):
+    for p, text in enumerate(chapter, 1):
+        text = clean(text)
+        if text:
+            pre.append((f"pre.1.{c}.{p}", text))
+write("pre-he.tsv", pre)
 
 # Greek New Testament: SBLGNT (CC BY 4.0). Critical signs of the edition
 # (⸀⸁⸂⸃⸄⸅) mark readings of its apparatus, which is not loaded.

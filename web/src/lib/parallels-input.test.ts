@@ -94,3 +94,11 @@ describe("linkExternal", () => {
     ]);
   });
 });
+
+describe("Pirkei de-Rabbi Eliezer", () => {
+  it("is read by name and machine address", () => {
+    expect(parseExternalRef("Пиркей де-рабби Элиэзер 21:10")).toEqual(["pre.1.21.10"]);
+    expect(parseExternalRef("ПРЭ 21:10")).toEqual(["pre.1.21.10"]);
+    expect(externalLabel("pre.1.21.10")).toBe("Пиркей де-рабби Элиэзер 21:10");
+  });
+});
