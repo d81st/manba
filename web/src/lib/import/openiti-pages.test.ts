@@ -58,6 +58,8 @@ describe("parseOpenitiPages", () => {
       ],
       gaps: [],
       repairs: [],
+      skipped: 0,
+      tail: "",
     });
   });
 
@@ -70,6 +72,22 @@ describe("parseOpenitiPages", () => {
     const gapped = parseOpenitiPages(SOURCE.replace("PageV01P003", "PageV01P005").replace("PageV01P004", "PageV01P006"), { gaps: true });
     expect(gapped.report.gaps).toEqual([{ after: "1:2", next: "1:5" }]);
     expect(() => parseOpenitiPages(SOURCE.replace("PageV01P002", "PageV01P009"), { gaps: true })).toThrow(/follows/);
+  });
+
+  it("with the tail option gives the text after the last marker to the next page", () => {
+    const book = parseOpenitiPages(`${SOURCE}\n# نص زائد`, { tail: true });
+    expect(book.report.tail).toBe("2:4");
+    expect(book.pieces.at(-1)).toMatchObject({ volume: 2, page: 4, paragraphs: ["نص زائد"] });
+  });
+
+  it("with startAt reads the body from the first line equal to it", () => {
+    // An export that repeats its opening page: the first copy is left out.
+    const repeated = SOURCE.replace("### | قسم أول تجريبي", "# نسخة مكررة PageV01P001\n### | قسم أول تجريبي");
+    expect(() => parseOpenitiPages(repeated)).toThrow(/follows/);
+    const book = parseOpenitiPages(repeated, { startAt: "### | قسم أول تجريبي" });
+    expect(book.report.skipped).toBe(1);
+    expect(book.pieces[0].paragraphs).toEqual(["نص أول في الصفحة الأولى"]);
+    expect(() => parseOpenitiPages(SOURCE, { startAt: "### | لا يوجد" })).toThrow(/no line/);
   });
 });
 
@@ -118,18 +136,22 @@ describe("parseOpenitiPages, rough exports", () => {
       "# نص ثالث PageV01P003",
       "# نص رابع PageV01P003",
       "PageV01P004 ms12",
+      "# نص خامس PageV01P002",
+      "# تتمة PageV01P005",
     ].join("\n");
     expect(() => parseOpenitiPages(source, { loose: true })).toThrow(/follows/);
     const book = parseOpenitiPages(source, { loose: true, repair: true });
     expect(book.report.repairs).toEqual([
       { marker: "1:4", read: "1:2" },
       { marker: "1:3", read: "" },
+      { marker: "1:2", read: "" },
     ]);
     expect(book.pieces.map((p) => [p.page, p.paragraphs])).toEqual([
       [1, ["نص أول"]],
       [2, ["نص ثان"]],
       [3, ["نص ثالث"]],
       [4, ["نص رابع"]],
+      [5, ["نص خامس", "تتمة"]],
     ]);
   });
 });

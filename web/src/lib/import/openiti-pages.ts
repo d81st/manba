@@ -12,7 +12,12 @@
 // "gaps" — pages the export lacks are allowed and reported; "repair" — slips
 // in the page markers are read as the pages they plainly mean and reported
 // (the History of al-Tabari): a marker repeating the one before it is
-// dropped, and one out of sequence between pages n and n + 2 is read as n + 1.
+// dropped, one out of sequence between pages n and n + 2 is read as n + 1, and
+// an earlier page standing between pages n and n + 1 is dropped;
+// "startAt" — the body is read from the first line equal to it (an export
+// that repeats its opening pages, the Itqan of al-Suyuti); "tail" — text after
+// the last page marker is the next page (an export whose last page has no
+// marker, the Jawahir al-Quran of al-Ghazali), reported in "tail".
 import { cleanLine } from "./openiti-hadith.ts";
 
 export type PagesSection = { number: number; title: string };
@@ -34,8 +39,17 @@ export type PagesReport = {
   volumes: { volume: number; first: number }[]; // first page of each volume in the export
   gaps: { after: string; next: string }[]; // pages the export lacks (with the "gaps" option)
   repairs: { marker: string; read: string }[]; // slipped markers (with the "repair" option); "" read — dropped
+  skipped: number; // body lines left out before "startAt"
+  tail: string; // the page given to the text after the last marker ("tail" option), or ""
 };
-export type PagesOptions = { jk?: boolean; loose?: boolean; gaps?: boolean; repair?: boolean };
+export type PagesOptions = {
+  jk?: boolean;
+  loose?: boolean;
+  gaps?: boolean;
+  repair?: boolean;
+  startAt?: string;
+  tail?: boolean;
+};
 export type PagesBook = {
   sections: PagesSection[];
   chapters: PagesChapter[];
@@ -61,7 +75,11 @@ export function repairPageMarkers(source: string) {
     if (c && a.volume === b.volume && b.volume === c.volume && b.page !== a.page + 1 && c.page === a.page + 2) {
       repairs.push({ marker: `${b.volume}:${b.page}`, read: `${b.volume}:${a.page + 1}` });
       b.page = a.page + 1;
-    } else if (b.volume === a.volume && b.page === a.page) {
+    } else if (
+      (b.volume === a.volume && b.page === a.page) ||
+      // A stray earlier page between pages n and n + 1 (the Itqan: 178, 68, 179).
+      (c && a.volume === b.volume && b.volume === c.volume && b.page < a.page && c.page === a.page + 1)
+    ) {
       b.keep = false;
       repairs.push({ marker: `${b.volume}:${b.page}`, read: "" });
     }
@@ -102,6 +120,8 @@ export function parseOpenitiPages(input: string, options: PagesOptions = {}): Pa
     volumes: [],
     gaps: [],
     repairs: repaired.repairs,
+    skipped: 0,
+    tail: "",
   };
 
   let section = 0;
@@ -196,7 +216,14 @@ export function parseOpenitiPages(input: string, options: PagesOptions = {}): Pa
     }
   };
 
-  for (const raw of lines.slice(end + 1)) {
+  let body = lines.slice(end + 1);
+  if (options.startAt !== undefined) {
+    const start = body.indexOf(options.startAt);
+    if (start < 0) throw new Error(`OpenITI: no line "${options.startAt}"`);
+    report.skipped = start;
+    body = body.slice(start);
+  }
+  for (const raw of body) {
     if (options.jk && /^# \|/.test(raw)) {
       // A JK chapter heading; a page marker in it ends the page before it.
       closeParagraph();
@@ -242,7 +269,12 @@ export function parseOpenitiPages(input: string, options: PagesOptions = {}): Pa
     }
   }
   closeParagraph();
-  if (open.some((p) => p.paragraphs.length)) throw new Error("OpenITI: text after the last page marker");
+  if (open.some((p) => p.paragraphs.length)) {
+    if (!options.tail || !last) throw new Error("OpenITI: text after the last page marker");
+    const { volume, page } = last as { volume: number; page: number };
+    report.tail = `${volume}:${page + 1}`;
+    endPage(volume, page + 1);
+  }
 
   report.pieces = pieces.length;
   return { sections, chapters, pieces, report };

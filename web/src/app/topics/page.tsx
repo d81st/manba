@@ -31,10 +31,17 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const { category } = await searchParams;
   const only =
-    category === "hard" || category === "quran_text" || category === "sira" || category === "cities" || category === "testimony"
+    category === "hard" ||
+    category === "quran_text" ||
+    category === "sira" ||
+    category === "cities" ||
+    category === "testimony" ||
+    category === "science"
       ? category
       : null;
-  const topics = (await listPublishedTopics()).filter((topic) => !only || topic.category === only);
+  // «Ислам и наука» holds both of its categories.
+  const inFilter = (c: string) => !only || c === only || (only === "science" && c === "science_claims");
+  const topics = (await listPublishedTopics()).filter((topic) => inFilter(topic.category));
 
   const filters = [
     { href: "/topics", label: t.allCategories, active: !only },
@@ -43,6 +50,7 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
     { href: "/topics?category=sira", label: t.siraOnly, active: only === "sira" },
     { href: "/topics?category=cities", label: t.citiesOnly, active: only === "cities" },
     { href: "/topics?category=testimony", label: t.testimonyOnly, active: only === "testimony" },
+    { href: "/topics?category=science", label: t.scienceOnly, active: only === "science" },
   ];
 
   return (
@@ -78,6 +86,8 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
                   {topic.category === "sira" && <Badge variant="outline">{t.siraBadge}</Badge>}
                   {topic.category === "cities" && <Badge variant="outline">{t.citiesBadge}</Badge>}
                   {topic.category === "testimony" && <Badge variant="outline">{t.testimonyBadge}</Badge>}
+                  {topic.category === "science" && <Badge variant="outline">{t.scienceBadge}</Badge>}
+                  {topic.category === "science_claims" && <Badge variant="secondary">{t.scienceClaimsBadge}</Badge>}
                 </span>
                 <span className="text-sm text-muted-foreground">{topic.question}</span>
               </Link>

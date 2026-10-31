@@ -13,7 +13,7 @@ export const BOOKS_TAG = "books";
 
 const PATH = (column: string) => `string_to_array(subpath(${column}, 1)::text, '.')::int[]`;
 
-export const BOOK_CATEGORIES = ["sira", "tafsir", "qiraat", "history"] as const;
+export const BOOK_CATEGORIES = ["sira", "tafsir", "qiraat", "history", "sciences", "theology"] as const;
 export type BookCategory = (typeof BOOK_CATEGORIES)[number];
 
 export async function listBookWorks(): Promise<{ id: string; title: string; titleAr: string; category: BookCategory }[]> {

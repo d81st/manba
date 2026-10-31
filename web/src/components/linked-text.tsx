@@ -58,9 +58,34 @@ function IslamLinks({ text }: { text: string }) {
         {piece.text}
       </Link>
     ) : (
-      <Fragment key={i}>{piece.text}</Fragment>
+      <Fragment key={i}>
+        <ArabicRuns text={piece.text} />
+      </Fragment>
     ),
   );
+}
+
+// Arabic letters (with vowel marks), and the spaces, digits and marks between
+// Arabic words: a quote inside Russian text.
+const ARABIC_RUN =
+  /[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff\ufb50-\ufdff\ufe70-\ufeff]+(?:[\s\d.,:;!?()\-–—…]+[\u0600-\u06ff\u0750-\u077f\u08a0-\u08ff\ufb50-\ufdff\ufe70-\ufeff]+)*/g;
+
+// An Arabic quote is isolated as right-to-left text, so that the guillemets
+// and marks around it keep their places in the Russian line.
+function ArabicRuns({ text }: { text: string }) {
+  const parts: React.ReactNode[] = [];
+  let last = 0;
+  for (const m of text.matchAll(ARABIC_RUN)) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    parts.push(
+      <bdi key={m.index} dir="rtl" lang="ar" className="ar">
+        {m[0]}
+      </bdi>,
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
 }
 
 // Paragraphs separated by blank lines, with ayah addresses as links.

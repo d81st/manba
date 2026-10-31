@@ -6,7 +6,8 @@
 // introduction, 2:125b the second comment on one ayah). Kitab al-Sab'a of Ibn
 // Mujahid and Ansab al-ashraf of al-Baladhuri are cited by volume and page as
 // the Sira ("Ибн Муджахид 1:120", "Ансаб 5:175"), and so are the books on the
-// Prophet's life: "Вакиди 1:2", "Халифа 1:64", "Табари 2:412". No database here.
+// Prophet's life: "Вакиди 1:2", "Халифа 1:64", "Табари 2:412", and the books of
+// «Ислам и наука»: "Усайбиа 1:437", "Тахафут 1:307", "Иткан 4:24". No database here.
 import { parseHadithQuery, parseVariant, variantLetters } from "./hadith-query.ts";
 
 export type BookScheme = "page" | "ayah";
@@ -35,6 +36,16 @@ export const BOOKS: Record<string, { names: string[]; label: string; scheme: Boo
     scheme: "page",
   },
   tarikh_tabari: { names: ["табари", "ат-табари", "тарих ат-табари", "tabari"], label: "Табари", scheme: "page" },
+  // «Ислам и наука» (31.10.2026).
+  uyun_anba: { names: ["усайбиа", "ибн аби усайбиа", "уюн аль-анба", "usaybia"], label: "Усайбиа", scheme: "page" },
+  ikhbar_ulama: { names: ["кифти", "аль-кифти", "ихбар аль-уляма", "qifti"], label: "Кифти", scheme: "page" },
+  sharh_isharat_tusi: { names: ["туси", "ат-туси", "шарх аль-ишарат", "tusi"], label: "Туси", scheme: "page" },
+  tahafut_ghazali: { names: ["тахафут", "тахафут аль-фалясифа", "tahafut"], label: "Тахафут", scheme: "page" },
+  munqidh_ghazali: { names: ["мункыз", "аль-мункыз", "munqidh"], label: "Мункыз", scheme: "page" },
+  jawahir_quran_ghazali: { names: ["джавахир", "джавахир аль-куран", "jawahir"], label: "Джавахир", scheme: "page" },
+  ighathat_lahfan: { names: ["игаса", "игасат аль-ляхфан", "ighatha"], label: "Игаса", scheme: "page" },
+  muwafaqat_shatibi: { names: ["мувафакат", "аль-мувафакат", "шатиби", "muwafaqat"], label: "Мувафакат", scheme: "page" },
+  itqan_suyuti: { names: ["иткан", "аль-иткан", "itqan"], label: "Иткан", scheme: "page" },
 };
 export const BOOK_IDS = Object.keys(BOOKS);
 

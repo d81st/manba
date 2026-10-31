@@ -6,8 +6,10 @@ export const TOPIC_STATUSES = TERM_STATUSES;
 // Topics of the section «История текста Корана» (quran_text) are also listed
 // on its own page, /quran-text; cards of people and events of «Жизнеописание
 // пророка» (sira), on /sira; the cities of «Священные города» (cities), on
-// /cities; early non-Muslim testimonies about Islam (testimony), on /origins.
-export const TOPIC_CATEGORIES = ["general", "hard", "quran_text", "sira", "cities", "testimony"] as const;
+// /cities; early non-Muslim testimonies about Islam (testimony), on /origins;
+// «Ислам и наука» (science — a scholar, science_claims — a claim that a text
+// foretells a discovery), on /science.
+export const TOPIC_CATEGORIES = ["general", "hard", "quran_text", "sira", "cities", "testimony", "science", "science_claims"] as const;
 // Ayahs shown before and after each main passage.
 export const CONTEXT_AYAHS = 3;
 

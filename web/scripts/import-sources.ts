@@ -230,7 +230,7 @@ type HadithSource = {
   sourceUrl?: string; // the OpenITI repository, when not 0275AH
   work: {
     id: string;
-    category?: "hadith" | "sira" | "tafsir" | "qiraat" | "history"; // hadith by default
+    category?: "hadith" | "sira" | "tafsir" | "qiraat" | "history" | "sciences" | "theology"; // hadith by default
     canon: "sunni" | "shia";
     titles: Record<string, string>;
     authoritySunni: number | null;
@@ -1014,6 +1014,221 @@ const TARIKH_TABARI: HadithSource = {
   retrievedAt: "2026-10-25",
 };
 
+
+// Books of «Ислам и наука» (docs/PLAN.md, 31.10.2026): lives and works of the
+// scholars (Ibn Abi Usaybi'a, al-Qifti, al-Tusi on Ibn Sina), the theologians'
+// views of the philosophers (al-Ghazali, Ibn al-Qayyim) and the classical
+// dispute over sciences in the Quran (al-Ghazali, al-Suyuti, al-Shatibi), cited
+// by volume and page like the Sira. No authority levels until a specialist sets them.
+const UYUN_ANBA: HadithSource = {
+  file: "0668IbnAbiUsaybica.CuyunAnba.Shamela0006687-ara1.completed",
+  layout: "pages",
+  pages: { loose: true, gaps: true, repair: true },
+  key: "openiti:0668IbnAbiUsaybica.CuyunAnba.Shamela0006687-ara1:4b1d288",
+  sourceId: "openiti.uyun-anba-shamela0006687",
+  sourceTitle: "OpenITI · 0668IbnAbiUsaybica.CuyunAnba.Shamela0006687-ara1",
+  sourceVersion: "OpenITI/0675AH 4b1d288 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0675AH",
+  notice: `${OPENITI_CITATION}. Text: 0668IbnAbiUsaybica.CuyunAnba.Shamela0006687-ara1 — 'Uyun al-anba' fi tabaqat al-atibba' of Ibn Abi Usaybi'a, ed. Nizar Rida, Dar Maktabat al-Hayat, Beirut, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "uyun_anba",
+    category: "sciences",
+    canon: "sunni",
+    titles: { ar: "عيون الأنباء في طبقات الأطباء", ru: "Ибн Аби Усайбиа, «Уюн аль-анба фи табакат аль-атибба»", "ru-short": "Усайбиа" },
+    authoritySunni: null,
+  },
+  versionId: "uyun_anba.ar.openiti",
+  versionTitle: "Арабский текст: изд. Низара Ризы («Дар Мактабат аль-Хайат», Бейрут), страницы издания (OpenITI)",
+  minItems: 700,
+  retrievedAt: "2026-10-31",
+};
+
+const IKHBAR_ULAMA: HadithSource = {
+  file: "0646IbnQifti.IkhbarCulama.Shamela0026336-ara1.mARkdown",
+  layout: "pages",
+  pages: { loose: true },
+  key: "openiti:0646IbnQifti.IkhbarCulama.Shamela0026336-ara1:287c0cc",
+  sourceId: "openiti.ikhbar-ulama-shamela0026336",
+  sourceTitle: "OpenITI · 0646IbnQifti.IkhbarCulama.Shamela0026336-ara1",
+  sourceVersion: "OpenITI/0650AH 287c0cc (2026-03-23)",
+  sourceUrl: "https://github.com/OpenITI/0650AH",
+  notice: `${OPENITI_CITATION}. Text: 0646IbnQifti.IkhbarCulama.Shamela0026336-ara1 — Ikhbar al-'ulama' bi-akhbar al-hukama' of al-Qifti, ed. Ibrahim Shams al-Din, Dar al-Kutub al-'Ilmiyya, Beirut, 1st ed., 2005, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "ikhbar_ulama",
+    category: "sciences",
+    canon: "sunni",
+    titles: { ar: "أخبار العلماء بأخيار الحكماء", ru: "аль-Кифти, «Ихбар аль-уляма би-ахбар аль-хукама»", "ru-short": "Кифти" },
+    authoritySunni: null,
+  },
+  versionId: "ikhbar_ulama.ar.openiti",
+  versionTitle: "Арабский текст: изд. Ибрахима Шамс ад-Дина («Дар аль-Кутуб аль-Ильмийя», Бейрут, 1-е изд., 2005), страницы издания (OpenITI)",
+  minItems: 300,
+  retrievedAt: "2026-10-31",
+};
+
+const SHARH_ISHARAT: HadithSource = {
+  file: "0672NasirDinTusi.TafsirIsharat.Shamela0006534BK2-ara1.mARkdown",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0672NasirDinTusi.TafsirIsharat.Shamela0006534BK2-ara1:4b1d288",
+  sourceId: "openiti.sharh-isharat-tusi-shamela0006534bk2",
+  sourceTitle: "OpenITI · 0672NasirDinTusi.TafsirIsharat.Shamela0006534BK2-ara1",
+  sourceVersion: "OpenITI/0675AH 4b1d288 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0675AH",
+  notice: `${OPENITI_CITATION}. Text: 0672NasirDinTusi.TafsirIsharat.Shamela0006534BK2-ara1 — Commentary of Nasir al-Din al-Tusi on al-Isharat wa-l-tanbihat of Ibn Sina, ed. Sulayman Dunya, Dar al-Ma'arif, Cairo, 3rd ed., with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "sharh_isharat_tusi",
+    category: "sciences",
+    canon: "shia",
+    titles: { ar: "شرح الإشارات والتنبيهات", ru: "Насир ад-Дин ат-Туси, комментарий к «аль-Ишарат ва-т-танбихат» Ибн Сины", "ru-short": "Туси" },
+    authoritySunni: null,
+  },
+  versionId: "sharh_isharat_tusi.ar.openiti",
+  versionTitle: "Арабский текст комментария: изд. Сулеймана Дуньи («Дар аль-Маариф», Каир, 3-е изд.), страницы издания (OpenITI; текст Ибн Сины — в другом файле той же выгрузки)",
+  minItems: 350,
+  retrievedAt: "2026-10-31",
+};
+
+const TAHAFUT: HadithSource = {
+  file: "0505Ghazali.Tahafut.Shamela0011055-ara1",
+  layout: "pages",
+  pages: { gaps: true },
+  key: "openiti:0505Ghazali.Tahafut.Shamela0011055-ara1:6290621",
+  sourceId: "openiti.tahafut-ghazali-shamela0011055",
+  sourceTitle: "OpenITI · 0505Ghazali.Tahafut.Shamela0011055-ara1",
+  sourceVersion: "OpenITI/0525AH 6290621 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0525AH",
+  notice: `${OPENITI_CITATION}. Text: 0505Ghazali.Tahafut.Shamela0011055-ara1 — Tahafut al-falasifa of al-Ghazali, ed. Sulayman Dunya, Dar al-Ma'arif, Cairo, 6th ed., with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "tahafut_ghazali",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "تهافت الفلاسفة", ru: "аль-Газали, «Тахафут аль-фалясифа»", "ru-short": "Тахафут" },
+    authoritySunni: null,
+  },
+  versionId: "tahafut_ghazali.ar.openiti",
+  versionTitle: "Арабский текст: изд. Сулеймана Дуньи («Дар аль-Маариф», Каир, 6-е изд.), страницы издания (OpenITI)",
+  minItems: 600,
+  retrievedAt: "2026-10-31",
+};
+
+const MUNQIDH: HadithSource = {
+  file: "0505Ghazali.Munqidh.Shamela0009246-ara1",
+  layout: "pages",
+  pages: { gaps: true },
+  key: "openiti:0505Ghazali.Munqidh.Shamela0009246-ara1:6290621",
+  sourceId: "openiti.munqidh-ghazali-shamela0009246",
+  sourceTitle: "OpenITI · 0505Ghazali.Munqidh.Shamela0009246-ara1",
+  sourceVersion: "OpenITI/0525AH 6290621 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0525AH",
+  notice: `${OPENITI_CITATION}. Text: 0505Ghazali.Munqidh.Shamela0009246-ara1 — al-Munqidh min al-dalal of al-Ghazali, Dar al-Kutub al-Haditha, Egypt, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "munqidh_ghazali",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "المنقذ من الضلال", ru: "аль-Газали, «аль-Мункыз мин ад-даляль»", "ru-short": "Мункыз" },
+    authoritySunni: null,
+  },
+  versionId: "munqidh_ghazali.ar.openiti",
+  versionTitle: "Арабский текст: изд. «Дар аль-Кутуб аль-Хадиса» (Египет), страницы издания (OpenITI)",
+  minItems: 100,
+  retrievedAt: "2026-10-31",
+};
+
+const JAWAHIR_QURAN: HadithSource = {
+  file: "0505Ghazali.JawahirQuran.Shamela0009883-ara1",
+  layout: "pages",
+  pages: { gaps: true, tail: true },
+  key: "openiti:0505Ghazali.JawahirQuran.Shamela0009883-ara1:6290621",
+  sourceId: "openiti.jawahir-quran-ghazali-shamela0009883",
+  sourceTitle: "OpenITI · 0505Ghazali.JawahirQuran.Shamela0009883-ara1",
+  sourceVersion: "OpenITI/0525AH 6290621 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0525AH",
+  notice: `${OPENITI_CITATION}. Text: 0505Ghazali.JawahirQuran.Shamela0009883-ara1 — Jawahir al-Quran of al-Ghazali, ed. Muhammad Rashid Rida al-Qabbani, Dar Ihya' al-'Ulum, Beirut, 2nd ed., 1986, with the edition's pages; the text after the last page marker of the export is read as the next page (data/sources/openiti/README.md). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "jawahir_quran_ghazali",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "جواهر القرآن", ru: "аль-Газали, «Джавахир аль-Куран»", "ru-short": "Джавахир" },
+    authoritySunni: null,
+  },
+  versionId: "jawahir_quran_ghazali.ar.openiti",
+  versionTitle: "Арабский текст: изд. Мухаммада Рашида Ризы аль-Каббани («Дар Ихья аль-Улюм», Бейрут, 2-е изд., 1986), страницы издания (OpenITI)",
+  minItems: 250,
+  retrievedAt: "2026-10-31",
+};
+
+const IGHATHAT_LAHFAN: HadithSource = {
+  file: "0751IbnQayyimJawziyya.IghathatLahfan.Shamela0011688-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0751IbnQayyimJawziyya.IghathatLahfan.Shamela0011688-ara1:61b0c78",
+  sourceId: "openiti.ighathat-lahfan-shamela0011688",
+  sourceTitle: "OpenITI · 0751IbnQayyimJawziyya.IghathatLahfan.Shamela0011688-ara1",
+  sourceVersion: "OpenITI/0775AH 61b0c78 (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0775AH",
+  notice: `${OPENITI_CITATION}. Text: 0751IbnQayyimJawziyya.IghathatLahfan.Shamela0011688-ara1 — Ighathat al-lahfan min masayid al-shaytan of Ibn Qayyim al-Jawziyya, ed. Muhammad Hamid al-Fiqi, Maktabat al-Ma'arif, Riyadh, 2 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "ighathat_lahfan",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "إغاثة اللهفان من مصايد الشيطان", ru: "Ибн аль-Каййим, «Игасат аль-ляхфан мин масаид аш-шайтан»", "ru-short": "Игаса" },
+    authoritySunni: null,
+  },
+  versionId: "ighathat_lahfan.ar.openiti",
+  versionTitle: "Арабский текст: изд. Мухаммада Хамида аль-Фики («Мактабат аль-Маариф», Эр-Рияд), 2 тома, страницы издания (OpenITI)",
+  minItems: 700,
+  retrievedAt: "2026-10-31",
+};
+
+const MUWAFAQAT: HadithSource = {
+  file: "0790IbnMusaGharnatiShatibi.Muwafaqat.Shamela0011435-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0790IbnMusaGharnatiShatibi.Muwafaqat.Shamela0011435-ara1:7b745ec",
+  sourceId: "openiti.muwafaqat-shatibi-shamela0011435",
+  sourceTitle: "OpenITI · 0790IbnMusaGharnatiShatibi.Muwafaqat.Shamela0011435-ara1",
+  sourceVersion: "OpenITI/0800AH 7b745ec (2025-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0800AH",
+  notice: `${OPENITI_CITATION}. Text: 0790IbnMusaGharnatiShatibi.Muwafaqat.Shamela0011435-ara1 — al-Muwafaqat of al-Shatibi, ed. Abu 'Ubayda Mashhur Al Salman, Dar Ibn 'Affan, 1st ed., 1997, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "muwafaqat_shatibi",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "الموافقات", ru: "аш-Шатиби, «аль-Мувафакат»", "ru-short": "Мувафакат" },
+    authoritySunni: null,
+  },
+  versionId: "muwafaqat_shatibi.ar.openiti",
+  versionTitle: "Арабский текст: изд. Абу Убайды Машхура Аль Салмана («Дар Ибн Аффан», 1-е изд., 1997), страницы издания (OpenITI)",
+  minItems: 3000,
+  retrievedAt: "2026-10-31",
+};
+
+const ITQAN: HadithSource = {
+  file: "0911Suyuti.Itqan.Shamela0011728-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true, startAt: "### | مقدمة المؤلف" },
+  key: "openiti:0911Suyuti.Itqan.Shamela0011728-ara1:4f0f456",
+  sourceId: "openiti.itqan-suyuti-shamela0011728",
+  sourceTitle: "OpenITI · 0911Suyuti.Itqan.Shamela0011728-ara1",
+  sourceVersion: "OpenITI/0925AH 4f0f456 (2026-02-04)",
+  sourceUrl: "https://github.com/OpenITI/0925AH",
+  notice: `${OPENITI_CITATION}. Text: 0911Suyuti.Itqan.Shamela0011728-ara1 — al-Itqan fi 'ulum al-Quran of al-Suyuti, ed. Muhammad Abu l-Fadl Ibrahim, al-Hay'a al-Misriyya al-'Amma li-l-Kitab, Cairo, 1974, 4 vols, with the edition's pages; the export repeats the author's introduction (pp. 15-21), read once (data/sources/openiti/README.md). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "itqan_suyuti",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "الإتقان في علوم القرآن", ru: "ас-Суюти, «аль-Иткан фи улюм аль-Куран»", "ru-short": "Иткан" },
+    authoritySunni: null,
+  },
+  versionId: "itqan_suyuti.ar.openiti",
+  versionTitle: "Арабский текст: изд. Мухаммада Абу-ль-Фадля Ибрахима («аль-Хайа аль-Мисрийя аль-Амма ли-ль-Китаб», Каир, 1974), 4 тома, страницы издания (OpenITI)",
+  minItems: 1400,
+  retrievedAt: "2026-10-31",
+};
+
+const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
+
 // Pairs of hadiths of different collections with shared wording
 // (data/sources/links/README.md): a measure shown as such, not a claim.
 const SIMILAR_TEXTS = {
@@ -1450,6 +1665,7 @@ async function main() {
     await importOpenitiHadith(client, IBN_KATHIR);
     for (const src of [MASAHIF, FADAIL_ABU_UBAYD, SABAA_IBN_MUJAHID, ANSAB_BALADHURI]) await importOpenitiHadith(client, src);
     for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
+    for (const src of SCIENCE_BOOKS) await importOpenitiHadith(client, src);
     for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
     await importSablukov(client);
   } finally {
