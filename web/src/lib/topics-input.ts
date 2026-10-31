@@ -5,8 +5,9 @@ import { parseRefs, RECOGNITIONS, TERM_STATUSES, type InputProblem } from "./glo
 export const TOPIC_STATUSES = TERM_STATUSES;
 // Topics of the section «История текста Корана» (quran_text) are also listed
 // on its own page, /quran-text; cards of people and events of «Жизнеописание
-// пророка» (sira), on /sira; the cities of «Священные города» (cities), on /cities.
-export const TOPIC_CATEGORIES = ["general", "hard", "quran_text", "sira", "cities"] as const;
+// пророка» (sira), on /sira; the cities of «Священные города» (cities), on
+// /cities; early non-Muslim testimonies about Islam (testimony), on /origins.
+export const TOPIC_CATEGORIES = ["general", "hard", "quran_text", "sira", "cities", "testimony"] as const;
 // Ayahs shown before and after each main passage.
 export const CONTEXT_AYAHS = 3;
 

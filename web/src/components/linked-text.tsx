@@ -7,8 +7,29 @@ import { hadithPath } from "@/lib/hadith-query";
 
 // Text where ayah addresses ("2:106"), hadith references ("Бухари 3951"),
 // book pages ("Ибн Хишам 1:235") and verses of other religions' texts
-// ("Исход 21:24", not taken for an ayah) are links into the library.
+// ("Исход 21:24", not taken for an ayah) are links into the library, and web
+// addresses (a scan of an edition) open in a new tab.
 export function LinkedText({ text }: { text: string }) {
+  return text.split(/(https:\/\/[^\s,;«»()]+[^\s,;«»().])/).map((chunk, k) =>
+    k % 2 ? (
+      <a key={k} href={chunk} target="_blank" rel="noreferrer" className="break-all">
+        {shortUrl(chunk)}
+      </a>
+    ) : (
+      <Fragment key={k}>
+        <LibraryLinks text={chunk} />
+      </Fragment>
+    ),
+  );
+}
+
+// https://archive.org/details/x/page/n398/mode/2up -> archive.org/…/page/n398/mode/2up
+function shortUrl(url: string) {
+  const [host, ...path] = url.replace(/^https:\/\//, "").split("/");
+  return path.length > 4 ? `${host}/…/${path.slice(-4).join("/")}` : [host, ...path].join("/");
+}
+
+function LibraryLinks({ text }: { text: string }) {
   return linkExternal(text).map((part, j) =>
     part.href ? (
       <Link key={j} href={part.href}>

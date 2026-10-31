@@ -9,6 +9,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { EXTERNAL_IDS } from "@/lib/external";
 import { listParallels } from "@/lib/parallels";
 import { TRADITIONS } from "@/lib/parallels-input";
+import { listPublishedTopics, listTopicsForAdmin } from "@/lib/topics";
 import { isPreview, PreviewNote } from "../sira/shared";
 
 const messages = getMessages();
@@ -25,6 +26,7 @@ export default function OriginsPage({ searchParams }: PageProps<"/origins">) {
       <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">{messages.hadith.loading}</p>}>
         <Links searchParams={searchParams} />
+        <Testimonies searchParams={searchParams} />
       </Suspense>
       <section className="mt-10 mb-8">
         <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.library}</h2>
@@ -89,5 +91,44 @@ async function Links({ searchParams }: Pick<PageProps<"/origins">, "searchParams
         ))
       )}
     </>
+  );
+}
+
+// Early non-Muslim testimonies: topics of the category testimony (migration 018).
+async function Testimonies({ searchParams }: Pick<PageProps<"/origins">, "searchParams">) {
+  await connection();
+  const preview = isPreview(await searchParams);
+  if (!isDatabaseConfigured()) return null;
+  const topics = (preview ? await listTopicsForAdmin(undefined, "testimony") : await listPublishedTopics())
+    .filter((topic) => topic.category === "testimony" && topic.status !== "retired")
+    .sort((a, b) => a.id - b.id);
+  return (
+    <section id="testimonies" className="mt-10 scroll-mt-4">
+      <h2 className="text-lg font-semibold">{t.testimonies}</h2>
+      <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{t.testimoniesHint}</p>
+      {topics.length === 0 ? (
+        <p className="mt-3 text-sm text-muted-foreground">{t.testimoniesEmpty}</p>
+      ) : (
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+          {topics.map((topic) => (
+            <li key={topic.id}>
+              <Link
+                // A topic page shows only what is published; a draft opens in the admin form.
+                href={topic.status === "published" ? `/topics/${topic.slug}` : `/admin/topics/${topic.id}`}
+                className="flex h-full flex-col gap-2 rounded-xl border bg-card px-4 py-3 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent"
+              >
+                <span className="font-medium">{topic.title}</span>
+                <span className="text-sm text-muted-foreground">{topic.question}</span>
+                {topic.status !== "published" && (
+                  <span>
+                    <Badge variant="outline">{t.draft}</Badge>
+                  </span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

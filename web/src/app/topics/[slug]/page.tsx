@@ -67,6 +67,11 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
               <Badge variant="outline">{t.citiesBadge}</Badge>
             </Link>
           )}
+          {topic.category === "testimony" && (
+            <Link href="/origins#testimonies" className="no-underline">
+              <Badge variant="outline">{t.testimonyBadge}</Badge>
+            </Link>
+          )}
         </div>
         <p className="text-lg text-muted-foreground">{topic.question}</p>
       </header>
@@ -104,7 +109,7 @@ async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"]
           )}
           {topic.circumstancesNote && (
             <p className="mt-3 text-sm text-muted-foreground">
-              {t.sourceNote}: {topic.circumstancesNote}
+              {t.sourceNote}: <LinkedText text={topic.circumstancesNote} />
             </p>
           )}
         </section>

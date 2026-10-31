@@ -31,7 +31,9 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const { category } = await searchParams;
   const only =
-    category === "hard" || category === "quran_text" || category === "sira" || category === "cities" ? category : null;
+    category === "hard" || category === "quran_text" || category === "sira" || category === "cities" || category === "testimony"
+      ? category
+      : null;
   const topics = (await listPublishedTopics()).filter((topic) => !only || topic.category === only);
 
   const filters = [
@@ -40,6 +42,7 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
     { href: "/topics?category=quran_text", label: t.quranTextOnly, active: only === "quran_text" },
     { href: "/topics?category=sira", label: t.siraOnly, active: only === "sira" },
     { href: "/topics?category=cities", label: t.citiesOnly, active: only === "cities" },
+    { href: "/topics?category=testimony", label: t.testimonyOnly, active: only === "testimony" },
   ];
 
   return (
@@ -74,6 +77,7 @@ async function Topics({ searchParams }: { searchParams: PageProps<"/topics">["se
                   {topic.category === "quran_text" && <Badge variant="outline">{t.quranTextBadge}</Badge>}
                   {topic.category === "sira" && <Badge variant="outline">{t.siraBadge}</Badge>}
                   {topic.category === "cities" && <Badge variant="outline">{t.citiesBadge}</Badge>}
+                  {topic.category === "testimony" && <Badge variant="outline">{t.testimonyBadge}</Badge>}
                 </span>
                 <span className="text-sm text-muted-foreground">{topic.question}</span>
               </Link>
