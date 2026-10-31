@@ -1,6 +1,7 @@
 // Parsing of Quran search queries and highlighting of matches. No database
 // access here, so everything is unit-tested.
 import { hasDiacritics, searchKey } from "./arabic.ts";
+import { plainKey } from "./plain-key.ts";
 
 export const MAX_QUERY_LENGTH = 200;
 const MAX_WORDS = 10;
@@ -11,10 +12,12 @@ export type ParsedQuery =
   | { kind: "sura"; sura: number }
   | { kind: "ayahs"; sura: number; from: number; to: number }
   | { kind: "text"; words: string[]; diacritics: boolean }
+  | { kind: "translation"; words: string[] } // Russian words: searched in the translation
   | { kind: "unsupported" }
   | { kind: "invalid" };
 
 const ARABIC_LETTER = /[ء-يٱ-ۓۺ-ۿ]/;
+const CYRILLIC_LETTER = /[а-яё]/i;
 const ADDRESS_WORDS = /^(?:коран|quran|qur'?an|сура|sura|surah)(?=[\s.\d]|$)\.?\s*/iu;
 
 function toAsciiDigits(text: string) {
@@ -42,7 +45,11 @@ export function parseQuery(input: string): ParsedQuery {
     return { kind: "ayahs", sura, from, to };
   }
 
-  // Words: only Arabic for now; translations are not in the library yet.
+  // Russian words: the translation (its search form, plain-key.ts).
+  if (!ARABIC_LETTER.test(query) && CYRILLIC_LETTER.test(query)) {
+    const words = [...new Set(plainKey(query).split(" ").filter((word) => CYRILLIC_LETTER.test(word)))].slice(0, MAX_WORDS);
+    return words.length ? { kind: "translation", words } : { kind: "unsupported" };
+  }
   if (!ARABIC_LETTER.test(query)) return { kind: "unsupported" };
   const diacritics = hasDiacritics(query);
   const words = [
@@ -104,4 +111,12 @@ export function highlight(
     else pieces.push({ text: token, match });
   }
   return pieces;
+}
+
+// Pieces of a translation's plain text with the words that contain a query
+// word marked (words are compared through plainKey, like the database).
+export function highlightPlain(text: string, words: string[]): Piece[] {
+  return text
+    .split(/(\s+)/)
+    .map((token) => ({ text: token, match: words.some((word) => plainKey(token).includes(word)) && /\S/.test(token) }));
 }

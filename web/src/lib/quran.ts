@@ -10,11 +10,30 @@ export type SuraSummary = {
   revelationPlace: string | null; // traditional classification
 };
 
-export type Segment = { address: string; level: "ayah" | "basmala"; number: number; text: string };
+export type Segment = {
+  address: string;
+  level: "ayah" | "basmala";
+  number: number;
+  text: string;
+  translation: string | null; // the Russian translation, with its markup (lib/translation-markup.ts)
+};
 
 export type Attribution = { title: string; url: string; license: string; version: string };
 
-export type Sura = SuraSummary & { segments: Segment[]; attribution: Attribution | null };
+export type TranslationInfo = Attribution & { versionTitle: string; verification: string };
+
+export type Sura = SuraSummary & {
+  segments: Segment[];
+  attribution: Attribution | null;
+  translation: TranslationInfo | null;
+};
+
+// The Russian translation shown under the ayahs: the published one first loaded.
+const TRANSLATION = `
+  SELECT v.id, v.title AS version_title, v.verification, s.title, s.url, s.license, s.version
+  FROM text_versions v JOIN sources s ON s.id = v.source_id
+  WHERE v.work_id = 'quran' AND v.language = 'ru' AND v.kind = 'translation' AND v.status = 'published'
+  ORDER BY v.created_at, v.id LIMIT 1`;
 
 const SURA_SUMMARY = `
   SELECT split_part(a.address::text, '.', 2)::int AS number,
@@ -50,15 +69,18 @@ export async function getSura(number: number): Promise<Sura | null> {
   if (!summary.rows[0]) return null;
 
   // The primary published Arabic version: Hafs, Uthmani script.
-  const segments = await db().query<{ address: string; level: Segment["level"]; text: string }>(
-    `SELECT a.address::text AS address, a.level, t.content AS text
+  const translation = await db().query<Attribution & { id: string; version_title: string; verification: string }>(TRANSLATION);
+  const tr = translation.rows[0] ?? null;
+  const segments = await db().query<{ address: string; level: Segment["level"]; text: string; translation: string | null }>(
+    `SELECT a.address::text AS address, a.level, t.content AS text, r.content AS translation
      FROM addresses a
      JOIN texts t ON t.address = a.address
      JOIN text_versions v ON v.id = t.version_id
+     LEFT JOIN texts r ON r.address = a.address AND r.version_id = $2
      WHERE a.address <@ $1::ltree AND a.level IN ('basmala', 'ayah') AND a.status = 'active'
        AND v.work_id = 'quran' AND v.language = 'ar' AND v.is_primary AND v.status = 'published'
      ORDER BY a.ordinal`,
-    [address],
+    [address, tr?.id ?? ""],
   );
   const source = await db().query<Attribution>(
     `SELECT s.title, s.url, s.license, s.version
@@ -73,6 +95,9 @@ export async function getSura(number: number): Promise<Sura | null> {
       number: Number(row.address.split(".")[2]),
     })),
     attribution: source.rows[0] ?? null,
+    translation: tr
+      ? { title: tr.title, url: tr.url, license: tr.license, version: tr.version, versionTitle: tr.version_title, verification: tr.verification }
+      : null,
   };
 }
 
@@ -83,15 +108,22 @@ export type SearchHit = {
   suraName: string;
   text: string; // primary version (Uthmani)
   alt: string | null; // the same ayah in standard spelling, if loaded
+  translation: string | null; // the Russian translation, with its markup
 };
 export type SearchResult = { hits: SearchHit[]; total: number };
 
 export const SEARCH_LIMIT = 200;
 
-// Ayahs of the primary published Arabic version, with the sura name and the
-// standard-spelling text (another published original version) beside them.
+// The published Russian translation shown beside the ayahs (first loaded).
+const TRANSLATION_ID = `(SELECT id FROM text_versions
+    WHERE work_id = 'quran' AND language = 'ru' AND kind = 'translation' AND status = 'published'
+    ORDER BY created_at, id LIMIT 1)`;
+
+// Ayahs of the primary published Arabic version, with the sura name, the
+// standard-spelling text (another published original version) and the
+// translation beside them.
 const HITS = `
-  SELECT a.address::text AS address, t.content AS text, alt.content AS alt,
+  SELECT a.address::text AS address, t.content AS text, alt.content AS alt, tr.content AS translation,
          s.names->>'translit' AS sura_name, count(*) OVER () AS total
   FROM texts t
   JOIN addresses a ON a.address = t.address
@@ -102,10 +134,18 @@ const HITS = `
     WHERE work_id = 'quran' AND language = 'ar' AND kind = 'original'
       AND script = 'imlaei' AND status = 'published'
     ORDER BY id LIMIT 1)
+  LEFT JOIN texts tr ON tr.address = a.address AND tr.version_id = ${TRANSLATION_ID}
   WHERE v.work_id = 'quran' AND v.language = 'ar' AND v.is_primary AND v.status = 'published'
     AND a.level = 'ayah' AND a.status = 'active'`;
 
-type HitRow = { address: string; text: string; alt: string | null; sura_name: string; total: string };
+type HitRow = {
+  address: string;
+  text: string;
+  alt: string | null;
+  translation: string | null;
+  sura_name: string;
+  total: string;
+};
 
 function toResult(rows: HitRow[]): SearchResult {
   return {
@@ -119,6 +159,7 @@ function toResult(rows: HitRow[]): SearchResult {
         suraName: row.sura_name,
         text: row.text,
         alt: row.alt,
+        translation: row.translation,
       };
     }),
   };
@@ -134,6 +175,18 @@ export async function searchText(patterns: string[], diacritics: boolean): Promi
        SELECT m.address FROM texts m JOIN text_versions mv ON mv.id = m.version_id
        WHERE mv.work_id = 'quran' AND mv.language = 'ar' AND mv.kind = 'original'
          AND mv.status = 'published' AND ${match.sql})
+     ORDER BY a.ordinal LIMIT ${SEARCH_LIMIT}`,
+    match.params,
+  );
+  return toResult(rows);
+}
+
+// Ayahs whose Russian translation has every pattern (its search form, plain-key.ts).
+export async function searchTranslation(patterns: string[]): Promise<SearchResult> {
+  const match = matchConditions("m", patterns, false, 1, true);
+  const { rows } = await db().query<HitRow>(
+    `${HITS} AND a.address IN (
+       SELECT m.address FROM texts m WHERE m.version_id = ${TRANSLATION_ID} AND ${match.sql})
      ORDER BY a.ordinal LIMIT ${SEARCH_LIMIT}`,
     match.params,
   );

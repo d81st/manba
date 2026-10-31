@@ -1343,6 +1343,91 @@ async function importExternal(client: pg.Client, src: ExternalSource) {
   }
 }
 
+// Sablukov's Russian translation of the Quran (Kazan, 1894), from Wikisource,
+// in the Hafs ayah numbering: data/sources/sablukov/README.md. Not the primary
+// version: the primary text of the Quran is Hafs in Arabic.
+const SABLUKOV = {
+  key: "wikisource:sablukov-1894:v1",
+  file: join(DATA_DIR, "sablukov", "sablukov-ru.tsv"),
+  versionId: "quran.ru.sablukov1894",
+  title: "Перевод Г. С. Саблукова (Казань, 1894, 2-е изд.)",
+  translator: "Г. С. Саблуков",
+  source: {
+    id: "wikisource.sablukov-1894",
+    title: "Викитека: Коран (Мухаммед; Саблуков)/1894 (ВТ), по скану «Коран - Г.С. Саблуков, 1894 г., 2-е издание.djvu»",
+    url: "https://ru.wikisource.org/wiki/Коран_(Мухаммед;_Саблуков)/1894_(ВТ)",
+    license: "Public Domain",
+    notice:
+      "Викитека: ЛИЦЕНЗИЯ = PD-old (переводчик умер в 1880 году). Текст — вычитка Викитеки в современной орфографии; нумерация аятов приведена к счёту Хафса: data/sources/sablukov/README.md.",
+    version: "Викитека, страницы 5–534, загружены 2026-10-31",
+  },
+};
+
+async function importSablukov(client: pg.Client) {
+  const done = await client.query("SELECT 1 FROM import_batches WHERE key = $1", [SABLUKOV.key]);
+  if (done.rowCount) {
+    console.log(`Import skipped: ${SABLUKOV.key} is already loaded.`);
+    return;
+  }
+  if (!existsSync(SABLUKOV.file)) {
+    console.log("Import skipped: no data/sources/sablukov/sablukov-ru.tsv.");
+    return;
+  }
+  const rows = readFileSync(SABLUKOV.file, "utf8")
+    .split("\n")
+    .filter(Boolean)
+    .map((line, i) => {
+      const [address, text] = line.split("\t");
+      if (!/^quran\.\d+\.\d+$/.test(address) || !text) throw new Error(`sablukov-ru.tsv:${i + 1}: not "address, text"`);
+      return { address, text };
+    });
+  const ayahs = rows.filter((r) => !r.address.endsWith(".0")).length;
+  if (ayahs !== 6236) throw new Error(`sablukov-ru.tsv: ${ayahs} ayahs, expected 6236`);
+
+  await client.query("BEGIN");
+  try {
+    const missing = await client.query(
+      `SELECT a FROM unnest($1::text[]) AS a
+       WHERE NOT EXISTS (SELECT 1 FROM addresses x WHERE x.address = a::extensions.ltree) LIMIT 5`,
+      [rows.map((r) => r.address)],
+    );
+    if (missing.rowCount) throw new Error(`sablukov-ru.tsv: no address ${missing.rows.map((r) => r.a).join(", ")}`);
+    const src = SABLUKOV.source;
+    await client.query(
+      `INSERT INTO sources (id, title, url, license, license_text, version, retrieved_at)
+       VALUES ($1, $2, $3, $4, $5, $6, '2026-10-31') ON CONFLICT (id) DO NOTHING`,
+      [src.id, src.title, src.url, src.license, src.notice, src.version],
+    );
+    const batch = await client.query(
+      `INSERT INTO import_batches (key, source_id, actor, summary) VALUES ($1, $2, 'import:wikisource', $3) RETURNING id`,
+      [SABLUKOV.key, src.id, json({ texts: rows.length })],
+    );
+    const batchId = batch.rows[0].id;
+    await client.query(
+      `INSERT INTO text_versions
+         (id, work_id, language, kind, title, translator, source_id, verification, is_primary, status, batch_id)
+       VALUES ($1, 'quran', 'ru', 'translation', $2, $3, $4, 'unverified', false, 'draft', $5)`,
+      [SABLUKOV.versionId, SABLUKOV.title, SABLUKOV.translator, src.id, batchId],
+    );
+    await client.query(
+      `INSERT INTO texts (address, version_id, content, search_plain, batch_id)
+       SELECT a::extensions.ltree, $4, c, p, $5 FROM unnest($1::text[], $2::text[], $3::text[]) AS t(a, c, p)`,
+      [rows.map((r) => r.address), rows.map((r) => r.text), rows.map((r) => plainKey(r.text)), SABLUKOV.versionId, batchId],
+    );
+    await client.query("UPDATE text_versions SET status = 'published' WHERE id = $1", [SABLUKOV.versionId]);
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, new_value, reason, actor)
+       VALUES ('import_batch', $1, 'created', $2, $3, 'import:wikisource')`,
+      [SABLUKOV.key, json({ batchId, version: SABLUKOV.versionId, texts: rows.length }), "Загрузка русского перевода Корана: Г. С. Саблуков, 1894"],
+    );
+    await client.query("COMMIT");
+    console.log(`Import done: ${SABLUKOV.key} (${rows.length} texts).`);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  }
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     console.log("Import skipped: DATABASE_URL is not set.");
@@ -1366,6 +1451,7 @@ async function main() {
     for (const src of [MASAHIF, FADAIL_ABU_UBAYD, SABAA_IBN_MUJAHID, ANSAB_BALADHURI]) await importOpenitiHadith(client, src);
     for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
     for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
+    await importSablukov(client);
   } finally {
     await client.end();
   }

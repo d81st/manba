@@ -7,8 +7,10 @@ import { Page } from "@/components/page";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getAyahs, SEARCH_LIMIT, searchText, type SearchResult } from "@/lib/quran";
-import { highlight, likePatterns, parseQuery } from "@/lib/quran-query";
+import { TranslationText } from "@/components/translation-text";
+import { getAyahs, SEARCH_LIMIT, searchText, searchTranslation, type SearchResult } from "@/lib/quran";
+import { highlight, highlightPlain, likePatterns, parseQuery } from "@/lib/quran-query";
+import { translationPlain } from "@/lib/translation-markup";
 import { QuranNav } from "../nav";
 import { SearchForm } from "../search-form";
 
@@ -65,10 +67,15 @@ async function Results({ parsed }: { parsed: ReturnType<typeof parseQuery> }) {
 
   let result: SearchResult;
   let words: string[] = [];
+  let ruWords: string[] = [];
   let diacritics = false;
   if (parsed.kind === "ayahs") {
     result = await getAyahs(parsed.sura, parsed.from, parsed.to);
     if (result.total === 0) return <Notice kind="info">{t.search.noAyah}</Notice>;
+  } else if (parsed.kind === "translation") {
+    ruWords = parsed.words;
+    result = await searchTranslation(likePatterns(ruWords));
+    if (result.total === 0) return <Notice kind="info">{t.search.nothing}</Notice>;
   } else {
     ({ words, diacritics } = parsed);
     result = await searchText(likePatterns(words), diacritics);
@@ -94,17 +101,37 @@ async function Results({ parsed }: { parsed: ReturnType<typeof parseQuery> }) {
               {hit.sura}:{hit.ayah}
               <span className="block">{hit.suraName}</span>
             </Link>
-            <p className="quran flex-1 text-[1.55rem] leading-[2.3] sm:text-[1.75rem]" lang="ar" dir="rtl">
-              {highlight(hit.text, words, diacritics, hit.alt).map((piece, i) =>
-                piece.match ? (
-                  <mark key={i} className="rounded bg-highlight text-inherit">
-                    {piece.text}
-                  </mark>
-                ) : (
-                  piece.text
-                ),
+            <div className="flex flex-1 flex-col gap-2">
+              <p className="quran text-[1.55rem] leading-[2.3] sm:text-[1.75rem]" lang="ar" dir="rtl">
+                {highlight(hit.text, words, diacritics, hit.alt).map((piece, i) =>
+                  piece.match ? (
+                    <mark key={i} className="rounded bg-highlight text-inherit">
+                      {piece.text}
+                    </mark>
+                  ) : (
+                    piece.text
+                  ),
+                )}
+              </p>
+              {hit.translation && (
+                <p className="leading-relaxed" lang="ru">
+                  {ruWords.length ? (
+                    // Plain text when its words are marked: the markup would split them.
+                    highlightPlain(translationPlain(hit.translation), ruWords).map((piece, i) =>
+                      piece.match ? (
+                        <mark key={i} className="rounded bg-highlight text-inherit">
+                          {piece.text}
+                        </mark>
+                      ) : (
+                        piece.text
+                      ),
+                    )
+                  ) : (
+                    <TranslationText content={hit.translation} />
+                  )}
+                </p>
               )}
-            </p>
+            </div>
           </li>
         ))}
       </ol>
@@ -113,7 +140,7 @@ async function Results({ parsed }: { parsed: ReturnType<typeof parseQuery> }) {
         <a href="https://tanzil.net" target="_blank" rel="noreferrer">
           Tanzil Project (tanzil.net)
         </a>
-        , CC BY 3.0, {t.unchanged}.
+        , CC BY 3.0, {t.unchanged}. {t.search.translationNote}
       </footer>
     </section>
   );

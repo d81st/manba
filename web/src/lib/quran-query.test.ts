@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { highlight, likePatterns, parseQuery } from "./quran-query";
+import { highlight, highlightPlain, likePatterns, parseQuery } from "./quran-query";
 
 // Arabic test words are ordinary dictionary words, not source text.
 
@@ -42,8 +42,10 @@ describe("parseQuery: words", () => {
     expect(parseQuery("كتاب كتاب book")).toEqual({ kind: "text", words: ["كتاب"], diacritics: false });
   });
 
-  it("does not search Russian text yet", () => {
-    expect(parseQuery("милость")).toEqual({ kind: "unsupported" });
+  it("searches Russian words in the translation", () => {
+    expect(parseQuery("милость")).toEqual({ kind: "translation", words: ["милость"] });
+    expect(parseQuery("Ёлка  ЁЛКА, милость")).toEqual({ kind: "translation", words: ["елка", "милость"] });
+    expect(parseQuery("hello")).toEqual({ kind: "unsupported" });
     expect(parseQuery("   ")).toEqual({ kind: "empty" });
   });
 });
@@ -94,6 +96,16 @@ describe("highlight", () => {
   it("ignores a standard spelling that does not line up", () => {
     expect(highlight("ٱلْكِتَٰبُ جَدِيدٌ", ["الكتاب"], false, "الكتاب")).toEqual([
       { text: "ٱلْكِتَٰبُ جَدِيدٌ", match: false },
+    ]);
+  });
+});
+
+describe("highlightPlain", () => {
+  it("marks words containing a query word", () => {
+    // Made-up sample, not a source text.
+    expect(highlightPlain("Абв гдеж, Ёжик", ["где", "еж"]).filter((p) => p.match).map((p) => p.text)).toEqual([
+      "гдеж,",
+      "Ёжик",
     ]);
   });
 });

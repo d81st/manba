@@ -12,6 +12,7 @@ import { getSura } from "@/lib/quran";
 import { QuranNav } from "../nav";
 import { SuraMeta } from "../sura-meta";
 import { ScrollToHash } from "@/components/scroll-to-hash";
+import { TranslationText } from "@/components/translation-text";
 
 // The commentary each ayah links to.
 const TAFSIR = "tafsir_ibn_kathir";
@@ -20,19 +21,27 @@ const t = getMessages().quran;
 
 export const metadata: Metadata = { title: t.title };
 
-export default function SuraPage({ params }: PageProps<"/quran/[sura]">) {
+export default function SuraPage({ params, searchParams }: PageProps<"/quran/[sura]">) {
   return (
     <Page>
       <Suspense fallback={<p className="mt-8 text-muted-foreground">{t.loading}</p>}>
-        <SuraText params={params} />
+        <SuraText params={params} searchParams={searchParams} />
       </Suspense>
     </Page>
   );
 }
 
-async function SuraText({ params }: { params: PageProps<"/quran/[sura]">["params"] }) {
+async function SuraText({
+  params,
+  searchParams,
+}: {
+  params: PageProps<"/quran/[sura]">["params"];
+  searchParams: PageProps<"/quran/[sura]">["searchParams"];
+}) {
   await connection();
   const { sura: raw } = await params;
+  // ?tr=0 hides the translation.
+  const showTranslation = (await searchParams).tr !== "0";
   const number = Number(raw);
   if (!/^\d+$/.test(raw) || number < 1 || number > 114) notFound();
   if (!isDatabaseConfigured()) return <p className="mt-8 text-destructive">{t.noDatabase}</p>;
@@ -51,6 +60,13 @@ async function SuraText({ params }: { params: PageProps<"/quran/[sura]">["params
           {sura.names.ar}
         </p>
         <SuraMeta sura={sura} />
+        {sura.translation && (
+          <p className="text-sm">
+            <Link href={showTranslation ? `/quran/${number}?tr=0` : `/quran/${number}`} scroll={false}>
+              {showTranslation ? t.translation.hide : t.translation.show}
+            </Link>
+          </p>
+        )}
       </header>
 
       <ol className="mt-2 mb-6">
@@ -60,6 +76,11 @@ async function SuraText({ params }: { params: PageProps<"/quran/[sura]">["params
               <p className="quran text-center text-[1.6rem] leading-loose" lang="ar" dir="rtl">
                 {segment.text}
               </p>
+              {showTranslation && segment.translation && (
+                <p className="text-center text-sm text-muted-foreground" lang="ru">
+                  <TranslationText content={segment.translation} />
+                </p>
+              )}
             </li>
           ) : (
             <li
@@ -78,9 +99,16 @@ async function SuraText({ params }: { params: PageProps<"/quran/[sura]">["params
                   {t.tafsir}
                 </Link>
               </span>
-              <p className="quran flex-1 text-[1.55rem] leading-[2.3] sm:text-[1.75rem]" lang="ar" dir="rtl">
-                {segment.text}
-              </p>
+              <div className="flex flex-1 flex-col gap-2">
+                <p className="quran text-[1.55rem] leading-[2.3] sm:text-[1.75rem]" lang="ar" dir="rtl">
+                  {segment.text}
+                </p>
+                {showTranslation && segment.translation && (
+                  <p className="leading-relaxed" lang="ru">
+                    <TranslationText content={segment.translation} />
+                  </p>
+                )}
+              </div>
             </li>
           ),
         )}
@@ -111,6 +139,17 @@ async function SuraText({ params }: { params: PageProps<"/quran/[sura]">["params
             Tanzil Project (tanzil.net)
           </a>
           , {sura.attribution.license}, {t.unchanged}.
+          {sura.translation && showTranslation && (
+            <>
+              <br />
+              {t.translation.label}: {sura.translation.versionTitle} —{" "}
+              <a href={sura.translation.url} target="_blank" rel="noreferrer">
+                {sura.translation.title}
+              </a>
+              , {sura.translation.license}
+              {sura.translation.verification === "unverified" && <>, {t.translation.unverified}</>}. {t.translation.about}
+            </>
+          )}
         </footer>
       )}
     </>
