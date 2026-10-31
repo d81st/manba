@@ -47,7 +47,8 @@ jobs:
             "INSERT INTO change_log (entity, entity_id, action, actor) VALUES ('ci', 'x', 'created', 'ci')"
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "UPDATE change_log SET reason = 'x'"
           ! psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "DELETE FROM change_log"
-          test "$(psql "$DATABASE_URL" -tA -c "WITH s AS (SELECT take_editorial_snapshot('ci') AS id) SELECT jsonb_typeof(e.tables->'change_log') FROM editorial_snapshots e JOIN s USING (id)")" = array
+          SNAPSHOT=$(psql "$DATABASE_URL" -tA -c "SELECT take_editorial_snapshot('ci')")
+          test "$(psql "$DATABASE_URL" -tA -c "SELECT jsonb_typeof(tables->'change_log') FROM editorial_snapshots WHERE id = $SNAPSHOT")" = array
           test "$(psql "$DATABASE_URL" -tA -c "SELECT has_table_privilege('anon', 'change_log', 'SELECT')")" = f
           test "$(psql "$DATABASE_URL" -tA -c "SELECT count(*) FROM pg_tables t WHERE schemaname = 'public'
             AND (NOT rowsecurity OR NOT EXISTS (SELECT 1 FROM pg_policies p WHERE p.tablename = t.tablename))")" = 0
