@@ -1,4 +1,4 @@
-import { BookA, CalendarRange, History, Link2, ListChecks, type LucideIcon, Network, Scale, Users } from "lucide-react";
+import { BookA, CalendarRange, History, Link2, ListChecks, type LucideIcon, MessageCircleQuestion, Network, Scale, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Page } from "@/components/page";
@@ -15,6 +15,7 @@ const SECTIONS: { href: string; icon: LucideIcon; title: string; hint: string }[
   { href: "/admin/origins", icon: Network, title: t.sections.origins, hint: t.sections.originsHint },
   { href: "/admin/history", icon: History, title: t.sections.history, hint: t.sections.historyHint },
   { href: "/admin/tests", icon: ListChecks, title: t.sections.tests, hint: t.sections.testsHint },
+  { href: "/admin/assistant", icon: MessageCircleQuestion, title: t.sections.assistant, hint: t.sections.assistantHint },
   { href: "/admin/sides", icon: Users, title: t.sections.sides, hint: t.sections.sidesHint },
   { href: "/admin/links", icon: Link2, title: t.sections.links, hint: t.sections.linksHint },
 ];
