@@ -12,6 +12,7 @@ import {
   Network,
   Scale,
   ScrollText,
+  SearchX,
   SquareLibrary,
 } from "lucide-react";
 import Link from "next/link";
@@ -39,6 +40,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
   timeline: History,
   tests: ListChecks,
   assistant: MessageCircleQuestion,
+  notFound: SearchX,
 };
 
 // Sections that already have pages.
@@ -56,6 +58,7 @@ const LINKS: Partial<Record<SectionKey, string>> = {
   timeline: "/history",
   tests: "/tests",
   assistant: "/assistant",
+  notFound: "/not-found-in-sources",
 };
 
 export default function Home() {
