@@ -1558,6 +1558,55 @@ async function importExternal(client: pg.Client, src: ExternalSource) {
   }
 }
 
+// Verses added later to an external translation already loaded: only the
+// addresses the version does not have yet are inserted (published texts are
+// never changed; adding is allowed). The Synodal chapters aligned by the
+// versification mappings (data/sources/external/README.md), 31.10.2026.
+const EXTERNAL_ADDITIONS = [{ key: "external:tanakh-ru:v2", file: "tanakh-ru.tsv", versionId: "tanakh.ru.synodal" }];
+
+async function importExternalAdditions(client: pg.Client, src: (typeof EXTERNAL_ADDITIONS)[number]) {
+  const done = await client.query("SELECT 1 FROM import_batches WHERE key = $1", [src.key]);
+  if (done.rowCount) {
+    console.log(`Import skipped: ${src.key} is already loaded.`);
+    return;
+  }
+  const version = await client.query("SELECT source_id FROM text_versions WHERE id = $1", [src.versionId]);
+  if (!version.rowCount) {
+    console.log(`Import skipped: ${src.key} — no version ${src.versionId} yet.`);
+    return;
+  }
+  const rows = readFileSync(join(DATA_DIR, "external", src.file), "utf8")
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => line.split("\t"));
+  await client.query("BEGIN");
+  try {
+    const batch = await client.query(
+      `INSERT INTO import_batches (key, source_id, actor, summary) VALUES ($1, $2, 'import:external', '{}') RETURNING id`,
+      [src.key, version.rows[0].source_id],
+    );
+    const batchId = batch.rows[0].id;
+    const added = await client.query(
+      `INSERT INTO texts (address, version_id, content, search_plain, batch_id)
+       SELECT a::extensions.ltree, $4, c, p, $5 FROM unnest($1::text[], $2::text[], $3::text[]) AS t(a, c, p)
+       WHERE EXISTS (SELECT 1 FROM addresses x WHERE x.address = a::extensions.ltree)
+         AND NOT EXISTS (SELECT 1 FROM texts y WHERE y.address = a::extensions.ltree AND y.version_id = $4)`,
+      [rows.map((r) => r[0]), rows.map((r) => r[1]), rows.map((r) => plainKey(r[1])), src.versionId, batchId],
+    );
+    await client.query("UPDATE import_batches SET summary = $2 WHERE id = $1", [batchId, json({ added: added.rowCount })]);
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, new_value, reason, actor)
+       VALUES ('import_batch', $1, 'created', $2, $3, 'import:external')`,
+      [src.key, json({ batchId, version: src.versionId, added: added.rowCount }), "Добавлены стихи Синодального перевода в главах, сопоставленных по таблице нумераций Copenhagen Alliance"],
+    );
+    await client.query("COMMIT");
+    console.log(`Import done: ${src.key} (${added.rowCount} texts added).`);
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  }
+}
+
 // Sablukov's Russian translation of the Quran (Kazan, 1894), from Wikisource,
 // in the Hafs ayah numbering: data/sources/sablukov/README.md. Not the primary
 // version: the primary text of the Quran is Hafs in Arabic.
@@ -1667,6 +1716,7 @@ async function main() {
     for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
     for (const src of SCIENCE_BOOKS) await importOpenitiHadith(client, src);
     for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
+    for (const src of EXTERNAL_ADDITIONS) await importExternalAdditions(client, src);
     await importSablukov(client);
   } finally {
     await client.end();
