@@ -8,6 +8,7 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { getParallelForEdit } from "@/lib/parallels";
+import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
 import { ParallelForm } from "../parallel-form";
 
@@ -43,10 +44,10 @@ async function EditParallel({ params, searchParams }: Pick<PageProps<"/admin/ori
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold">{parallel.title}</h1>
         <StatusBadge status={parallel.status} />
-        <Link href={`/origins/${parallel.slug}?drafts=1`} className="inline-flex items-center gap-1 text-sm">
+        <PreviewLink href={`/origins/${parallel.slug}`} className="inline-flex items-center gap-1 text-sm">
           <ExternalLink className="size-4" />
           {messages.admin.origins.preview}
-        </Link>
+        </PreviewLink>
       </div>
       <ParallelForm key={id} id={id} initial={initial} saved={saved} messages={messages} />
     </>

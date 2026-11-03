@@ -9,6 +9,7 @@ import { requireSession } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
 import { getHistoryEventForEdit, listHistoryTopics } from "@/lib/history";
 import type { HistoryLayer } from "@/lib/history-input";
+import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
 import { HistoryEventForm } from "../event-form";
 
@@ -50,9 +51,9 @@ async function EditEvent({ params, searchParams }: Pick<PageProps<"/admin/histor
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold">{event.title}</h1>
         <StatusBadge status={event.status} />
-        <Link href={`/history?drafts=1#${event.slug}`} className="text-sm">
+        <PreviewLink href={`/history#${event.slug}`} className="text-sm">
           {t.preview}
-        </Link>
+        </PreviewLink>
       </div>
       <HistoryEventForm key={`${id}-${event.status}`} id={id} initial={initial} topics={topics} saved={saved} messages={messages} />
     </>

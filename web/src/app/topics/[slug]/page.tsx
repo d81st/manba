@@ -11,15 +11,17 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
+import { isPreview } from "@/lib/preview";
 import { getSiraData } from "@/lib/sira-events";
 import { getPublishedTopic, type MainPassage } from "@/lib/topics";
+import { PreviewNote } from "../../sira/shared";
 
 const messages = getMessages();
 const t = messages.topics;
 
 export const metadata: Metadata = { title: t.title };
 
-export default function TopicPage({ params }: PageProps<"/topics/[slug]">) {
+export default function TopicPage({ params, searchParams }: PageProps<"/topics/[slug]">) {
   return (
     <Page>
       <nav className="mt-6 text-sm">
@@ -29,7 +31,7 @@ export default function TopicPage({ params }: PageProps<"/topics/[slug]">) {
         </Link>
       </nav>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>
-        <Topic params={params} />
+        <Topic params={params} searchParams={searchParams} />
       </Suspense>
     </Page>
   );
@@ -39,15 +41,23 @@ function Heading({ children }: { children: React.ReactNode }) {
   return <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{children}</h2>;
 }
 
-async function Topic({ params }: { params: PageProps<"/topics/[slug]">["params"] }) {
+async function Topic({
+  params,
+  searchParams,
+}: {
+  params: PageProps<"/topics/[slug]">["params"];
+  searchParams: PageProps<"/topics/[slug]">["searchParams"];
+}) {
   await connection();
   const { slug } = await params;
+  const preview = await isPreview(await searchParams);
   if (!/^[a-z][a-z0-9-]*$/.test(slug) || !isDatabaseConfigured()) notFound();
-  const topic = await getPublishedTopic(slug);
+  const topic = await getPublishedTopic(slug, preview);
   if (!topic) notFound();
 
   return (
     <article className="mt-3 space-y-8">
+      <PreviewNote preview={preview && topic.status !== "published"} />
       <header className="space-y-2 border-b pb-4">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold">{topic.title}</h1>

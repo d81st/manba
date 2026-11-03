@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getParallel } from "@/lib/parallels";
-import { isPreview, PreviewNote } from "../../sira/shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewNote } from "../../sira/shared";
 import { RefItems } from "../ref-items";
 
 const messages = getMessages();
@@ -36,7 +37,7 @@ function Heading({ children }: { children: React.ReactNode }) {
 async function Parallel({ params, searchParams }: Pick<PageProps<"/origins/[slug]">, "params" | "searchParams">) {
   await connection();
   const { slug } = await params;
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!/^[a-z][a-z0-9-]*$/.test(slug) || !isDatabaseConfigured()) notFound();
   const p = await getParallel(slug, preview);
   if (!p) notFound();

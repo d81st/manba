@@ -6,7 +6,8 @@ import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getCoMentions, getSiraData } from "@/lib/sira-events";
 import { forceLayout } from "@/lib/sira-graph";
-import { isPreview, pageOf, PreviewNote, SiraNav } from "../shared";
+import { isPreview } from "@/lib/preview";
+import { pageOf, PreviewNote, SiraNav } from "../shared";
 import { PeopleGraph } from "./people-graph";
 
 const messages = getMessages();
@@ -28,7 +29,7 @@ const GRAPH = { width: 900, height: 640 };
 
 async function People({ searchParams }: Pick<PageProps<"/sira/people">, "searchParams">) {
   await connection();
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const [{ people, relations }, together] = await Promise.all([getSiraData(preview), getCoMentions(preview)]);
   const slugs = new Set(people.map((p) => p.slug));
@@ -62,7 +63,7 @@ async function People({ searchParams }: Pick<PageProps<"/sira/people">, "searchP
             name: p.name,
             nameAr: p.nameAr,
             draft: p.status !== "published",
-            card: p.topic && (p.topic.published || preview) ? `/topics/${p.topic.slug}` : null,
+            card: p.topic && (p.topic.published || preview) ? `/topics/${p.topic.slug}${preview ? "?drafts=1" : ""}` : null,
             mentions: together.units[p.slug] ?? null,
           }))}
           relations={relations.map((r) => {

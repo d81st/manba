@@ -12,7 +12,8 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { getQuizQuestions, type QuizQuestion as Question } from "@/lib/quiz";
 import { levelKey } from "@/lib/quiz-input";
 import { cn } from "@/lib/utils";
-import { isPreview, PreviewNote } from "../sira/shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewBar } from "../sira/shared";
 import { Quiz, QuizQuestion } from "./quiz";
 
 const messages = getMessages();
@@ -40,7 +41,7 @@ const STRINGS = { answer: t.answer, right: t.right, wrong: t.wrong, rightAnswer:
 async function Tests({ searchParams }: Pick<PageProps<"/tests">, "searchParams">) {
   await connection();
   const params = await searchParams;
-  const preview = isPreview(params);
+  const preview = await isPreview(params);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const all = await getQuizQuestions(preview);
   const levels = [...new Set(all.map((q) => levelKey(q.level)))].sort((a, b) => (a ?? 99) - (b ?? 99));
@@ -56,12 +57,7 @@ async function Tests({ searchParams }: Pick<PageProps<"/tests">, "searchParams">
 
   return (
     <>
-      <div className="mt-2 flex justify-end text-sm">
-        <Link href={preview ? "/tests" : "/tests?drafts=1"} className="text-muted-foreground">
-          {preview ? messages.sira.publishedLink : messages.sira.previewLink}
-        </Link>
-      </div>
-      <PreviewNote preview={preview} />
+      <PreviewBar href="/tests" preview={preview} />
       {all.length === 0 ? (
         <p className="mt-6 text-sm text-muted-foreground">
           {t.empty} <Link href="/admin/tests">{t.drafts}</Link>

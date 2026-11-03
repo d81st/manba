@@ -9,6 +9,7 @@ import { requireSession } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
 import { getPersonForEdit, listChoices } from "@/lib/sira-events";
 import type { PersonRelationInput } from "@/lib/sira-input";
+import { PreviewLink } from "../../../preview-link";
 import { StatusBadge } from "../../../status-badge";
 import { PersonForm } from "../../person-form";
 
@@ -55,9 +56,9 @@ async function EditPerson({ params, searchParams }: Pick<PageProps<"/admin/sira/
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold">{person.name}</h1>
         <StatusBadge status={person.status} />
-        <Link href="/sira/people?drafts=1" className="text-sm">
+        <PreviewLink href="/sira/people" className="text-sm">
           {t.preview}
-        </Link>
+        </PreviewLink>
       </div>
       <PersonForm key={`${id}-${person.status}`} id={id} initial={initial} people={choices.people} topics={choices.topics} saved={saved} messages={messages} />
     </>

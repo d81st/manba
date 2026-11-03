@@ -47,7 +47,7 @@ export type TopicInput = z.infer<typeof topicSchema>;
 
 const REF_FIELDS = ["mainRefs", "circumstancesRefs", "relatedRefs"] as const;
 
-// Checks that need no database: schema, references, and what a published hard
+// Checks that need no database: schema, references, and what any published
 // topic must contain so that no passage is shown without its context.
 export function checkTopicInput(raw: unknown): { input?: TopicInput; problems: InputProblem[] } {
   const result = topicSchema.safeParse(raw);
@@ -71,7 +71,7 @@ export function checkTopicInput(raw: unknown): { input?: TopicInput; problems: I
     const bad = parseRefs(position.refs).invalid;
     if (bad.length) problems.push({ field: `positions.${i}.refs`, code: "refs", detail: bad.join(", ") });
   });
-  if (input.category === "hard" && input.status === "published") {
+  if (input.status === "published") {
     if (parseRefs(input.mainRefs).addresses.length === 0) problems.push({ field: "mainRefs", code: "mainRequired" });
     if (!input.circumstances) problems.push({ field: "circumstances", code: "circumstancesRequired" });
     if (input.positions.length === 0) problems.push({ field: "positions", code: "positionsRequired" });

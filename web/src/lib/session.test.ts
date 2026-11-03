@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  createPreviewToken,
   createSessionToken,
   credentialsMatch,
+  PREVIEW_MAX_AGE,
+  readPreviewToken,
   readSessionToken,
   SESSION_MAX_AGE,
 } from "./session";
@@ -58,5 +61,27 @@ describe("session token", () => {
     const token = createSessionToken("admin")!;
     vi.stubEnv("SITE_PASSWORD", "new-password");
     expect(readSessionToken(token)).toBeNull();
+  });
+
+  it("does not accept a preview token as a session", () => {
+    expect(readSessionToken(createPreviewToken()!)).toBeNull();
+  });
+});
+
+describe("preview token", () => {
+  it("round-trips and expires", () => {
+    vi.useFakeTimers();
+    const token = createPreviewToken()!;
+    expect(readPreviewToken(token)?.exp).toBeGreaterThan(0);
+    vi.advanceTimersByTime((PREVIEW_MAX_AGE + 1) * 1000);
+    expect(readPreviewToken(token)).toBeNull();
+  });
+
+  it("rejects a session token and a forged payload", () => {
+    expect(readPreviewToken(createSessionToken("admin")!)).toBeNull();
+    const token = createPreviewToken()!;
+    const [, signature] = token.split(".");
+    const forged = Buffer.from(JSON.stringify({ kind: "preview", exp: 9_999_999_999 })).toString("base64url");
+    expect(readPreviewToken(`${forged}.${signature}`)).toBeNull();
   });
 });

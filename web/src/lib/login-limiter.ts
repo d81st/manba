@@ -1,41 +1,41 @@
-// Brute-force protection for the login form. In memory, per server instance:
-// enough for the single small Render instance used during development.
+// Thresholds for the login form. Counting happens in the database
+// (login-lockout.ts); this file only decides and reads the client address.
 
-const WINDOW_MS = 15 * 60 * 1000;
-const MAX_PER_ADDRESS = 10;
-// Addresses can be rotated, so also cap failures from everywhere together.
-const MAX_TOTAL = 50;
-const TOTAL = "*";
+export const WINDOW_MS = 15 * 60 * 1000;
 
-const failures = new Map<string, { count: number; since: number }>();
+// Same login from one address, and the same login from anywhere.
+export const MAX_PAIR = 10;
+export const MAX_LOGIN = 10;
+// One address, any login: high enough that a shared office address is not
+// locked by a few mistakes on another account.
+export const MAX_ADDRESS = 30;
+// Every failure together, so rotating both the address and the login still stops.
+export const MAX_TOTAL = 50;
 
-function current(key: string, now: number) {
-  const entry = failures.get(key);
-  if (entry && now - entry.since > WINDOW_MS) {
-    failures.delete(key);
-    return undefined;
-  }
-  return entry;
-}
+export type FailureCounts = {
+  pair: number;
+  login: number;
+  address: number;
+  total: number;
+};
 
-export function isLocked(address: string, now = Date.now()) {
+export function isLocked(counts: FailureCounts) {
   return (
-    (current(address, now)?.count ?? 0) >= MAX_PER_ADDRESS ||
-    (current(TOTAL, now)?.count ?? 0) >= MAX_TOTAL
+    counts.pair >= MAX_PAIR ||
+    counts.login >= MAX_LOGIN ||
+    counts.address >= MAX_ADDRESS ||
+    counts.total >= MAX_TOTAL
   );
 }
 
-export function recordFailure(address: string, now = Date.now()) {
-  for (const key of [address, TOTAL]) {
-    const entry = current(key, now);
-    if (entry) entry.count += 1;
-    else failures.set(key, { count: 1, since: now });
-  }
-  if (failures.size > 10_000) {
-    for (const key of failures.keys()) current(key, now);
-  }
-}
-
-export function recordSuccess(address: string) {
-  failures.delete(address);
+// The platform appends the real client address at the end of X-Forwarded-For.
+// The first value is whatever the client sent, so it is not the address.
+export function clientAddress(forwarded: string | null | undefined, realIp?: string | null) {
+  const hops = (forwarded ?? "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (hops.length > 0) return hops[hops.length - 1];
+  const real = realIp?.trim();
+  return real || "local";
 }

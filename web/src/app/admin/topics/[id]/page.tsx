@@ -11,6 +11,7 @@ import { requireSession } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
 import { listTermChoices } from "@/lib/glossary";
 import { getTopicForEdit, listSides, listTopicChoices } from "@/lib/topics";
+import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
 import { TopicForm } from "../topic-form";
 
@@ -59,12 +60,10 @@ async function EditTopic({
         <h1 className="text-2xl font-semibold">{topic.title}</h1>
         {topic.category === "hard" && <Badge variant="secondary">{t.categories.hard}</Badge>}
         <StatusBadge status={topic.status} />
-        {topic.status === "published" && (
-          <Link href={`/topics/${topic.slug}`} className="inline-flex items-center gap-1 text-sm">
-            <ExternalLink className="size-4" />
-            {t.topics.view}
-          </Link>
-        )}
+        <PreviewLink href={`/topics/${topic.slug}`} className="inline-flex items-center gap-1 text-sm">
+          <ExternalLink className="size-4" />
+          {t.topics.view}
+        </PreviewLink>
       </div>
       <TopicForm
         key={`${id}-${topic.status}`}

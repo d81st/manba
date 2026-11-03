@@ -11,7 +11,8 @@ import { getHistoryEvents, type HistoryDate, type HistoryEvent } from "@/lib/his
 import { ceLabel, HISTORY_LAYERS, type HistoryLayer, placeYear } from "@/lib/history-input";
 import { HIJRI_MONTHS } from "@/lib/sira-dates";
 import { cn } from "@/lib/utils";
-import { isPreview, PreviewNote } from "../sira/shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewBar } from "../sira/shared";
 
 const messages = getMessages();
 const t = messages.history;
@@ -62,7 +63,7 @@ function periodOf(year: number, scale: Scale) {
 async function Timeline({ searchParams }: Pick<PageProps<"/history">, "searchParams">) {
   await connection();
   const params = await searchParams;
-  const preview = isPreview(params);
+  const preview = await isPreview(params);
   const layer = HISTORY_LAYERS.find((l) => l === params.layer) ?? null;
   const scale: Scale = SCALES.find((s) => s === params.scale) ?? "century";
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
@@ -91,12 +92,7 @@ async function Timeline({ searchParams }: Pick<PageProps<"/history">, "searchPar
 
   return (
     <>
-      <div className="mt-2 flex justify-end text-sm">
-        <Link href={preview ? "/history" : "/history?drafts=1"} className="text-muted-foreground">
-          {preview ? messages.sira.publishedLink : messages.sira.previewLink}
-        </Link>
-      </div>
-      <PreviewNote preview={preview} />
+      <PreviewBar href="/history" preview={preview} />
       <nav className="mt-4 flex flex-wrap items-center gap-2 text-sm">
         <Chip href={query({ layer: null })} active={!layer}>
           {t.allLayers}
@@ -128,7 +124,7 @@ async function Timeline({ searchParams }: Pick<PageProps<"/history">, "searchPar
               <h2 className="text-lg font-semibold tabular-nums">{group.label}</h2>
               <ul className="mt-2 space-y-3">
                 {group.items.map(({ event }) => (
-                  <EventCard key={event.id} event={event} />
+                  <EventCard key={event.id} event={event} preview={preview} />
                 ))}
               </ul>
             </li>
@@ -138,7 +134,7 @@ async function Timeline({ searchParams }: Pick<PageProps<"/history">, "searchPar
               <h2 className="text-lg font-semibold">{t.undated}</h2>
               <ul className="mt-2 space-y-3">
                 {undated.map((event) => (
-                  <EventCard key={event.id} event={event} />
+                  <EventCard key={event.id} event={event} preview={preview} />
                 ))}
               </ul>
             </li>
@@ -165,7 +161,7 @@ function Chip({ href, active, children }: { href: string; active: boolean; child
   );
 }
 
-function EventCard({ event }: { event: HistoryEvent }) {
+function EventCard({ event, preview }: { event: HistoryEvent; preview: boolean }) {
   return (
     <li id={event.slug} className="scroll-mt-4 rounded-xl border bg-card p-4 text-card-foreground shadow-sm target:border-primary">
       <div className="flex flex-wrap items-center gap-2">
@@ -174,8 +170,11 @@ function EventCard({ event }: { event: HistoryEvent }) {
         {event.status !== "published" && (
           <Badge variant="secondary">{messages.admin.statuses[event.status as keyof typeof messages.admin.statuses] ?? event.status}</Badge>
         )}
-        {event.topic && (event.topic.published || event.status !== "published") && (
-          <Link href={`/topics/${event.topic.slug}`} className="ms-auto text-sm">
+        {event.topic && (event.topic.published || preview) && (
+          <Link
+            href={preview ? `/topics/${event.topic.slug}?drafts=1` : `/topics/${event.topic.slug}`}
+            className="ms-auto text-sm"
+          >
             {t.topic}: {event.topic.title}
           </Link>
         )}

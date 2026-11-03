@@ -8,6 +8,7 @@ import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { ceLabel } from "@/lib/history-input";
 import { listHistoryForAdmin } from "@/lib/history";
+import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
 
 const messages = getMessages();
@@ -25,7 +26,7 @@ export default function AdminHistoryPage() {
       <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <Link href="/admin/history/new">+ {t.add}</Link>
-        <Link href="/history?drafts=1">{t.preview}</Link>
+        <PreviewLink href="/history">{t.preview}</PreviewLink>
       </div>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>
         <Events />

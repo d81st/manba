@@ -9,7 +9,8 @@ import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { approxCommonEra, formatReading } from "@/lib/sira-dates";
 import { getSiraData } from "@/lib/sira-events";
-import { isPreview, PreviewNote, SiraNav, SourceDot, SourceLink, sortDates, sourceLabel } from "../../shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewNote, SiraNav, SourceDot, SourceLink, sortDates, sourceLabel } from "../../shared";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -30,7 +31,7 @@ export default function EventPage({ params, searchParams }: PageProps<"/sira/eve
 async function Event({ params, searchParams }: Pick<PageProps<"/sira/events/[slug]">, "params" | "searchParams">) {
   await connection();
   const [{ slug }, query] = await Promise.all([params, searchParams]);
-  const preview = isPreview(query);
+  const preview = await isPreview(query);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const data = await getSiraData(preview);
   const event = data.events.find((e) => e.slug === slug);
@@ -62,7 +63,9 @@ async function Event({ params, searchParams }: Pick<PageProps<"/sira/events/[slu
           <>
             <dt className="text-muted-foreground">{t.event.card}</dt>
             <dd>
-              <Link href={`/topics/${event.topic.slug}`}>{event.topic.slug}</Link>
+              <Link href={preview ? `/topics/${event.topic.slug}?drafts=1` : `/topics/${event.topic.slug}`}>
+                {event.topic.slug}
+              </Link>
             </dd>
           </>
         )}

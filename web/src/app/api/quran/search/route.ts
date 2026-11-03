@@ -1,10 +1,12 @@
 import type { NextRequest } from "next/server";
+import { getSession } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
 import { searchAddresses } from "@/lib/quran";
 import { likePatterns, parseQuery } from "@/lib/quran-query";
 
 // Ayahs to light up on the map: GET /api/quran/search?q=... -> { kind, addresses }.
 export async function GET(request: NextRequest) {
+  if (!(await getSession())) return Response.json({ error: "unauthorized" }, { status: 401 });
   const parsed = parseQuery(request.nextUrl.searchParams.get("q") ?? "");
   if (parsed.kind === "text") {
     if (!isDatabaseConfigured()) return Response.json({ error: "no_database" }, { status: 503 });

@@ -3,7 +3,8 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n";
-import { isLocked, recordFailure, recordSuccess } from "@/lib/login-limiter";
+import { clientAddress } from "@/lib/login-limiter";
+import { isLoginLocked, recordLoginFailure, recordLoginSuccess } from "@/lib/login-lockout";
 import { safeNext } from "@/lib/safe-next";
 import {
   createSessionToken,
@@ -25,15 +26,15 @@ export async function login(
 
   if (!isConfigured()) return { error: t.notConfigured, login };
 
-  const forwarded = (await headers()).get("x-forwarded-for");
-  const address = forwarded?.split(",")[0]?.trim() || "local";
-  if (isLocked(address)) return { error: t.locked, login };
+  const headerList = await headers();
+  const address = clientAddress(headerList.get("x-forwarded-for"), headerList.get("x-real-ip"));
+  if (await isLoginLocked(address, login)) return { error: t.locked, login };
 
   if (!credentialsMatch(login, password)) {
-    recordFailure(address);
+    await recordLoginFailure(address, login);
     return { error: t.invalid, login };
   }
-  recordSuccess(address);
+  await recordLoginSuccess(address, login);
 
   (await cookies()).set(SESSION_COOKIE, createSessionToken(login)!, {
     httpOnly: true,

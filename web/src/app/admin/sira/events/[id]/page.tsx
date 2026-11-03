@@ -8,6 +8,7 @@ import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
 import { getEventForEdit, listChoices } from "@/lib/sira-events";
+import { PreviewLink } from "../../../preview-link";
 import { StatusBadge } from "../../../status-badge";
 import { EventForm } from "../../event-form";
 
@@ -45,9 +46,9 @@ async function EditEvent({ params, searchParams }: Pick<PageProps<"/admin/sira/e
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold">{event.title}</h1>
         <StatusBadge status={event.status} />
-        <Link href={`/sira/events/${event.slug}?drafts=1`} className="text-sm">
+        <PreviewLink href={`/sira/events/${event.slug}`} className="text-sm">
           {t.preview}
-        </Link>
+        </PreviewLink>
       </div>
       <EventForm key={`${id}-${event.status}`} id={id} initial={initial} places={choices.places} topics={choices.topics} saved={saved} messages={messages} />
     </>

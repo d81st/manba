@@ -10,7 +10,8 @@ import { EXTERNAL_IDS } from "@/lib/external";
 import { listParallels } from "@/lib/parallels";
 import { TRADITIONS } from "@/lib/parallels-input";
 import { listPublishedTopics, listTopicsForAdmin } from "@/lib/topics";
-import { isPreview, PreviewNote } from "../sira/shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewBar } from "../sira/shared";
 
 const messages = getMessages();
 const t = messages.origins;
@@ -45,18 +46,13 @@ export default function OriginsPage({ searchParams }: PageProps<"/origins">) {
 
 async function Links({ searchParams }: Pick<PageProps<"/origins">, "searchParams">) {
   await connection();
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const parallels = await listParallels(preview);
   const suffix = preview ? "?drafts=1" : "";
   return (
     <>
-      <div className="mt-2 flex justify-end text-sm">
-        <Link href={preview ? "/origins" : "/origins?drafts=1"} className="text-muted-foreground">
-          {preview ? messages.sira.publishedLink : messages.sira.previewLink}
-        </Link>
-      </div>
-      <PreviewNote preview={preview} />
+      <PreviewBar href="/origins" preview={preview} />
       {parallels.length === 0 ? (
         <p className="mt-6 text-sm text-muted-foreground">
           {t.empty} <Link href="/admin/origins">{t.drafts}</Link>
@@ -97,7 +93,7 @@ async function Links({ searchParams }: Pick<PageProps<"/origins">, "searchParams
 // Early non-Muslim testimonies: topics of the category testimony (migration 018).
 async function Testimonies({ searchParams }: Pick<PageProps<"/origins">, "searchParams">) {
   await connection();
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!isDatabaseConfigured()) return null;
   const topics = (preview ? await listTopicsForAdmin(undefined, "testimony") : await listPublishedTopics())
     .filter((topic) => topic.category === "testimony" && topic.status !== "retired")
@@ -113,8 +109,7 @@ async function Testimonies({ searchParams }: Pick<PageProps<"/origins">, "search
           {topics.map((topic) => (
             <li key={topic.id}>
               <Link
-                // A topic page shows only what is published; a draft opens in the admin form.
-                href={topic.status === "published" ? `/topics/${topic.slug}` : `/admin/topics/${topic.id}`}
+                href={preview ? `/topics/${topic.slug}?drafts=1` : `/topics/${topic.slug}`}
                 className="flex h-full flex-col gap-2 rounded-xl border bg-card px-4 py-3 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent"
               >
                 <span className="font-medium">{topic.title}</span>

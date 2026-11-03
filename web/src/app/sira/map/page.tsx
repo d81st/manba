@@ -7,7 +7,8 @@ import { type MapView, RegionMap } from "@/components/region-map";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSiraData, type SiraEvent, type SiraPlace } from "@/lib/sira-events";
-import { isPreview, PreviewNote, SiraNav } from "../shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewNote, SiraNav } from "../shared";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -39,7 +40,7 @@ const LABELS: Record<string, [number, number, "start" | "end" | "middle"]> = {
 
 async function SiraMap({ searchParams }: Pick<PageProps<"/sira/map">, "searchParams">) {
   await connection();
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const { places, events } = await getSiraData(preview);
   const suffix = preview ? "?drafts=1" : "";

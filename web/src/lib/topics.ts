@@ -469,15 +469,16 @@ async function ayahRange(sura: number, from: number, to: number): Promise<TopicA
   return rows.map(toAyah);
 }
 
-export async function getPublishedTopic(slug: string): Promise<PublicTopic | null> {
+export async function getPublishedTopic(slug: string, drafts = false): Promise<PublicTopic | null> {
   "use cache";
   cacheTag(TOPICS_TAG);
   cacheLife("hours");
+  const statuses = drafts ? ["draft", "review", "published"] : ["published"];
   const summary = await db().query<TopicSummary & { circumstances: string; circumstancesNote: string }>(
     `SELECT s.*, x.circumstances, x.circumstances_note AS "circumstancesNote"
-     FROM (${SUMMARY} WHERE t.slug = $1 AND t.status = 'published') s
+     FROM (${SUMMARY} WHERE t.slug = $1 AND t.status = ANY($2::text[])) s
      JOIN topic_texts x ON x.topic_id = s.id AND x.locale = '${LOCALE}'`,
-    [slug],
+    [slug, statuses],
   );
   const topic = summary.rows[0];
   if (!topic) return null;

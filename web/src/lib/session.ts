@@ -6,6 +6,10 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 export const SESSION_COOKIE = "manba_session";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // seconds
 
+// Set only by the admin preview action. A ?drafts=1 link alone does not open drafts.
+export const PREVIEW_COOKIE = "manba_preview";
+export const PREVIEW_MAX_AGE = 60 * 60 * 12; // seconds
+
 export type Session = { login: string; exp: number };
 
 export function isConfigured() {
@@ -52,6 +56,28 @@ export function createSessionToken(login: string) {
   return `${payload}.${sign(payload, key)}`;
 }
 
+export function createPreviewToken(now = Date.now()) {
+  const key = signingKey();
+  if (!key) return null;
+  const exp = Math.floor(now / 1000) + PREVIEW_MAX_AGE;
+  const payload = Buffer.from(JSON.stringify({ kind: "preview", exp })).toString("base64url");
+  return `${payload}.${sign(payload, key)}`;
+}
+
+export function readPreviewToken(token: string | undefined, now = Date.now()): { exp: number } | null {
+  const key = signingKey();
+  if (!key || !token) return null;
+  const [payload, signature] = token.split(".");
+  if (!payload || !signature || !safeEqual(signature, sign(payload, key))) return null;
+  try {
+    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString()) as { kind?: string; exp?: number };
+    if (parsed.kind !== "preview" || typeof parsed.exp !== "number" || parsed.exp <= now / 1000) return null;
+    return { exp: parsed.exp };
+  } catch {
+    return null;
+  }
+}
+
 export function readSessionToken(token: string | undefined): Session | null {
   const key = signingKey();
   if (!key || !token) return null;
@@ -60,9 +86,8 @@ export function readSessionToken(token: string | undefined): Session | null {
     return null;
   }
   try {
-    const session = JSON.parse(
-      Buffer.from(payload, "base64url").toString(),
-    ) as Session;
+    const session = JSON.parse(Buffer.from(payload, "base64url").toString()) as Session;
+    if (typeof session.login !== "string" || typeof session.exp !== "number") return null;
     return session.exp > Date.now() / 1000 ? session : null;
   } catch {
     return null;

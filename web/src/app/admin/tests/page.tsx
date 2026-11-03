@@ -8,6 +8,7 @@ import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { listQuestionsForAdmin } from "@/lib/quiz";
 import { levelKey } from "@/lib/quiz-input";
+import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
 
 const messages = getMessages();
@@ -25,7 +26,7 @@ export default function AdminTestsPage() {
       <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <Link href="/admin/tests/new">+ {t.add}</Link>
-        <Link href="/tests?drafts=1">{t.preview}</Link>
+        <PreviewLink href="/tests">{t.preview}</PreviewLink>
       </div>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>
         <Questions />

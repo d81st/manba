@@ -9,7 +9,8 @@ import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSiraData } from "@/lib/sira-events";
 import { listPublishedTopics, listTopicsForAdmin } from "@/lib/topics";
-import { isPreview, PreviewNote } from "../sira/shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewBar } from "../sira/shared";
 
 const messages = getMessages();
 const t = messages.cities;
@@ -41,7 +42,7 @@ const LABELS: Record<string, [number, number, "start" | "end" | "middle"]> = {
 
 async function Cities({ searchParams }: Pick<PageProps<"/cities">, "searchParams">) {
   await connection();
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const [topics, { places, events }] = await Promise.all([
     preview ? listTopicsForAdmin(undefined, "cities") : listPublishedTopics(),
@@ -59,12 +60,7 @@ async function Cities({ searchParams }: Pick<PageProps<"/cities">, "searchParams
 
   return (
     <>
-      <div className="mt-2 flex justify-end text-sm">
-        <Link href={preview ? "/cities" : "/cities?drafts=1"} className="text-muted-foreground">
-          {preview ? messages.sira.publishedLink : messages.sira.previewLink}
-        </Link>
-      </div>
-      <PreviewNote preview={preview} />
+      <PreviewBar href="/cities" preview={preview} />
       {cities.length === 0 ? (
         <p className="mt-6 text-sm text-muted-foreground">
           {t.empty} <Link href="/admin/topics?category=cities">{t.drafts}</Link>
@@ -93,7 +89,7 @@ async function Cities({ searchParams }: Pick<PageProps<"/cities">, "searchParams
               return (
                 <li key={city.id} id={city.place ?? undefined} className="scroll-mt-4">
                   <Link
-                    href={`/topics/${city.slug}`}
+                    href={preview ? `/topics/${city.slug}?drafts=1` : `/topics/${city.slug}`}
                     className="flex flex-col gap-1 rounded-xl border bg-card p-4 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent"
                   >
                     <span className="flex flex-wrap items-baseline justify-between gap-2">

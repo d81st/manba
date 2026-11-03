@@ -36,15 +36,16 @@ describe("checkTopicInput", () => {
     ]);
   });
 
-  it("does not publish a hard topic without text, circumstances and a position", () => {
-    const { problems } = checkTopicInput({ ...base, category: "hard", status: "published" });
-    expect(problems.map((p) => p.code)).toEqual(["mainRequired", "circumstancesRequired", "positionsRequired"]);
+  it("does not publish any topic without text, circumstances and a position", () => {
+    for (const category of ["general", "hard", "science"] as const) {
+      const { problems } = checkTopicInput({ ...base, category, status: "published" });
+      expect(problems.map((p) => p.code)).toEqual(["mainRequired", "circumstancesRequired", "positionsRequired"]);
+    }
   });
 
-  it("publishes a complete hard topic and keeps drafts free", () => {
+  it("publishes a complete topic and keeps drafts free", () => {
     const complete = {
       ...base,
-      category: "hard",
       status: "published",
       mainRefs: "9:29",
       circumstances: "Вымышленные обстоятельства.",
@@ -52,10 +53,6 @@ describe("checkTopicInput", () => {
     };
     expect(checkTopicInput(complete).problems).toEqual([]);
     expect(checkTopicInput({ ...base, category: "hard" }).problems).toEqual([]);
-  });
-
-  it("does not ask a general topic for positions", () => {
-    expect(checkTopicInput({ ...base, status: "published" }).problems).toEqual([]);
   });
 
   it("drops repeated links", () => {

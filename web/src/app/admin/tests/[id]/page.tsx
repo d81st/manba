@@ -8,6 +8,7 @@ import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { getQuestionForEdit, listQuizChoices } from "@/lib/quiz";
 import type { QuestionInput } from "@/lib/quiz-input";
+import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
 import { QuestionForm } from "../question-form";
 
@@ -45,9 +46,9 @@ async function EditQuestion({ params, searchParams }: Pick<PageProps<"/admin/tes
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold">{question.prompt || `#${id}`}</h1>
         <StatusBadge status={question.status} />
-        <Link href={`/tests?drafts=1#q-${id}`} className="text-sm">
+        <PreviewLink href={`/tests#q-${id}`} className="text-sm">
           {t.preview}
-        </Link>
+        </PreviewLink>
       </div>
       <QuestionForm key={`${id}-${question.status}`} id={id} initial={initial} topics={topics} terms={terms} saved={saved} messages={messages} />
     </>

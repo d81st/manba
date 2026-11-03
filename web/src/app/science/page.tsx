@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { listPublishedTopics, listTopicsForAdmin, type TopicSummary } from "@/lib/topics";
-import { isPreview, PreviewNote } from "../sira/shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewBar } from "../sira/shared";
 
 const messages = getMessages();
 const t = messages.science;
@@ -44,7 +45,7 @@ export default function SciencePage({ searchParams }: PageProps<"/science">) {
 
 async function Science({ searchParams }: Pick<PageProps<"/science">, "searchParams">) {
   await connection();
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const topics = (preview ? await listTopicsForAdmin() : await listPublishedTopics())
     .filter((topic) => topic.status !== "retired")
@@ -54,14 +55,9 @@ async function Science({ searchParams }: Pick<PageProps<"/science">, "searchPara
 
   return (
     <>
-      <div className="mt-2 flex justify-end text-sm">
-        <Link href={preview ? "/science" : "/science?drafts=1"} className="text-muted-foreground">
-          {preview ? messages.sira.publishedLink : messages.sira.previewLink}
-        </Link>
-      </div>
-      <PreviewNote preview={preview} />
-      <Part title={t.history} hint={t.historyHint} topics={history} />
-      <Part title={t.claims} hint={t.claimsHint} topics={claims} />
+      <PreviewBar href="/science" preview={preview} />
+      <Part title={t.history} hint={t.historyHint} topics={history} preview={preview} />
+      <Part title={t.claims} hint={t.claimsHint} topics={claims} preview={preview} />
       <h2 className="mt-10 mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.books}</h2>
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
         {BOOKS.map((id) => (
@@ -87,7 +83,17 @@ const TITLES: Record<string, string> = {
 };
 const bookTitle = (id: string) => TITLES[id] ?? id;
 
-function Part({ title, hint, topics }: { title: string; hint: string; topics: TopicSummary[] }) {
+function Part({
+  title,
+  hint,
+  topics,
+  preview,
+}: {
+  title: string;
+  hint: string;
+  topics: TopicSummary[];
+  preview: boolean;
+}) {
   return (
     <section className="mt-8">
       <h2 className="text-lg font-semibold">{title}</h2>
@@ -101,7 +107,7 @@ function Part({ title, hint, topics }: { title: string; hint: string; topics: To
           {topics.map((topic) => (
             <li key={topic.id}>
               <Link
-                href={`/topics/${topic.slug}`}
+                href={preview ? `/topics/${topic.slug}?drafts=1` : `/topics/${topic.slug}`}
                 className="flex h-full flex-col gap-1 rounded-xl border bg-card p-4 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent"
               >
                 <span className="font-medium">{topic.title}</span>

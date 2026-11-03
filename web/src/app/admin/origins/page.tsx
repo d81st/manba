@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { listParallelsForAdmin } from "@/lib/parallels";
+import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
 
 const messages = getMessages();
@@ -34,7 +35,7 @@ export default function OriginsAdminPage() {
       </div>
       <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
       <p className="mt-2 text-sm">
-        <Link href="/origins?drafts=1">{t.preview}</Link>
+        <PreviewLink href="/origins">{t.preview}</PreviewLink>
       </p>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>
         <List />

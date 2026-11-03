@@ -43,19 +43,32 @@ export function SourceLink({ address }: { address: string }) {
   );
 }
 
-export function isPreview(params: Record<string, string | string[] | undefined>) {
-  return params.drafts === "1";
-}
-
-// Back to the section and the switch between published and the preview with drafts.
+// Back to the section. Leaving the preview is a plain link; entering it is an admin action.
 export function SiraNav({ path, preview }: { path: string; preview: boolean }) {
   return (
     <nav className="mt-6 flex flex-wrap items-center justify-between gap-2 text-sm">
       <Link href={preview ? "/sira?drafts=1" : "/sira"}>← {t.back}</Link>
-      <Link href={preview ? path : `${path}?drafts=1`} className="text-muted-foreground">
-        {preview ? t.publishedLink : t.previewLink}
-      </Link>
+      {preview && (
+        <Link href={path} className="text-muted-foreground">
+          {t.publishedLink}
+        </Link>
+      )}
     </nav>
+  );
+}
+
+// While a preview is open, a way back to the published page. No link that turns drafts on.
+export function PreviewBar({ href, preview }: { href: string; preview: boolean }) {
+  if (!preview) return null;
+  return (
+    <>
+      <div className="mt-2 flex justify-end text-sm">
+        <Link href={href} className="text-muted-foreground">
+          {t.publishedLink}
+        </Link>
+      </div>
+      <PreviewNote preview />
+    </>
   );
 }
 

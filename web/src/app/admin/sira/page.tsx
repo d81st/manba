@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
 import { getSiraForAdmin } from "@/lib/sira-events";
+import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
 
 const messages = getMessages();
@@ -25,9 +26,9 @@ export default function SiraAdminPage() {
       <h1 className="mt-3 text-2xl font-semibold">{t.title}</h1>
       <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
       <p className="mt-2 flex flex-wrap gap-x-4 text-sm">
-        <Link href="/sira/timeline?drafts=1">{messages.sira.views.timeline}</Link>
-        <Link href="/sira/map?drafts=1">{messages.sira.views.map}</Link>
-        <Link href="/sira/people?drafts=1">{messages.sira.views.people}</Link>
+        <PreviewLink href="/sira/timeline">{messages.sira.views.timeline}</PreviewLink>
+        <PreviewLink href="/sira/map">{messages.sira.views.map}</PreviewLink>
+        <PreviewLink href="/sira/people">{messages.sira.views.people}</PreviewLink>
         <span className="text-muted-foreground">— {t.preview}</span>
       </p>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>

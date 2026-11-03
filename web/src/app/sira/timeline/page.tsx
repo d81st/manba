@@ -7,7 +7,8 @@ import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { approxCommonEra, formatReading, monthsFromHijra } from "@/lib/sira-dates";
 import { getSiraData, type SiraEvent } from "@/lib/sira-events";
-import { isPreview, PreviewNote, SiraNav, SOURCE_WORKS, SourceDot, sortDates, sourceColor, sourceLabel, workOf } from "../shared";
+import { isPreview } from "@/lib/preview";
+import { PreviewNote, SiraNav, SOURCE_WORKS, SourceDot, sortDates, sourceColor, sourceLabel, workOf } from "../shared";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -28,7 +29,7 @@ const hasHijraDate = (e: SiraEvent) => e.dates.some((d) => monthsFromHijra(d) !=
 
 async function Timeline({ searchParams }: Pick<PageProps<"/sira/timeline">, "searchParams">) {
   await connection();
-  const preview = isPreview(await searchParams);
+  const preview = await isPreview(await searchParams);
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
   const { events } = await getSiraData(preview);
   const suffix = preview ? "?drafts=1" : "";
