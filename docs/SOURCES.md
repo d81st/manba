@@ -70,3 +70,17 @@
 3. ~~Русский перевод первой фазы~~ Саблуков (1894) загружен 31.10.2026; Крачковский — после проверки прав (вероятно, охраняется до 2034 года), современные — по договорённости с правообладателями.
 4. Хадисы: какие сборники в первой фазе и откуда текст? Здесь чище всего OpenITI или файлы, которые предоставит автор или специалист.
 5. Писать ли в Sunnah.com, Thaqalayn и KFGQPC с запросом разрешения?
+
+## Где автор читал, чтобы найти источник
+
+Список от автора, 04.11.2026. Это места, которые он открывал, когда искал, где лежит текст. Сайт из списка показывает, куда смотреть. Текст попадает в библиотеку только из корпуса с записанной лицензией или из файла, который передаёт автор, после проверки прав. Формулировки Википедии, форумов и обзорных статей на сайт не переносятся.
+
+Уже использованы в проекте: [tanzil.net](https://tanzil.net) (Хафс), [www.sefaria.org](https://www.sefaria.org) (Ленинградский кодекс, Мишна, «Пиркей де-рабби Элиэзер»), [archive.org](https://archive.org) (сканы в общественном достоянии), [ru.wikisource.org](https://ru.wikisource.org) (вычитка Саблукова), [corpuscoranicum.de](https://corpuscoranicum.de) и [api.corpuscoranicum.de](https://api.corpuscoranicum.de) (каталог рукописей: пока только факты и ссылки, не тексты описаний).
+
+Рукописи и библиотеки: [www.birmingham.ac.uk](https://www.birmingham.ac.uk), [cudl.lib.cam.ac.uk](https://cudl.lib.cam.ac.uk), [idb.ub.uni-tuebingen.de](https://idb.ub.uni-tuebingen.de), [digital.staatsbibliothek-berlin.de](https://digital.staatsbibliothek-berlin.de), [gallica.bnf.fr](https://gallica.bnf.fr), [www.hathitrust.org](https://www.hathitrust.org) и [babel.hathitrust.org](https://babel.hathitrust.org), [elib.shpl.ru](https://elib.shpl.ru), [rusneb.ru](https://rusneb.ru), [upload.wikimedia.org](https://upload.wikimedia.org).
+
+Другие корпуса, лицензию проверять до любой загрузки: [www.documentacatholicaomnia.eu](https://www.documentacatholicaomnia.eu), [ccel.org](https://ccel.org), [azbyka.ru](https://azbyka.ru), [www.roger-pearse.com](https://www.roger-pearse.com), [www.avesta.org](https://www.avesta.org), [syriaca.org](https://syriaca.org), [dasi.cnr.it](https://dasi.cnr.it), [ociana.osu.edu](https://ociana.osu.edu), [pleiades.stoa.org](https://pleiades.stoa.org), [www.vostlit.info](https://www.vostlit.info), [www.ibiblio.org](https://www.ibiblio.org), [en.wikisource.org](https://en.wikisource.org) и остальные `*.wikisource.org`, `*.archive.org`.
+
+Указатели изданий, не тексты: [api.openalex.org](https://api.openalex.org), [api.crossref.org](https://api.crossref.org), [doi.org](https://doi.org), [www.ncbi.nlm.nih.gov](https://www.ncbi.nlm.nih.gov), [www.ebi.ac.uk](https://www.ebi.ac.uk), [arxiv.org](https://arxiv.org) и [export.arxiv.org](https://export.arxiv.org), [www.wikidata.org](https://www.wikidata.org) и [query.wikidata.org](https://query.wikidata.org).
+
+Страницы, с которых автор только находил, где искать: [en.wikipedia.org](https://en.wikipedia.org), [www.islamic-awareness.org](https://www.islamic-awareness.org), [www.reddit.com](https://www.reddit.com) и [old.reddit.com](https://old.reddit.com), [tafsir.net](https://tafsir.net), [www.ahlalhdeeth.com](https://www.ahlalhdeeth.com).
