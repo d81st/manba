@@ -379,8 +379,8 @@ export function TopicForm({
           <CardTitle>{f.relatedRefs}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <Field id="relatedRefs" label={f.relatedRefs} hint={f.relatedRefsHint} error={message(problemFor("relatedRefs"))}>
-            <Input id="relatedRefs" value={form.relatedRefs} onChange={(e) => set("relatedRefs", e.target.value)} />
+          <Field id="relatedRefs" label={f.relatedRefs} hint={f.relatedRefsHint} error={message(problemFor("relatedRefs"))} wide>
+            <Textarea id="relatedRefs" rows={4} value={form.relatedRefs} onChange={(e) => set("relatedRefs", e.target.value)} />
           </Field>
           <Picker
             label={f.terms}
