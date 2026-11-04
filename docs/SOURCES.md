@@ -84,3 +84,19 @@
 Указатели изданий, не тексты: [api.openalex.org](https://api.openalex.org), [api.crossref.org](https://api.crossref.org), [doi.org](https://doi.org), [www.ncbi.nlm.nih.gov](https://www.ncbi.nlm.nih.gov), [www.ebi.ac.uk](https://www.ebi.ac.uk), [arxiv.org](https://arxiv.org) и [export.arxiv.org](https://export.arxiv.org), [www.wikidata.org](https://www.wikidata.org) и [query.wikidata.org](https://query.wikidata.org).
 
 Страницы, с которых автор только находил, где искать: [en.wikipedia.org](https://en.wikipedia.org), [www.islamic-awareness.org](https://www.islamic-awareness.org), [www.reddit.com](https://www.reddit.com) и [old.reddit.com](https://old.reddit.com), [tafsir.net](https://tafsir.net), [www.ahlalhdeeth.com](https://www.ahlalhdeeth.com).
+
+Когда текста нет в библиотеке, смотреть сначала этот список и список автора выше, затем искать дальше. Найденный сайт по-прежнему только показывает, где читать.
+
+## Найдено поиском 04.11.2026
+
+Проверено по страницам самих проектов в этот день. Лицензия записана только там, где она стояла на странице проекта.
+
+- [Corpus Coranicum](https://corpuscoranicum.org/en/print) на своей странице пишет CC BY 4.0. Каталог рукописей — [corpuscoranicum.org/en/manuscripts](https://corpuscoranicum.org/en/manuscripts): описания, местами транслитерация, снимки. Часть снимков на сайт не выложена: у проекта нет прав на изображение. Снимок рукописи загружать отдельно, после проверки прав держателя.
+- [KITAB / OpenITI](https://kitab-project.org/docs/openITI) — тот корпус, из которого уже взяты книги проекта, CC BY-NC-SA 4.0. На странице [об авторском праве](https://openiti.org/docs/Copyright_Questions.html) проект пишет, что считает арабские и персидские тексты до 1900 года общественным достоянием, и просит издателя писать на openiti@umd.edu, если тот с этим не согласен. Это позиция OpenITI. Среди их источников названы «аш-Шамиля», «аль-Джами аль-кабир», shiaonlinelibrary.com, зейдитское и ибадитское собрания и [Graeco-Arabic Studies](https://graeco-arabic-studies.org). Партия тафсиров взята с [altafsir.com](https://www.altafsir.com/TafsirTerms.asp): условия этого сайта запрещают копировать и распространять материалы без письменного разрешения. Тафсиры оттуда и файлы OpenITI с пометкой Tafsir не загружать, пока разрешение не записано.
+- [Al-Furqan, электронная база](https://al-furqan.com/about-the-digital-library/) — каталог рукописей (около 165 тысяч записей), не сами тексты. Общей лицензии на выгрузку на странице нет.
+- [Qatar Digital Library](https://www.qdl.qa/en/arabic-manuscripts-collection-british-library) — снимки арабских рукописей Британской библиотеки и материалы по Персидскому заливу. Права смотреть у каждой единицы.
+- [Qalamos](https://www.qalamos.net/content/index.xed?lang=de) — каталог рукописей азиатских и африканских письменностей в немецких и партнёрских собраниях, с метаданными и снимками. Общей лицензии на странице входа нет.
+- [Ptolemaeus Arabus et Latinus](https://ptolemaeus.badw.de/licenses) — арабские и латинские тексты круга Птолемея. На странице лицензий: каталог и глоссарий — CC BY, тексты — лицензия их репозитория, печатные выпуски — CC BY-NC-ND. Брать по этой странице, не весь сайт разом.
+- [Digital Syriac Corpus](https://syriaccorpus.org/) — сирийские тексты в разметке TEI, среди них книги Пешитты. Лицензии на открытой странице не было: до загрузки её нужно найти.
+- [The Syriac Library](https://www.tertullian.org/rpearse/thesyriaclibrary/) — страница Роджера Пирса: сирийские тексты, которые он помечает как общественное достояние. Проверять каждый файл.
+- [syri.ac, каталог оцифрованных рукописей](https://syri.ac/digimss/faceted) — указатель свободно выложенных сирийских и гаршуни рукописей, со ссылкой на хранилище. Снимок берётся у хранилища, не из каталога.
