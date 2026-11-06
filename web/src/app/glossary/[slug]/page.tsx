@@ -55,7 +55,9 @@ async function Term({ params }: { params: PageProps<"/glossary/[slug]">["params"
 
       <section>
         <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.short}</h2>
-        <p className="text-lg">{term.short}</p>
+        <p className="text-lg">
+          <LinkedText text={term.short} />
+        </p>
       </section>
 
       {term.detail && (
