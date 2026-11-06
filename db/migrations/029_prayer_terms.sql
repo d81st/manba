@@ -7,6 +7,9 @@
 -- Recognition is marked tradition because the quotation is what that source
 -- says, and the detail says a specialist still has to check the label.
 -- Existing slugs are left alone.
+-- On an empty database (CI, a fresh install) the library is imported only
+-- after the migrations, so the cited fragments do not exist yet and the cards
+-- are skipped rather than failing on the address foreign key.
 
 DO $$
 DECLARE
@@ -15,6 +18,10 @@ DECLARE
   qibla_id bigint;
   rakat_id bigint;
 BEGIN
+  IF (SELECT count(*) FROM addresses
+      WHERE address IN ('bukhari.350', 'muslim.687.1', 'tafsir_ibn_kathir.2.144', 'quran.2.144')) < 4 THEN
+    RETURN;
+  END IF;
   n := coalesce((SELECT max(basic_order) FROM terms), 0);
 
   IF NOT EXISTS (SELECT 1 FROM terms WHERE slug = 'salat') THEN
