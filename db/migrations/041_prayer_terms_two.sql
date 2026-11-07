@@ -9,7 +9,7 @@
 -- Existing slugs are left alone. On an empty database (CI, a fresh install)
 -- the library is imported after the migrations, so the cards are skipped.
 
-CREATE FUNCTION pg_temp.add_definition(
+CREATE OR REPLACE FUNCTION pg_temp.add_definition(
   tid bigint, pos integer, who text, body text, refs text[]
 ) RETURNS void LANGUAGE plpgsql AS $f$
 DECLARE
@@ -22,7 +22,7 @@ BEGIN
   SELECT tid, did, a::extensions.ltree, i FROM unnest(refs) WITH ORDINALITY AS u(a, i);
 END $f$;
 
-CREATE FUNCTION pg_temp.add_term(
+CREATE OR REPLACE FUNCTION pg_temp.add_term(
   slug_in text, arabic_in text, translit text, translation text, short_in text, detail_in text, refs text[]
 ) RETURNS bigint LANGUAGE plpgsql AS $f$
 DECLARE
