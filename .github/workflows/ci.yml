@@ -41,6 +41,8 @@ jobs:
           psql "$DATABASE_URL" -c "CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN;"
           npm run db:migrate
           npm run db:migrate | grep -q "up to date"
+          # Source tables live in the schema "library" (migration 049).
+          test "$(psql "$DATABASE_URL" -tA -c "SELECT count(*) FROM pg_tables WHERE schemaname = 'library'")" = 12
       - name: Journal is append-only and closed to public roles
         run: |
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c \
@@ -50,13 +52,13 @@ jobs:
           SNAPSHOT=$(psql "$DATABASE_URL" -tA -c "SELECT take_editorial_snapshot('ci')")
           test "$(psql "$DATABASE_URL" -tA -c "SELECT jsonb_typeof(tables->'change_log') FROM editorial_snapshots WHERE id = $SNAPSHOT")" = array
           test "$(psql "$DATABASE_URL" -tA -c "SELECT has_table_privilege('anon', 'change_log', 'SELECT')")" = f
-          test "$(psql "$DATABASE_URL" -tA -c "SELECT count(*) FROM pg_tables t WHERE schemaname = 'public'
-            AND (NOT rowsecurity OR NOT EXISTS (SELECT 1 FROM pg_policies p WHERE p.tablename = t.tablename))")" = 0
+          test "$(psql "$DATABASE_URL" -tA -c "SELECT count(*) FROM pg_tables t WHERE schemaname IN ('public', 'library')
+            AND (NOT rowsecurity OR NOT EXISTS (SELECT 1 FROM pg_policies p WHERE p.schemaname = t.schemaname AND p.tablename = t.tablename))")" = 0
       - name: Source imports load once and stay immutable
         run: |
           npm run db:import
           npm run db:import | grep -q "already loaded"
-          Q="SET search_path TO public, extensions;"
+          Q="SET search_path TO public, library, extensions;"
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'quran.ar.hafs'")" = 6348
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'quran.ar.hafs-simple'")" = 6348
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM addresses WHERE level = 'ayah'")" = 6236

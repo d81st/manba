@@ -1703,7 +1703,7 @@ async function main() {
   });
   await client.connect();
   try {
-    await client.query("SET search_path TO public, extensions");
+    await client.query("SET search_path TO public, library, extensions");
     await importTanzil(client);
     await importTanzilSimple(client);
     await importOpenitiHadith(client, BUKHARI);

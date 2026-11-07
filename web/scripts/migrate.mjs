@@ -42,8 +42,9 @@ async function main() {
         : undefined,
   });
   await client.connect();
-  // Same lookup path as Supabase, so extension types and operators resolve.
-  await client.query("SET search_path TO public, extensions");
+  // Live data, source texts and extensions; a schema that does not exist yet
+  // (library, before migration 049) is skipped by Postgres.
+  await client.query("SET search_path TO public, library, extensions");
 
   try {
     await client.query("SELECT pg_advisory_lock($1)", [LOCK_KEY]);
