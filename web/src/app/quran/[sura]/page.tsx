@@ -11,6 +11,8 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { getSura } from "@/lib/quran";
 import { QuranNav } from "../nav";
 import { SuraMeta } from "../sura-meta";
+import { VideoList } from "@/components/video-list";
+import { videosForAddresses } from "@/lib/videos";
 import { ScrollToHash } from "@/components/scroll-to-hash";
 import { TranslationText } from "@/components/translation-text";
 
@@ -48,6 +50,7 @@ async function SuraText({
 
   const sura = await getSura(number);
   if (!sura) notFound();
+  const videos = await videosForAddresses(sura.segments.filter((s) => s.level !== "basmala").map((s) => s.address));
 
   return (
     <>
@@ -108,6 +111,7 @@ async function SuraText({
                     <TranslationText content={segment.translation} />
                   </p>
                 )}
+                <VideoList videos={videos[segment.address] ?? []} compact />
               </div>
             </li>
           ),

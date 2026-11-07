@@ -14,6 +14,8 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { isPreview } from "@/lib/preview";
 import { getSiraData } from "@/lib/sira-events";
 import { getPublishedTopic, type MainPassage } from "@/lib/topics";
+import { videosForTopic } from "@/lib/videos";
+import { VideoList } from "@/components/video-list";
 import { PreviewNote } from "../../sira/shared";
 
 const messages = getMessages();
@@ -54,6 +56,7 @@ async function Topic({
   if (!/^[a-z][a-z0-9-]*$/.test(slug) || !isDatabaseConfigured()) notFound();
   const topic = await getPublishedTopic(slug, preview);
   if (!topic) notFound();
+  const videos = await videosForTopic(slug);
 
   return (
     <article className="mt-3 space-y-8">
@@ -169,6 +172,8 @@ async function Topic({
           {topic.relatedHadiths.length > 0 && <HadithRefList hadiths={topic.relatedHadiths} className="mt-3" />}
         </section>
       )}
+
+      <VideoList videos={videos} />
 
       {(topic.terms.length > 0 || topic.related.length > 0) && (
         <section className="grid gap-6 sm:grid-cols-2">

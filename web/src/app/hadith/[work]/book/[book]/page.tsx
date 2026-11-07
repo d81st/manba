@@ -12,6 +12,8 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { bookPageHref, getBook, getCollection } from "@/lib/hadith";
 import { hadithAnchor, refLabel } from "@/lib/hadith-query";
 import { HadithAttribution } from "../../../attribution";
+import { VideoList } from "@/components/video-list";
+import { videosForAddresses } from "@/lib/videos";
 import { VerseLine } from "@/components/verse-line";
 
 const t = getMessages().hadith;
@@ -54,6 +56,8 @@ async function BookText({
   if (!/^[a-z][a-z0-9_]*$/.test(work) || !/^\d{1,4}$/.test(raw) || !isDatabaseConfigured()) notFound();
   const [collection, book] = await Promise.all([getCollection(work), getBook(work, Number(raw), page)]);
   if (!collection || !book) notFound();
+  const addressOf = (path: number[]) => [work, ...path].join(".");
+  const videos = await videosForAddresses(book.chapters.flatMap((c) => c.hadiths.map((h) => addressOf(h.path))));
 
   // Pages of a long book, then the books before and after it.
   const back =
@@ -141,6 +145,7 @@ async function BookText({
                 </span>
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <ArabicText text={hadith.text} />
+                  <VideoList videos={videos[addressOf(hadith.path)] ?? []} compact />
                   {hadith.similar.length > 0 && (
                     <details className="text-sm">
                       <summary className="cursor-pointer text-muted-foreground">
