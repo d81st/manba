@@ -72,11 +72,20 @@ export function checkTopicInput(raw: unknown): { input?: TopicInput; problems: I
     if (bad.length) problems.push({ field: `positions.${i}.refs`, code: "refs", detail: bad.join(", ") });
   });
   if (input.status === "published") {
-    if (parseRefs(input.mainRefs).addresses.length === 0) problems.push({ field: "mainRefs", code: "mainRequired" });
+    // A topic about something outside the library (manuscripts, a testimony of
+    // another religion) may stand on outside sources instead: a link to the
+    // catalog or scan in the note to the circumstances (decision of the author 07.11.2026).
+    const outside = hasOutsideSource(input.circumstancesNote);
+    if (parseRefs(input.mainRefs).addresses.length === 0 && !outside) problems.push({ field: "mainRefs", code: "mainRequired" });
     if (!input.circumstances) problems.push({ field: "circumstances", code: "circumstancesRequired" });
     if (input.positions.length === 0) problems.push({ field: "positions", code: "positionsRequired" });
   }
   return { input, problems };
+}
+
+// A web address of a catalog, scan or publication in the note.
+export function hasOutsideSource(note: string) {
+  return /https:\/\/\S+/.test(note);
 }
 
 // Consecutive ayahs of one sura, so a passage can be shown with the ayahs around it.

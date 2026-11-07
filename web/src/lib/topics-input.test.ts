@@ -43,6 +43,18 @@ describe("checkTopicInput", () => {
     }
   });
 
+  it("lets a topic about something outside the library stand on a linked outside source", () => {
+    const outside = {
+      ...base,
+      status: "published",
+      circumstances: "Вымышленный текст для теста.",
+      circumstancesNote: "Каталог: https://example.org/catalog/1",
+      positions: [position],
+    };
+    expect(checkTopicInput(outside).problems).toEqual([]);
+    expect(checkTopicInput({ ...outside, circumstancesNote: "без ссылки" }).problems.map((p) => p.code)).toEqual(["mainRequired"]);
+  });
+
   it("publishes a complete topic and keeps drafts free", () => {
     const complete = {
       ...base,
