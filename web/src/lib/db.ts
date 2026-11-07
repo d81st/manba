@@ -17,12 +17,14 @@ export function db() {
       // Supabase requires TLS; its certificate is not in the default CA store.
       ssl: process.env.DATABASE_SSL === "true" ? { rejectUnauthorized: false } : undefined,
       max: 5,
-    });
-    // Live data in "public", source texts in "library", ltree and pg_trgm in
-    // "extensions". Set on every new connection, so it does not depend on the
-    // database default of the host (Neon, Supabase, local Postgres).
-    store.dbPool.on("connect", (client) => {
-      client.query(SEARCH_PATH).catch(() => {});
+      // Live data in "public", source texts in "library", ltree and pg_trgm in
+      // "extensions", whatever the host's database default (Neon, Supabase,
+      // local Postgres). The pool waits for this hook before it hands a new
+      // connection out, so the first query already sees "library"; if it
+      // fails, the connection is closed and the caller gets the error.
+      onConnect: async (client) => {
+        await client.query(SEARCH_PATH);
+      },
     });
   }
   return store.dbPool;
