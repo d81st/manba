@@ -12,13 +12,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { MapSura } from "@/lib/quran";
 import { BLOCK_GAP, cellPosition, fittingCell, hitTest, layoutMap, type Layout } from "@/lib/quran-map-layout";
+import { STORIES } from "@/lib/story-threads";
 
-type Lens = "none" | "place" | "juz" | "length" | "search";
+type Lens = "none" | "place" | "juz" | "length" | "search" | "thread";
+type Thread = { addresses: string[]; parallels: { slug: string; title: string }[] };
 type Order = "mushaf" | "revelation";
 type Point = { sura: number; ayah: number };
 type Card = Point & { left: number; top: number; pinned: boolean };
 
-const LENSES: Lens[] = ["none", "place", "juz", "length", "search"];
+const LENSES: Lens[] = ["none", "place", "juz", "length", "search", "thread"];
 const MIN_CELL = 3;
 const MAX_CELL = 16;
 
@@ -77,6 +79,9 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState<Set<string> | null>(null);
   const [palette, setPalette] = useState<Palette | null>(null);
+  const [story, setStory] = useState<string | null>(null);
+  const [thread, setThread] = useState<Thread | null>(null);
+  const threadSet = useMemo(() => (thread ? new Set(thread.addresses) : null), [thread]);
 
   const bySura = useMemo(() => new Map(suras.map((s) => [s.number, s])), [suras]);
   const ordered = useMemo(() => {
@@ -129,11 +134,14 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
         case "search":
           if (!matches) return p.cell;
           return matches.has(`${sura.number}:${ayah}`) ? p.match : p.faint;
+        case "thread":
+          if (!threadSet) return p.cell;
+          return threadSet.has(`${sura.number}:${ayah}`) ? p.match : p.faint;
         default:
           return p.cell;
       }
     },
-    [lens, bins, matches],
+    [lens, bins, matches, threadSet],
   );
 
   // Draw.
@@ -168,6 +176,27 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
       }
     }
 
+    // A story thread: one line through its ayahs in the order of the text.
+    if (lens === "thread" && thread && thread.addresses.length > 1) {
+      ctx.save();
+      ctx.strokeStyle = palette.focus;
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      thread.addresses.forEach((address, i) => {
+        const [s, a] = address.split(":").map(Number);
+        const block = layout.blocks.find((b) => b.sura === s);
+        if (!block) return;
+        const { x, y } = cellPosition(layout, block, a);
+        const cx = x + layout.cell / 2;
+        const cy = y + layout.cell / 2;
+        if (i === 0) ctx.moveTo(cx, cy);
+        else ctx.lineTo(cx, cy);
+      });
+      ctx.stroke();
+      ctx.restore();
+    }
+
     if (focus) {
       const block = layout.blocks.find((b) => b.sura === focus.sura);
       if (block) {
@@ -177,7 +206,7 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
         ctx.strokeRect(x - 1, y - 1, layout.cell + 2, layout.cell + 2);
       }
     }
-  }, [layout, palette, bySura, colorOf, focus]);
+  }, [layout, palette, bySura, colorOf, focus, lens, thread]);
 
   // Ayah text for the card, fetched once per ayah.
   const loadText = useCallback(
@@ -295,6 +324,18 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
     }
   };
 
+  // Story thread lens.
+  const chooseStory = async (slug: string) => {
+    setStory(slug);
+    setThread(null);
+    try {
+      const response = await fetch(`/api/quran/thread?story=${encodeURIComponent(slug)}`);
+      if (response.ok) setThread((await response.json()) as Thread);
+    } catch {
+      setThread({ addresses: [], parallels: [] });
+    }
+  };
+
   const cardSura = card ? bySura.get(card.sura) : undefined;
   const cardText = card ? texts[`${card.sura}:${card.ayah}`] : undefined;
 
@@ -381,6 +422,48 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
             />
             <Button type="submit">{t.search.submit}</Button>
           </form>
+        )}
+
+        {lens === "thread" && (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-sm">
+              <Label htmlFor="map-story" className="font-normal">
+                {m.story}
+              </Label>
+              <Select value={story ?? undefined} onValueChange={(value) => void chooseStory(value)}>
+                <SelectTrigger id="map-story" className="w-64">
+                  <SelectValue placeholder={m.storyPlaceholder} />
+                </SelectTrigger>
+                <SelectContent>
+                  {STORIES.map((s) => (
+                    <SelectItem key={s.slug} value={s.slug}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {thread && (
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <p className="flex flex-wrap items-center gap-1.5">
+                  <span className="inline-block size-3 rounded-[3px]" style={{ background: "var(--map-match)" }} />
+                  {m.threadFound}: {thread.addresses.length}
+                </p>
+                <p className="text-xs">{m.threadNote}</p>
+                {thread.parallels.length > 0 && (
+                  <p className="text-xs">
+                    {m.threadParallels}:{" "}
+                    {thread.parallels.map((p, i) => (
+                      <span key={p.slug}>
+                        {i > 0 && ", "}
+                        <Link href={`/origins/${p.slug}`}>{p.title}</Link>
+                      </span>
+                    ))}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         )}
 
         <Legend lens={lens} m={m} bins={bins} matches={matches} ayahs={t.ayahs} />
