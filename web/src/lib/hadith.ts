@@ -439,7 +439,11 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
      FROM unnest($1::text[]) AS r(ref)
      CROSS JOIN LATERAL (
        SELECT a.address, a.level, a.ordinal, t.content, v.work_id, count(*) OVER ()::int AS total
-       FROM addresses a
+       -- The addresses under the reference first (tree index), then their
+       -- texts. OFFSET 0 keeps that order: otherwise the planner, guessing one
+       -- primary version, read every text of every version for each reference
+       -- (about a minute for a topic with a hundred and forty references).
+       FROM (SELECT address, level, ordinal FROM addresses WHERE address <@ r.ref::extensions.ltree OFFSET 0) a
        JOIN texts t ON t.address = a.address
        JOIN text_versions v ON v.id = t.version_id AND v.is_primary AND v.status = 'published' AND v.language = 'ar'
        WHERE a.address <@ r.ref::extensions.ltree
