@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import type { InputProblem } from "@/lib/glossary-input";
 import { saveEvent, savePerson, savePlace, SIRA_TAG } from "@/lib/sira-events";
 import { checkEventInput, checkPersonInput, checkPlaceInput } from "@/lib/sira-input";
@@ -26,21 +26,21 @@ async function finish(id: number | null, saved: { id?: number; problems: InputPr
 }
 
 export async function saveEventAction(id: number | null, _prev: SiraFormState, formData: FormData): Promise<SiraFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const { input, problems } = checkEventInput(payload(formData));
   if (!input) return { problems };
   return finish(id, await saveEvent(id, input, session.login), "events");
 }
 
 export async function savePersonAction(id: number | null, _prev: SiraFormState, formData: FormData): Promise<SiraFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const { input, problems } = checkPersonInput(payload(formData));
   if (!input) return { problems };
   return finish(id, await savePerson(id, input, session.login), "people");
 }
 
 export async function savePlaceAction(id: number | null, _prev: SiraFormState, formData: FormData): Promise<SiraFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const { input, problems } = checkPlaceInput(payload(formData));
   if (!input) return { problems };
   return finish(id, await savePlace(id, input, session.login), "places");

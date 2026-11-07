@@ -58,6 +58,11 @@ async function main() {
     const done = new Set(rows.map((row) => row.name));
     const pending = listMigrations().filter((m) => !done.has(m.name));
 
+    // Editorial data (topics, glossary, links...) is copied before any
+    // migration runs, so a migration that rewrites it can be undone by hand.
+    // Skipped on an empty database: there is nothing to keep yet.
+    if (pending.length > 0) await snapshotEditorial(client, pending);
+
     for (const migration of pending) {
       try {
         await client.query("BEGIN");
@@ -77,6 +82,20 @@ async function main() {
     await client.query("SELECT pg_advisory_unlock($1)", [LOCK_KEY]).catch(() => {});
     await client.end();
   }
+}
+
+async function snapshotEditorial(client, pending) {
+  const { rows } = await client.query(
+    "SELECT to_regprocedure('take_editorial_snapshot(text)') IS NOT NULL AS ready, to_regclass('topics') IS NOT NULL AS has_topics",
+  );
+  if (!rows[0].ready || !rows[0].has_topics) return;
+  const { rows: data } = await client.query("SELECT EXISTS (SELECT 1 FROM topics) AS any");
+  if (!data[0].any) return;
+  const names = pending.map((m) => m.name.replace(/\.sql$/, "")).join(", ");
+  const { rows: taken } = await client.query("SELECT take_editorial_snapshot($1) AS id", [
+    `перед миграциями: ${names}`.slice(0, 500),
+  ]);
+  console.log(`Editorial snapshot ${taken[0].id} taken before migrations.`);
 }
 
 main().catch((error) => {

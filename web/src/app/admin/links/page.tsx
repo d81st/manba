@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listPairsForReview, REVIEW_STATUSES, type PairSide, type ReviewFilter, type ReviewPair } from "@/lib/hadith-links";
 import { COLLECTION_ORDER, COLLECTIONS, formatHadithRef, parseHadithRef } from "@/lib/hadith-query";
 import { markShared } from "@/lib/shared-words";
@@ -44,7 +44,7 @@ function addressOf(text: string | undefined) {
 
 async function PairList({ searchParams }: { searchParams: PageProps<"/admin/links">["searchParams"] }) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const params = await searchParams;
   const status = REVIEW_STATUSES.find((s) => s === params.status) ?? "unchecked";
   const work = COLLECTION_ORDER.find((w) => w === params.work) ?? null;

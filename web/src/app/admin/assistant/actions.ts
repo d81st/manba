@@ -2,13 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { deleteSynonym, saveSynonym } from "@/lib/assistant";
 import { checkSynonymInput } from "@/lib/assistant-query";
 
 // Plain forms without scripts: the result is shown by the address (?error=…).
 export async function saveSynonymAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const raw = Number(formData.get("id") ?? 0);
   const id = Number.isInteger(raw) && raw > 0 ? raw : null;
   const { input, problems } = checkSynonymInput({
@@ -24,7 +24,7 @@ export async function saveSynonymAction(formData: FormData) {
 }
 
 export async function deleteSynonymAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const id = Number(formData.get("id") ?? 0);
   if (Number.isInteger(id) && id > 0) await deleteSynonym(id, session.login);
   revalidatePath("/admin/assistant");

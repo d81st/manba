@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
 import { getPersonForEdit, listChoices } from "@/lib/sira-events";
 import type { PersonRelationInput } from "@/lib/sira-input";
@@ -33,7 +33,7 @@ export default function EditPersonPage({ params, searchParams }: PageProps<"/adm
 
 async function EditPerson({ params, searchParams }: Pick<PageProps<"/admin/sira/people/[id]">, "params" | "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const person = await getPersonForEdit(Number(raw));

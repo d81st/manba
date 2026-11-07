@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getQuestionForEdit, listQuizChoices } from "@/lib/quiz";
 import type { QuestionInput } from "@/lib/quiz-input";
 import { PreviewLink } from "../../preview-link";
@@ -32,7 +32,7 @@ export default function EditQuestionPage({ params, searchParams }: PageProps<"/a
 
 async function EditQuestion({ params, searchParams }: Pick<PageProps<"/admin/tests/[id]">, "params" | "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const question = await getQuestionForEdit(Number(raw));

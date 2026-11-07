@@ -7,7 +7,7 @@ import { Page } from "@/components/page";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getSiraForAdmin } from "@/lib/sira-events";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
@@ -54,7 +54,7 @@ function Heading({ title, href, add }: { title: string; href: string; add: strin
 
 async function Lists() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const data = await getSiraForAdmin();
   const relationCount = (slug: string) => data.relations.filter((r) => r.a === slug || r.b === slug).length;
   const eventsAt = (slug: string) => data.events.filter((e) => e.place === slug).length;

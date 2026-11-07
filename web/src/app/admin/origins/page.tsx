@@ -7,7 +7,7 @@ import { Page } from "@/components/page";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listParallelsForAdmin } from "@/lib/parallels";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
@@ -46,7 +46,7 @@ export default function OriginsAdminPage() {
 
 async function List() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const parallels = await listParallelsForAdmin();
   if (parallels.length === 0) return <p className="mt-6 text-muted-foreground">{t.empty}</p>;
   return (

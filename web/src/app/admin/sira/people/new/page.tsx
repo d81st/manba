@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
 import { PersonForm } from "../../person-form";
 
@@ -29,7 +29,7 @@ export default function NewPersonPage() {
 
 async function NewPerson() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const choices = await listChoices();
   return <PersonForm id={null} initial={null} people={choices.people} topics={choices.topics} saved={false} messages={messages} />;
 }

@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listSides } from "@/lib/topics";
 import { SideForm } from "./side-form";
 
@@ -29,7 +29,7 @@ export default function SidesPage() {
 
 async function Sides() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const sides = await listSides();
   const nextPosition = Math.max(0, ...sides.map((s) => s.position)) + 1;
   return (

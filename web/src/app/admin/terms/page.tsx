@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listTermsForAdmin } from "@/lib/glossary";
 import { TERM_STATUSES } from "@/lib/glossary-input";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,7 @@ export default function TermsPage({ searchParams }: PageProps<"/admin/terms">) {
 
 async function TermsTable({ searchParams }: { searchParams: PageProps<"/admin/terms">["searchParams"] }) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const raw = (await searchParams).status;
   const status = TERM_STATUSES.find((s) => s === raw);
   const terms = await listTermsForAdmin(status);

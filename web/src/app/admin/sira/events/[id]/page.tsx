@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
 import { getEventForEdit, listChoices } from "@/lib/sira-events";
 import { PreviewLink } from "../../../preview-link";
@@ -32,7 +32,7 @@ export default function EditEventPage({ params, searchParams }: PageProps<"/admi
 
 async function EditEvent({ params, searchParams }: Pick<PageProps<"/admin/sira/events/[id]">, "params" | "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const event = await getEventForEdit(Number(raw));

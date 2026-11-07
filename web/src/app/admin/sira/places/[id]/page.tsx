@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getPlaceForEdit } from "@/lib/sira-events";
 import { PlaceForm } from "../../place-form";
 
@@ -29,7 +29,7 @@ export default function EditPlacePage({ params, searchParams }: PageProps<"/admi
 
 async function EditPlace({ params, searchParams }: Pick<PageProps<"/admin/sira/places/[id]">, "params" | "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const place = await getPlaceForEdit(Number(raw));

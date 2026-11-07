@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listQuestionsForAdmin } from "@/lib/quiz";
 import { levelKey } from "@/lib/quiz-input";
 import { PreviewLink } from "../preview-link";
@@ -37,7 +37,7 @@ export default function AdminTestsPage() {
 
 async function Questions() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const questions = await listQuestionsForAdmin();
   if (questions.length === 0) return <p className="mt-6 text-muted-foreground">{t.empty}</p>;
   return (

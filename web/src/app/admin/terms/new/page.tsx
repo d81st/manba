@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listTermChoices } from "@/lib/glossary";
 import { TermForm } from "../term-form";
 
@@ -28,7 +28,7 @@ export default function NewTermPage() {
 
 async function NewTerm() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const choices = await listTermChoices();
   return <TermForm id={null} initial={null} choices={choices} relatedNames={{}} saved={false} t={t} />;
 }

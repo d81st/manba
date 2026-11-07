@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
 import { listTermChoices } from "@/lib/glossary";
 import { listSides, listTopicChoices } from "@/lib/topics";
@@ -30,7 +30,7 @@ export default function NewTopicPage() {
 
 async function NewTopic() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const [sides, terms, topics, choices] = await Promise.all([
     listSides(),
     listTermChoices(),

@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { FindingForm } from "../finding-form";
 
 const messages = getMessages();
@@ -28,6 +28,6 @@ export default function NewFindingPage() {
 
 async function NewFinding() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   return <FindingForm id={null} initial={null} saved={false} messages={messages} />;
 }

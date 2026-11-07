@@ -63,6 +63,15 @@ describe("session token", () => {
     expect(readSessionToken(token)).toBeNull();
   });
 
+  it("gives the main administrator the admin role", () => {
+    expect(readSessionToken(createSessionToken("admin")!)?.role).toBe("admin");
+  });
+
+  it("carries an account's role, id and version", () => {
+    const token = createSessionToken("reader.one", { role: "reader", uid: 7, ver: 3, pc: true })!;
+    expect(readSessionToken(token)).toMatchObject({ login: "reader.one", role: "reader", uid: 7, ver: 3, pc: true });
+  });
+
   it("does not accept a preview token as a session", () => {
     expect(readSessionToken(createPreviewToken()!)).toBeNull();
   });

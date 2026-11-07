@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { foundLabel, listFindings } from "@/lib/findings";
 import { FINDING_STATUSES } from "@/lib/findings-input";
 import { cn } from "@/lib/utils";
@@ -36,7 +36,7 @@ export default function AdminFindingsPage({ searchParams }: PageProps<"/admin/fi
 
 async function Findings({ searchParams }: Pick<PageProps<"/admin/findings">, "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const params = await searchParams;
   const status = FINDING_STATUSES.find((s) => s === params.status);
   const findings = await listFindings(status);

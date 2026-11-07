@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { deleteDraftTerm, GLOSSARY_TAG, saveTerm } from "@/lib/glossary";
 import { checkTermInput, type InputProblem } from "@/lib/glossary-input";
 
@@ -14,7 +14,7 @@ export async function saveTermAction(
   _prev: TermFormState,
   formData: FormData,
 ): Promise<TermFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   let raw: unknown;
   try {
     raw = JSON.parse(String(formData.get("payload") ?? ""));
@@ -32,7 +32,7 @@ export async function saveTermAction(
 }
 
 export async function deleteTermAction(id: number): Promise<{ ok: boolean }> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const ok = await deleteDraftTerm(id, session.login);
   if (!ok) return { ok: false };
   updateTag(GLOSSARY_TAG);

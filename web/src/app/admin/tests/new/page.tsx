@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listQuizChoices } from "@/lib/quiz";
 import { QuestionForm } from "../question-form";
 
@@ -29,7 +29,7 @@ export default function NewQuestionPage() {
 
 async function NewQuestion() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { topics, terms } = await listQuizChoices();
   return <QuestionForm id={null} initial={null} topics={topics} terms={terms} saved={false} messages={messages} />;
 }

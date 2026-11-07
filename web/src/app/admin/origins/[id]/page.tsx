@@ -6,7 +6,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getParallelForEdit } from "@/lib/parallels";
 import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
@@ -32,7 +32,7 @@ export default function EditParallelPage({ params, searchParams }: PageProps<"/a
 
 async function EditParallel({ params, searchParams }: Pick<PageProps<"/admin/origins/[id]">, "params" | "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const parallel = await getParallelForEdit(Number(raw));

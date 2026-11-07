@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import type { InputProblem } from "@/lib/glossary-input";
 import { deleteDraftTopic, saveTopic, TOPICS_TAG } from "@/lib/topics";
 import { checkTopicInput } from "@/lib/topics-input";
@@ -15,7 +15,7 @@ export async function saveTopicAction(
   _prev: TopicFormState,
   formData: FormData,
 ): Promise<TopicFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   let raw: unknown;
   try {
     raw = JSON.parse(String(formData.get("payload") ?? ""));
@@ -33,7 +33,7 @@ export async function saveTopicAction(
 }
 
 export async function deleteTopicAction(id: number): Promise<{ ok: boolean }> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const ok = await deleteDraftTopic(id, session.login);
   if (!ok) return { ok: false };
   updateTag(TOPICS_TAG);

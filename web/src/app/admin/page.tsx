@@ -1,4 +1,4 @@
-import { BookA, CalendarRange, History, Link2, ListChecks, type LucideIcon, MessageCircleQuestion, Network, Scale, SearchX, Users } from "lucide-react";
+import { BookA, CalendarRange, History, Link2, ListChecks, type LucideIcon, MessageCircleQuestion, Network, Scale, SearchX, UserCog, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Page } from "@/components/page";
@@ -19,6 +19,7 @@ const SECTIONS: { href: string; icon: LucideIcon; title: string; hint: string }[
   { href: "/admin/assistant", icon: MessageCircleQuestion, title: t.sections.assistant, hint: t.sections.assistantHint },
   { href: "/admin/sides", icon: Users, title: t.sections.sides, hint: t.sections.sidesHint },
   { href: "/admin/links", icon: Link2, title: t.sections.links, hint: t.sections.linksHint },
+  { href: "/admin/users", icon: UserCog, title: t.sections.users, hint: t.sections.usersHint },
 ];
 
 export default function AdminPage() {

@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { ParallelForm } from "../parallel-form";
 
 const messages = getMessages();
@@ -28,6 +28,6 @@ export default function NewParallelPage() {
 
 async function NewParallel() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   return <ParallelForm id={null} initial={null} saved={false} messages={messages} />;
 }

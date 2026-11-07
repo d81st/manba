@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { PlaceForm } from "../../place-form";
 
 const messages = getMessages();
@@ -28,6 +28,6 @@ export default function NewPlacePage() {
 
 async function NewPlace() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   return <PlaceForm id={null} initial={null} saved={false} messages={messages} />;
 }

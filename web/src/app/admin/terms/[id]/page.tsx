@@ -6,7 +6,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { getTermForEdit, listTermChoices } from "@/lib/glossary";
 import { StatusBadge } from "../../status-badge";
 import { TermForm } from "../term-form";
@@ -36,7 +36,7 @@ async function EditTerm({
   searchParams: PageProps<"/admin/terms/[id]">["searchParams"];
 }) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const term = await getTermForEdit(Number(raw));

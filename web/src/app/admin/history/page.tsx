@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { ceLabel } from "@/lib/history-input";
 import { listHistoryForAdmin } from "@/lib/history";
 import { PreviewLink } from "../preview-link";
@@ -37,7 +37,7 @@ export default function AdminHistoryPage() {
 
 async function Events() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const events = await listHistoryForAdmin();
   if (events.length === 0) return <p className="mt-6 text-muted-foreground">{t.empty}</p>;
   return (

@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listHistoryTopics } from "@/lib/history";
 import { HistoryEventForm } from "../event-form";
 
@@ -29,7 +29,7 @@ export default function NewHistoryEventPage() {
 
 async function NewEvent() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const topics = await listHistoryTopics();
   return <HistoryEventForm id={null} initial={null} topics={topics} saved={false} messages={messages} />;
 }

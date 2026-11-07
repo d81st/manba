@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
 import { EventForm } from "../../event-form";
 
@@ -29,7 +29,7 @@ export default function NewEventPage() {
 
 async function NewEvent() {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const choices = await listChoices();
   return <EventForm id={null} initial={null} places={choices.places} topics={choices.topics} saved={false} messages={messages} />;
 }

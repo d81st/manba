@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getMessages } from "@/i18n";
 import { listMisses, listSynonyms, type Synonym } from "@/lib/assistant";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { deleteSynonymAction, saveSynonymAction } from "./actions";
 
 const messages = getMessages();
@@ -61,7 +61,7 @@ function SynonymForm({ synonym }: { synonym?: Synonym }) {
 
 async function Synonyms({ searchParams }: Pick<PageProps<"/admin/assistant">, "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const params = await searchParams;
   const [synonyms, misses] = await Promise.all([listSynonyms(), listMisses()]);
   const error = typeof params.error === "string" ? (t.errors as Record<string, string>)[params.error] ?? t.errors.invalid : null;

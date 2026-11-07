@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listTopicsForAdmin } from "@/lib/topics";
 import { TOPIC_CATEGORIES, TOPIC_STATUSES } from "@/lib/topics-input";
 import { Filters } from "../filters";
@@ -42,7 +42,7 @@ export default function TopicsPage({ searchParams }: PageProps<"/admin/topics">)
 
 async function TopicsTable({ searchParams }: { searchParams: PageProps<"/admin/topics">["searchParams"] }) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const params = await searchParams;
   const status = TOPIC_STATUSES.find((s) => s === params.status);
   const category = TOPIC_CATEGORIES.find((c) => c === params.category);

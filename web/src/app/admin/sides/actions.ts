@@ -1,7 +1,7 @@
 "use server";
 
 import { updateTag } from "next/cache";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import type { InputProblem } from "@/lib/glossary-input";
 import { saveSide, TOPICS_TAG } from "@/lib/topics";
 import { checkSideInput } from "@/lib/topics-input";
@@ -9,7 +9,7 @@ import { checkSideInput } from "@/lib/topics-input";
 export type SideFormState = { problems: InputProblem[]; saved?: boolean };
 
 export async function saveSideAction(id: number | null, _prev: SideFormState, formData: FormData): Promise<SideFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   const { input, problems } = checkSideInput({
     slug: formData.get("slug"),
     title: formData.get("title"),

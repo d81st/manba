@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import type { InputProblem } from "@/lib/glossary-input";
 import { PARALLELS_TAG, saveParallel } from "@/lib/parallels";
 import { checkParallelInput } from "@/lib/parallels-input";
@@ -11,7 +11,7 @@ export type ParallelFormState = { problems: InputProblem[]; saved?: boolean };
 
 // The form sends its fields as one JSON value; everything is checked here again.
 export async function saveParallelAction(id: number | null, _prev: ParallelFormState, formData: FormData): Promise<ParallelFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   let raw: unknown = null;
   try {
     raw = JSON.parse(String(formData.get("payload") ?? ""));

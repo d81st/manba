@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
 import { listTermChoices } from "@/lib/glossary";
 import { getTopicForEdit, listSides, listTopicChoices } from "@/lib/topics";
@@ -40,7 +40,7 @@ async function EditTopic({
   searchParams: PageProps<"/admin/topics/[id]">["searchParams"];
 }) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const topic = await getTopicForEdit(Number(raw));

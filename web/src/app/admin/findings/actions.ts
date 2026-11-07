@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { FINDINGS_TAG, saveFinding } from "@/lib/findings";
 import { checkFindingInput } from "@/lib/findings-input";
 import type { InputProblem } from "@/lib/glossary-input";
@@ -10,7 +10,7 @@ import type { InputProblem } from "@/lib/glossary-input";
 export type FindingFormState = { problems: InputProblem[]; saved?: boolean };
 
 export async function saveFindingAction(id: number | null, _prev: FindingFormState, formData: FormData): Promise<FindingFormState> {
-  const session = await requireSession();
+  const session = await requireAdmin();
   let raw: unknown = null;
   try {
     raw = JSON.parse(String(formData.get("payload") ?? ""));

@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { foundLabel, getFinding } from "@/lib/findings";
 import type { FindingInput } from "@/lib/findings-input";
 import { FindingForm } from "../finding-form";
@@ -30,7 +30,7 @@ export default function EditFindingPage({ params, searchParams }: PageProps<"/ad
 
 async function EditFinding({ params, searchParams }: Pick<PageProps<"/admin/findings/[id]">, "params" | "searchParams">) {
   await connection();
-  await requireSession();
+  await requireAdmin();
   const { id: raw } = await params;
   if (!/^\d+$/.test(raw)) notFound();
   const finding = await getFinding(Number(raw));
