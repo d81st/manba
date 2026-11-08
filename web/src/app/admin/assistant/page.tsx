@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getMessages } from "@/i18n";
-import { listMisses, listSynonyms, type Synonym } from "@/lib/assistant";
 import { requireAdmin } from "@/lib/auth";
-import { deleteSynonymAction, saveSynonymAction } from "./actions";
+import { deleteSynonymAction, saveSynonymAction } from "@/modules/assistant/server";
+import { listMisses, listSynonyms } from "@/modules/assistant/server";
+import type { Synonym } from "@/modules/assistant";
 
 const messages = getMessages();
 const t = messages.admin.assistant;

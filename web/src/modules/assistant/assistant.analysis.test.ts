@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analyzeQuestion, missKey, namesMatch, stemRu } from "./assistant-query";
+import { analyzeQuestion, missKey, namesMatch, stemRu } from "./assistant.analysis";
 
 describe("stemRu", () => {
   it("cuts the endings so the forms of a word meet", () => {
@@ -47,7 +47,7 @@ describe("namesMatch", () => {
 
 describe("checkSynonymInput", () => {
   it("normalizes the phrase and splits the forms", async () => {
-    const { checkSynonymInput } = await import("./assistant-query");
+    const { checkSynonymInput } = await import("./assistant.analysis");
     expect(checkSynonymInput({ phrase: " Ёлка ", forms: "абв, где\nабв", note: "" })).toEqual({
       input: { phrase: "елка", forms: ["абв", "где"], note: "" },
       problems: [],

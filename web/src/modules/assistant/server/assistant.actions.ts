@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { deleteSynonym, saveSynonym } from "@/lib/assistant";
-import { checkSynonymInput } from "@/lib/assistant-query";
+import { deleteSynonym, saveSynonym } from "./synonym.commands";
+import { checkSynonymInput } from "../assistant.analysis";
 
 // Plain forms without scripts: the result is shown by the address (?error=…).
 export async function saveSynonymAction(formData: FormData) {

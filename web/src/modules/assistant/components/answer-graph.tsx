@@ -1,4 +1,4 @@
-import type { AssistantResult } from "@/lib/assistant";
+import type { AssistantResult } from "../assistant.types";
 
 // A 2D graph of what was found: the words of the question (left), the terms
 // and topics (middle), the fragments (right); lines — what was found by a
@@ -13,7 +13,7 @@ type Node = { id: string; label: string; href?: string; col: 0 | 1 | 2 };
 
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
-export function AssistantGraph({ result, maxSources = 14 }: { result: AssistantResult; maxSources?: number }) {
+export function AnswerGraph({ result, maxSources = 14 }: { result: AssistantResult; maxSources?: number }) {
   const words: Node[] = result.concepts.map((c, i) => ({ id: `c${i}`, label: c.label, col: 0 }));
   const middle: Node[] = result.pages
     .filter((p) => p.kind === "term" || p.kind === "topic")
