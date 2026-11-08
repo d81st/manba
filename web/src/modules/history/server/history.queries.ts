@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { HISTORY_TAG } from "../history.constants";
 import type { HistoryEvent, HistoryEventForEdit } from "../history.types";
 import { DATES, LOCALE } from "./history.sql";

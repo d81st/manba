@@ -2,13 +2,13 @@
 
 import { Plus, X } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { RECOGNITIONS } from "@/lib/input";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Field } from "@/shared/ui/field";
+import { Input } from "@/shared/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Textarea } from "@/shared/ui/textarea";
+import { RECOGNITIONS } from "@/shared/forms/input";
 import type { AdminStrings, Definition, ErrorOf } from "./form-types";
 
 let nextKey = 1;

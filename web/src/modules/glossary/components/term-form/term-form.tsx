@@ -2,9 +2,9 @@
 
 import { CircleAlert, CircleCheck, Trash2 } from "lucide-react";
 import { startTransition, useActionState, useState, useTransition } from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import type { InputProblem } from "@/lib/input";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
+import { Button } from "@/shared/ui/button";
+import type { InputProblem } from "@/shared/forms/input";
 import { deleteTermAction, saveTermAction, type TermFormState } from "../../server/term.actions";
 import type { TermInput } from "../../term.validation";
 import { DefinitionsCard, withKeys } from "./definitions-card";

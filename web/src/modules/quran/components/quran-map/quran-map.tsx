@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type Messages } from "@/i18n";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { type Messages } from "@/shared/i18n";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
 import type { MapSura } from "../../quran.types";
 import { cellPosition, fittingCell, hitTest, layoutMap, type Layout } from "../../quran.map-layout";
 import { AyahCard } from "./ayah-card";

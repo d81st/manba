@@ -1,5 +1,5 @@
-import type { PasswordProblem } from "@/lib/passwords";
-import type { Role } from "@/lib/session";
+import type { PasswordProblem } from "@/shared/auth/passwords";
+import type { Role } from "@/shared/auth/session";
 
 export type UserRow = {
   id: number;

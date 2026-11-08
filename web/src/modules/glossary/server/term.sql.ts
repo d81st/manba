@@ -1,4 +1,4 @@
-import { defaultLocale } from "@/i18n";
+import { defaultLocale } from "@/shared/i18n";
 import type { RelationKind } from "../term.types";
 
 // Shared pieces of the glossary queries (internal to the module's server side).

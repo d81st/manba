@@ -5,16 +5,16 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
-import { searchKey } from "../src/lib/arabic.ts";
-import { type Numbering, parseOpenitiHadith } from "../src/lib/import/openiti-hadith.ts";
-import { parseOpenitiKafi } from "../src/lib/import/openiti-kafi.ts";
-import { parseOpenitiNarrations } from "../src/lib/import/openiti-narrations.ts";
-import { type PagesOptions, parseOpenitiPages } from "../src/lib/import/openiti-pages.ts";
-import { parseOpenitiTafsir } from "../src/lib/import/openiti-tafsir.ts";
-import { fadailToAnnotated, masahifToAnnotated } from "../src/lib/import/openiti-jk.ts";
-import { parseOpenitiRunning } from "../src/lib/import/openiti-running.ts";
-import { parseTanzil } from "../src/lib/import/tanzil.ts";
-import { plainKey } from "../src/lib/plain-key.ts";
+import { searchKey } from "../src/shared/text/arabic.ts";
+import { type Numbering, parseOpenitiHadith } from "../src/shared/import/openiti-hadith.ts";
+import { parseOpenitiKafi } from "../src/shared/import/openiti-kafi.ts";
+import { parseOpenitiNarrations } from "../src/shared/import/openiti-narrations.ts";
+import { type PagesOptions, parseOpenitiPages } from "../src/shared/import/openiti-pages.ts";
+import { parseOpenitiTafsir } from "../src/shared/import/openiti-tafsir.ts";
+import { fadailToAnnotated, masahifToAnnotated } from "../src/shared/import/openiti-jk.ts";
+import { parseOpenitiRunning } from "../src/shared/import/openiti-running.ts";
+import { parseTanzil } from "../src/shared/import/tanzil.ts";
+import { plainKey } from "../src/shared/text/plain-key.ts";
 
 const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "sources");
 const ACTOR = "import:tanzil";
@@ -1320,7 +1320,7 @@ type ExternalSource = {
   minTexts: number;
 };
 
-const EXTERNAL_BOOKS = JSON.parse(readFileSync(join(DATA_DIR, "..", "..", "web", "src", "lib", "external-books.json"), "utf8"));
+const EXTERNAL_BOOKS = JSON.parse(readFileSync(join(DATA_DIR, "..", "..", "web", "src", "shared", "addresses", "external-books.json"), "utf8"));
 const RETRIEVED_EXTERNAL = "2026-10-30";
 const VERSE_LEVELS = [
   { key: "book", names: { ru: "книга" } },

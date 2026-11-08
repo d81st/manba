@@ -1,7 +1,7 @@
 import "server-only";
 import type pg from "pg";
-import { db } from "@/lib/db";
-import type { InputProblem } from "@/lib/input";
+import { db } from "@/shared/db";
+import type { InputProblem } from "@/shared/forms/input";
 import type { CheckedHistoryEvent } from "../history.validation";
 import { LOCALE } from "./history.sql";
 import { getHistoryEventForEdit } from "./history.queries";

@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { type Verdict } from "../hadith.links";
 
 // Records a verdict on a pair, with a journal entry. False when the pair does not exist.

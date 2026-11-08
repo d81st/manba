@@ -1,4 +1,4 @@
-import type { Messages } from "@/i18n";
+import type { Messages } from "@/shared/i18n";
 
 // The pieces of the Quran map share these types: what a lens colors, the order
 // of the suras, a cell (sura and ayah) and the card shown for it.

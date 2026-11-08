@@ -1,7 +1,7 @@
 // How the address where a text was found is written for people.
 import "server-only";
-import { formatBookRef, isBook } from "@/lib/book-query";
-import { formatHadithRef } from "@/lib/hadith-query";
+import { formatBookRef, isBook } from "@/shared/addresses/book-query";
+import { formatHadithRef } from "@/shared/addresses/hadith-query";
 
 export const foundLabel = (address: string) => {
   const work = address.split(".")[0];

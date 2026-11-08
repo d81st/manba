@@ -1,8 +1,8 @@
 import { LockKeyhole } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getMessages } from "@/i18n";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { getMessages } from "@/shared/i18n";
 import { LoginForm } from "@/modules/accounts";
 
 const t = getMessages();

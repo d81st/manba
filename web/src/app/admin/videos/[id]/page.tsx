@@ -3,10 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { Badge } from "@/components/ui/badge";
-import { getMessages } from "@/i18n";
-import { requireAdmin } from "@/lib/auth";
+import { Page } from "@/shared/layout/page";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages } from "@/shared/i18n";
+import { requireAdmin } from "@/shared/auth/auth";
 import { getVideoForEdit } from "@/modules/videos/server";
 import { VideoForm } from "@/modules/videos";
 

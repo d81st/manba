@@ -2,11 +2,11 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { SIRA_TAG } from "../sira.constants";
 import { saveEvent, savePerson, savePlace } from "./sira.commands";
 import { checkEventInput, checkPersonInput, checkPlaceInput } from "../sira.validation";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export type SiraFormState = { problems: InputProblem[]; saved?: boolean };
 

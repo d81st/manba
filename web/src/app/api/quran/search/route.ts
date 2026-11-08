@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
-import { getSession } from "@/lib/auth";
-import { isDatabaseConfigured } from "@/lib/db";
-import { likePatterns, parseQuery } from "@/lib/quran-query";
+import { getSession } from "@/shared/auth/auth";
+import { isDatabaseConfigured } from "@/shared/db";
+import { likePatterns, parseQuery } from "@/shared/addresses/quran-query";
 import { searchAddresses } from "@/modules/quran/server";
 
 // Ayahs to light up on the map: GET /api/quran/search?q=... -> { kind, addresses }.

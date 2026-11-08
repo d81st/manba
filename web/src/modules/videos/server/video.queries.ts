@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
-import { formatRefs } from "@/lib/refs";
+import { db } from "@/shared/db";
+import { formatRefs } from "@/shared/addresses/refs";
 import { VIDEOS_TAG } from "../video.constants";
 import type { PublicVideo, Video } from "../video.types";
 import { type VideoInput } from "../video.validation";

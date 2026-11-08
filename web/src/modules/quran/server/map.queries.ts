@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import type { MapSura, SuraSummary } from "../quran.types";
 
 export async function getMapData(): Promise<MapSura[]> {

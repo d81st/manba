@@ -2,8 +2,8 @@
 // here, so everything is unit-tested; that the found address exists is
 // checked on saving (server/finding.commands.ts).
 import { z } from "zod";
-import { parseRefs } from "@/lib/refs";
-import type { InputProblem } from "@/lib/input";
+import { parseRefs } from "@/shared/addresses/refs";
+import type { InputProblem } from "@/shared/forms/input";
 
 export const FINDING_STATUSES = ["new", "checking", "confirmed", "not_found"] as const;
 

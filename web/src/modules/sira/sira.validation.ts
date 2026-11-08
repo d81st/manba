@@ -3,8 +3,8 @@
 // everything is unit-tested; that a quote stands in its passage is checked on
 // saving (lib/sira-events.ts).
 import { z } from "zod";
-import { parseBookRef } from "@/lib/book-query";
-import { type InputProblem, TERM_STATUSES } from "@/lib/input";
+import { parseBookRef } from "@/shared/addresses/book-query";
+import { type InputProblem, TERM_STATUSES } from "@/shared/forms/input";
 
 export const SIRA_STATUSES = TERM_STATUSES;
 export const EVENT_KINDS = ["life", "expedition"] as const;

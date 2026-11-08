@@ -1,16 +1,16 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import type { Messages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Textarea } from "@/shared/ui/textarea";
+import type { Messages } from "@/shared/i18n";
 import { VIDEO_STATUSES, type VideoInput } from "../video.validation";
-import { Field } from "@/components/ui/field";
-import { ChoiceSelect } from "@/components/ui/choice-select";
+import { Field } from "@/shared/ui/field";
+import { ChoiceSelect } from "@/shared/ui/choice-select";
 import { saveVideoAction, type VideoFormState } from "../server/video.actions";
-import { FormNotes, messageOf } from "@/components/form-kit";
+import { FormNotes, messageOf } from "@/shared/forms/form-kit";
 
 const EMPTY: VideoInput = { url: "", title: "", channel: "", language: "", note: "", refs: "", topics: "", status: "draft" };
 

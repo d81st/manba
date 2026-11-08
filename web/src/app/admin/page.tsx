@@ -1,8 +1,8 @@
 import { BookA, CalendarRange, History, Link2, ListChecks, type LucideIcon, MessageCircleQuestion, Network, Scale, SearchX, UserCog, Users, Video } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
 
 const t = getMessages().admin;
 

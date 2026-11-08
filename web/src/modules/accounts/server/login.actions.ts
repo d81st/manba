@@ -2,19 +2,19 @@
 
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import { clientAddress } from "../login.limiter";
 import { isLoginLocked, recordLoginFailure, recordLoginSuccess } from "./login-lockout";
-import { isDatabaseConfigured } from "@/lib/db";
-import { safeNext } from "@/lib/safe-next";
+import { isDatabaseConfigured } from "@/shared/db";
+import { safeNext } from "@/shared/auth/safe-next";
 import {
     createSessionToken,
     credentialsMatch,
     isConfigured,
     SESSION_COOKIE,
     SESSION_MAX_AGE,
-} from "@/lib/session";
-import { findAccount } from "@/lib/accounts";
+} from "@/shared/auth/session";
+import { findAccount } from "@/shared/auth/accounts";
 
 export type LoginState = { error?: string; login?: string };
 

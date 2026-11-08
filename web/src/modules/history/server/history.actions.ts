@@ -2,11 +2,11 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { HISTORY_TAG } from "../history.constants";
 import { saveHistoryEvent } from "./history.commands";
 import { checkHistoryEventInput } from "../history.validation";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export type HistoryFormState = { problems: InputProblem[]; saved?: boolean };
 

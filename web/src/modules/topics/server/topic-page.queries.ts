@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { CONTEXT_AYAHS, TOPICS_TAG } from "../topic.constants";
 import { passagesOf } from "../topic.passages";
 import type { MainPassage, PublicPosition, PublicTopic, TopicAyah, TopicPlace, TopicSummary } from "../topic.types";

@@ -1,6 +1,6 @@
-import { LinkedParagraphs } from "@/components/linked-text";
-import { Badge } from "@/components/ui/badge";
-import { getMessages } from "@/i18n";
+import { LinkedParagraphs } from "@/shared/content/linked-text";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages } from "@/shared/i18n";
 import type { PublicParallel } from "../parallel.types";
 import { RefItems } from "./ref-items";
 

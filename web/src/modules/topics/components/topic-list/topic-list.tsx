@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getMessages } from "@/i18n";
-import { cn } from "@/lib/utils";
+import { getMessages } from "@/shared/i18n";
+import { cn } from "@/shared/ui/utils";
 import type { ListFilter } from "../../topic.constants";
 import type { TopicSummary } from "../../topic.types";
 import { TopicBadge } from "../topic-badges";

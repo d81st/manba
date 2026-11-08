@@ -1,8 +1,8 @@
 import "server-only";
 import type pg from "pg";
-import { db } from "@/lib/db";
-import { formatRefs } from "@/lib/refs";
-import type { InputProblem } from "@/lib/input";
+import { db } from "@/shared/db";
+import { formatRefs } from "@/shared/addresses/refs";
+import type { InputProblem } from "@/shared/forms/input";
 import type { CheckedQuestion } from "../quiz.validation";
 import { LOCALE } from "./quiz.sql";
 import { getQuestionForEdit } from "./quiz.queries";

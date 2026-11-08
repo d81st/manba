@@ -2,9 +2,9 @@
 
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { RELATION_KINDS } from "../../term.constants";
 import type { TermInput } from "../../term.validation";
 import type { AdminStrings, ErrorOf, Relation, SetField } from "./form-types";

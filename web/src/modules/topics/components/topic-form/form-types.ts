@@ -1,4 +1,4 @@
-import type { Messages } from "@/i18n";
+import type { Messages } from "@/shared/i18n";
 import type { TopicInput } from "../../topic.validation";
 
 // What every card of the topic form receives from the form itself.

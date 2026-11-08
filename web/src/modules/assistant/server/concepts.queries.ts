@@ -1,7 +1,7 @@
 import "server-only";
-import { searchKey } from "@/lib/arabic";
-import { db } from "@/lib/db";
-import { plainKey } from "@/lib/plain-key";
+import { searchKey } from "@/shared/text/arabic";
+import { db } from "@/shared/db";
+import { plainKey } from "@/shared/text/plain-key";
 import { type Analysis, namesMatch, stemRu } from "../assistant.analysis";
 import type { Concept } from "../assistant.types";
 import { LOCALE } from "./assistant.sql";

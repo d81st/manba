@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getMessages } from "@/i18n";
-import { bookPath, formatBookRef } from "@/lib/book-query";
+import { getMessages } from "@/shared/i18n";
+import { bookPath, formatBookRef } from "@/shared/addresses/book-query";
 import type { SiraDate } from "../sira.types";
 
 const t = getMessages().sira;

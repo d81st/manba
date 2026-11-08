@@ -1,7 +1,7 @@
 "use server";
 
 import { refresh, updateTag } from "next/cache";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { HADITH_TAG } from "../hadith.constants";
 import { VERDICTS } from "../hadith.links";
 import { reviewPair } from "./link-review.commands";

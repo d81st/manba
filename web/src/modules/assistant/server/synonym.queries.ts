@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import type { Synonym } from "../assistant.types";
 
 export async function listSynonyms(): Promise<Synonym[]> {

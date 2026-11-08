@@ -2,9 +2,9 @@
 // question asked in ordinary words. No database here, so everything is
 // unit-tested; the widening by the glossary and the synonyms and the search
 // are in lib/assistant.ts.
-import { searchKey } from "@/lib/arabic";
-import { plainKey } from "@/lib/plain-key";
-import { parseRefs } from "@/lib/refs";
+import { searchKey } from "@/shared/text/arabic";
+import { plainKey } from "@/shared/text/plain-key";
+import { parseRefs } from "@/shared/addresses/refs";
 
 export const MAX_QUESTION = 300;
 const MAX_WORDS = 8;

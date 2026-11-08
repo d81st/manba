@@ -2,8 +2,8 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
-import type { InputProblem } from "@/lib/input";
+import { requireAdmin } from "@/shared/auth/auth";
+import type { InputProblem } from "@/shared/forms/input";
 import { GLOSSARY_TAG } from "../term.constants";
 import { checkTermInput } from "../term.validation";
 import { deleteDraftTerm, saveTerm } from "./term.commands";

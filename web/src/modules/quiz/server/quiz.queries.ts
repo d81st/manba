@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
-import { formatRefs } from "@/lib/refs";
+import { db } from "@/shared/db";
+import { formatRefs } from "@/shared/addresses/refs";
 import { QUIZ_TAG } from "../quiz.constants";
 import { questionLevel } from "../quiz.levels";
 import type { QuizQuestion } from "../quiz.types";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { searchKey } from "@/lib/arabic";
+import { searchKey } from "@/shared/text/arabic";
 import { coMentions, forceLayout, nameMatcher } from "./sira.graph";
 
 // Fictional test data: made-up sentences, not a real text.

@@ -2,8 +2,8 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth";
-import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session";
+import { requireSession } from "@/shared/auth/auth";
+import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/shared/auth/session";
 import type { ChangeResult } from "../account.types";
 import { changeOwnPassword } from "./user.commands";
 

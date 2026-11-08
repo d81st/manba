@@ -3,9 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { requireAdmin } from "@/lib/auth";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { requireAdmin } from "@/shared/auth/auth";
 import { getPlaceForEdit } from "@/modules/sira/server";
 import { PlaceForm } from "@/modules/sira";
 

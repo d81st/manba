@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { requireSession } from "@/lib/auth";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { requireSession } from "@/shared/auth/auth";
 import { PasswordForm } from "@/modules/accounts";
 
 const t = getMessages().account;

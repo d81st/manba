@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import type { HadithRef } from "../hadith.types";
-import { cn } from "@/lib/utils";
-import { VerseLine } from "@/components/verse-line";
+import { cn } from "@/shared/ui/utils";
+import { VerseLine } from "@/shared/content/verse-line";
 
 const t = getMessages().hadith;
 

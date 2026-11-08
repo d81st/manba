@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { bookAnchor, bookLabel } from "@/lib/book-query";
-import { db } from "@/lib/db";
+import { bookAnchor, bookLabel } from "@/shared/addresses/book-query";
+import { db } from "@/shared/db";
 import { primaryVersion } from "@/modules/hadith/server";
 import { BOOKS_TAG } from "../library.constants";
 import type { BookSection } from "../library.types";

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
 import { TermArticle } from "@/modules/glossary";
 import { getPublishedTerm } from "@/modules/glossary/server";
 

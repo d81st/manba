@@ -1,8 +1,8 @@
 import { SearchX } from "lucide-react";
 import Link from "next/link";
-import { Page } from "@/components/page";
-import { Button } from "@/components/ui/button";
-import { getMessages } from "@/i18n";
+import { Page } from "@/shared/layout/page";
+import { Button } from "@/shared/ui/button";
+import { getMessages } from "@/shared/i18n";
 
 const t = getMessages().notFound;
 

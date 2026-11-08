@@ -1,5 +1,5 @@
-import { formatExternalRefs, isExternal } from "@/lib/external";
-import { formatRefs } from "@/lib/refs";
+import { formatExternalRefs, isExternal } from "@/shared/addresses/external";
+import { formatRefs } from "@/shared/addresses/refs";
 // References of a parallel can point both into the library and into the texts of other religions.
 
 export const isOutside = (address: string) => isExternal(address.split(".")[0]);

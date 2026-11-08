@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { requireAdmin } from "@/lib/auth";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { requireAdmin } from "@/shared/auth/auth";
 import { SideForm } from "@/modules/topics";
 import { listSides } from "@/modules/topics/server";
 

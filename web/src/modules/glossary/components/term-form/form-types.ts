@@ -1,4 +1,4 @@
-import type { Messages } from "@/i18n";
+import type { Messages } from "@/shared/i18n";
 import type { TermInput } from "../../term.validation";
 
 // What every card of the term form receives from the form itself.

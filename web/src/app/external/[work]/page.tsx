@@ -3,10 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages, plural } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { isExternal } from "@/lib/external";
+import { Page } from "@/shared/layout/page";
+import { getMessages, plural } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { isExternal } from "@/shared/addresses/external";
 import { getExternalContents } from "@/modules/library/server";
 
 const messages = getMessages();

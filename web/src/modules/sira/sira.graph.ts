@@ -2,7 +2,7 @@
 // пророка»): in how many chapters of the Sira two people are both named. A
 // measure of co-occurrence found by the forms of their names, not a claim
 // about the two. No database here.
-import { searchKey } from "@/lib/arabic";
+import { searchKey } from "@/shared/text/arabic";
 
 const LETTER = "\\u0621-\\u064a";
 

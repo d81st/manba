@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/shared/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { STORIES } from "../../quran.story-threads";
 import type { MapStrings, Thread } from "./map-types";
 

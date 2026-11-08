@@ -2,11 +2,11 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { QUIZ_TAG } from "../quiz.constants";
 import { saveQuestion } from "./quiz.commands";
 import { checkQuestionInput } from "../quiz.validation";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export type QuestionFormState = { problems: InputProblem[]; saved?: boolean };
 

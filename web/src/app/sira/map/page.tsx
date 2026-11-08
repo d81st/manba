@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { type MapView, RegionMap } from "@/components/region-map";
-import { getMessages, plural } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { isPreview } from "@/lib/preview";
-import { PreviewNote } from "@/components/preview";
+import { Page } from "@/shared/layout/page";
+import { type MapView, RegionMap } from "@/shared/content/region-map";
+import { getMessages, plural } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { isPreview } from "@/shared/auth/preview";
+import { PreviewNote } from "@/shared/layout/preview";
 import { PlaceCard, type SiraEvent, SiraNav } from "@/modules/sira";
 import { getSiraData } from "@/modules/sira/server";
 

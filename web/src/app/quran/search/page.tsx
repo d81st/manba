@@ -3,11 +3,11 @@ import { CircleAlert, Info } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getMessages, plural } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { highlight, highlightPlain, likePatterns, parseQuery } from "@/lib/quran-query";
+import { Page } from "@/shared/layout/page";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
+import { getMessages, plural } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { highlight, highlightPlain, likePatterns, parseQuery } from "@/shared/addresses/quran-query";
 import { QuranNav, SEARCH_LIMIT, SearchForm, type SearchResult, translationPlain, TranslationText } from "@/modules/quran";
 import { getAyahs, searchText, searchTranslation } from "@/modules/quran/server";
 

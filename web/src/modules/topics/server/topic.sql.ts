@@ -1,4 +1,4 @@
-import { defaultLocale } from "@/i18n";
+import { defaultLocale } from "@/shared/i18n";
 
 // Shared pieces of the topic queries (internal to the module's server side).
 export const LOCALE = defaultLocale;

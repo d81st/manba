@@ -1,7 +1,7 @@
 import "server-only";
 import type pg from "pg";
-import { db } from "@/lib/db";
-import type { InputProblem } from "@/lib/input";
+import { db } from "@/shared/db";
+import type { InputProblem } from "@/shared/forms/input";
 import { formatAnyRefs } from "../parallel.refs";
 import { type CheckedParallel, PARALLEL_REF_FIELDS, REF_ROLES } from "../parallel.validation";
 import { getParallelForEdit } from "./parallel.queries";

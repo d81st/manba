@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { type Analysis, missKey } from "../assistant.analysis";
 
 // Counts a question with no answer by its words only (migration 024).

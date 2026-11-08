@@ -1,4 +1,4 @@
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import type { PublicTopic } from "../../topic.types";
 import { Chips } from "./chips";
 import { SectionHeading } from "./section-heading";

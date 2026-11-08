@@ -1,4 +1,4 @@
-import type { Scheme } from "@/lib/hadith-query";
+import type { Scheme } from "@/shared/addresses/hadith-query";
 
 export type Attribution = { title: string; url: string; license: string; notice: string; version: string };
 

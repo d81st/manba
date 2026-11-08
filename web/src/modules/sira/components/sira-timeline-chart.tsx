@@ -1,4 +1,4 @@
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import { approxCommonEra, formatReading, monthsFromHijra } from "../sira.dates";
 import type { SiraEvent } from "../sira.types";
 import { SOURCE_WORKS, SourceDot, sortDates, sourceColor, sourceLabel, workOf } from "./sira-sources";

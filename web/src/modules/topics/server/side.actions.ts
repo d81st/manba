@@ -1,11 +1,11 @@
 "use server";
 
 import { updateTag } from "next/cache";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { TOPICS_TAG } from "../topic.constants";
 import { checkSideInput } from "../topic.validation";
 import { saveSide } from "./side.commands";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export type SideFormState = { problems: InputProblem[]; saved?: boolean };
 

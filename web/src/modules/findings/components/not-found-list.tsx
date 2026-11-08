@@ -1,5 +1,5 @@
-import { LinkedParagraphs } from "@/components/linked-text";
-import { getMessages } from "@/i18n";
+import { LinkedParagraphs } from "@/shared/content/linked-text";
+import { getMessages } from "@/shared/i18n";
 import type { Finding } from "../finding.types";
 import { leadHost } from "../finding.validation";
 

@@ -1,4 +1,4 @@
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 import type { RELATION_KINDS } from "./term.constants";
 import type { TermInput } from "./term.validation";
 import type { HadithRef } from "@/modules/hadith";

@@ -19,7 +19,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SRC = Path(sys.argv[1])
-BOOKS = json.loads((HERE.parents[2] / "web" / "src" / "lib" / "external-books.json").read_text())
+BOOKS = json.loads((HERE.parents[2] / "web" / "src" / "shared" / "addresses" / "external-books.json").read_text())
 
 
 def write(name, rows):

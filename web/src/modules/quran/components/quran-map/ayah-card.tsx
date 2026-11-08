@@ -2,7 +2,7 @@
 
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import type { MapSura } from "../../quran.types";
 import type { Card, MapStrings } from "./map-types";
 

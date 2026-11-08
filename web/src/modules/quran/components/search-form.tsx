@@ -1,8 +1,8 @@
 import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { getMessages } from "@/i18n";
-import { MAX_QUERY_LENGTH } from "@/lib/quran-query";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { getMessages } from "@/shared/i18n";
+import { MAX_QUERY_LENGTH } from "@/shared/addresses/quran-query";
 
 const t = getMessages().quran.search;
 

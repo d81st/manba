@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { parseRefs } from "@/lib/refs";
-import { type InputProblem, TERM_STATUSES } from "@/lib/input";
+import { parseRefs } from "@/shared/addresses/refs";
+import { type InputProblem, TERM_STATUSES } from "@/shared/forms/input";
 
 export const QUIZ_STATUSES = TERM_STATUSES;
 

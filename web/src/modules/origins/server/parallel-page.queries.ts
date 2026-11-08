@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
-import { EXTERNAL_WORKS, externalHref, externalLabel, formatExternalRefs } from "@/lib/external";
+import { db } from "@/shared/db";
+import { EXTERNAL_WORKS, externalHref, externalLabel, formatExternalRefs } from "@/shared/addresses/external";
 import { PARALLELS_TAG } from "../parallel.constants";
 import { isOutside } from "../parallel.refs";
 import type { PublicParallel, RefItem } from "../parallel.types";

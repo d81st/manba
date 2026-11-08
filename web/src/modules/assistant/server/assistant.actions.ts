@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { deleteSynonym, saveSynonym } from "./synonym.commands";
 import { checkSynonymInput } from "../assistant.analysis";
 

@@ -1,6 +1,6 @@
 import { ArrowLeft, Map, Search } from "lucide-react";
 import Link from "next/link";
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 
 const t = getMessages().quran;
 

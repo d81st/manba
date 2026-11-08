@@ -25,6 +25,25 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // Shared code (src/shared) is used by the modules and never uses them: it must
+  // work for any section. The one exception collects the modules' strings.
+  {
+    files: ["src/shared/**/*.{ts,tsx}"],
+    ignores: ["src/shared/i18n/ru.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: "^@/modules/",
+              message: "Shared code does not depend on sections: move the code into the module or pass the data in.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

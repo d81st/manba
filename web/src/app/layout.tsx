@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { defaultLocale, getMessages } from "@/i18n";
+import { defaultLocale, getMessages } from "@/shared/i18n";
 // Interface font served from our own server (OFL), with Cyrillic.
 import "@fontsource-variable/inter";
 import "./globals.css";

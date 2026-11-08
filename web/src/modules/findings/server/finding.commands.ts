@@ -1,6 +1,6 @@
 import "server-only";
-import { db } from "@/lib/db";
-import type { InputProblem } from "@/lib/input";
+import { db } from "@/shared/db";
+import type { InputProblem } from "@/shared/forms/input";
 import type { CheckedFinding } from "../finding.validation";
 import { getFinding } from "./finding.queries";
 

@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { getMessages } from "@/i18n";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages } from "@/shared/i18n";
 
 const t = getMessages().admin;
 

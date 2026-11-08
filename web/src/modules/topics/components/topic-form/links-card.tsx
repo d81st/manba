@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field } from "@/components/ui/field";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Field } from "@/shared/ui/field";
+import { Textarea } from "@/shared/ui/textarea";
 import type { TopicInput } from "../../topic.validation";
 import type { Choice, ErrorOf, FormStrings, SetField } from "./form-types";
 import { Picker } from "./picker";

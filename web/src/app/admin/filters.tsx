@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/utils";
 
 // A row of choices as links, the chosen one filled.
 export function Filters({

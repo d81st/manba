@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { inTextOrder, storyPattern, type Story } from "../quran.story-threads";
 
 // The ayahs of a story thread (quran.story-threads.ts) and the published

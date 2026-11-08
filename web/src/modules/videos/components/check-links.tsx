@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button } from "@/components/ui/button";
-import type { Messages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import type { Messages } from "@/shared/i18n";
 import { checkLinksAction, type CheckState } from "../server/video.actions";
 
 export function CheckLinks({ t }: { t: Messages["admin"]["videos"] }) {

@@ -1,6 +1,6 @@
 import "server-only";
-import { db } from "@/lib/db";
-import { matchConditions } from "@/lib/search-sql";
+import { db } from "@/shared/db";
+import { matchConditions } from "@/shared/text/search-sql";
 import { SEARCH_LIMIT } from "../quran.constants";
 import type { SearchResult } from "../quran.types";
 import { HITS, type HitRow, toResult, TRANSLATION_ID } from "./quran.sql";

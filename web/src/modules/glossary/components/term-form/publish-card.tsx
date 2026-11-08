@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TERM_STATUSES } from "@/lib/input";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Field } from "@/shared/ui/field";
+import { Input } from "@/shared/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { TERM_STATUSES } from "@/shared/forms/input";
 import type { TermInput } from "../../term.validation";
 import type { AdminStrings, ErrorOf, SetField } from "./form-types";
 

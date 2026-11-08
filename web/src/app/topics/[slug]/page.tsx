@@ -4,14 +4,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { isPreview } from "@/lib/preview";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { isPreview } from "@/shared/auth/preview";
 import { TopicArticle } from "@/modules/topics";
 import { getPublishedTopic, getTopicPlace } from "@/modules/topics/server";
 import { videosForTopic } from "@/modules/videos/server";
-import { PreviewNote } from "@/components/preview";
+import { PreviewNote } from "@/shared/layout/preview";
 
 const t = getMessages().topics;
 

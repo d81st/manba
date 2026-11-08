@@ -2,8 +2,8 @@
 
 import { Check, X } from "lucide-react";
 import { createContext, useContext, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/ui/utils";
 
 type Strings = { answer: string; right: string; wrong: string; rightAnswer: string; score: string };
 

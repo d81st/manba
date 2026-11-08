@@ -1,15 +1,15 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import type { Messages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import type { Messages } from "@/shared/i18n";
 import type { PlaceInput } from "../sira.validation";
-import { Field } from "@/components/ui/field";
+import { Field } from "@/shared/ui/field";
 import { savePlaceAction, type SiraFormState } from "../server/sira.actions";
-import { slugify } from "@/lib/input";
-import { FormNotes, messageOf, NumberInput } from "@/components/form-kit";
+import { slugify } from "@/shared/forms/input";
+import { FormNotes, messageOf, NumberInput } from "@/shared/forms/form-kit";
 
 const EMPTY: PlaceInput = { slug: "", name: "", nameAr: "", lat: null, lon: null, coordSource: "", reason: "" };
 

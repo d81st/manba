@@ -1,5 +1,5 @@
 import { enablePreview } from "@/app/admin/preview";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/utils";
 
 // A button that looks like the surrounding text links and sets the preview cookie.
 export function PreviewLink({

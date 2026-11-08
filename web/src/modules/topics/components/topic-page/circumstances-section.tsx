@@ -1,5 +1,5 @@
-import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
-import { getMessages } from "@/i18n";
+import { LinkedParagraphs, LinkedText } from "@/shared/content/linked-text";
+import { getMessages } from "@/shared/i18n";
 import type { PublicTopic } from "../../topic.types";
 import { SectionHeading } from "./section-heading";
 import { AyahList } from "@/modules/quran";

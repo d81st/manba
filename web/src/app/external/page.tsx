@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { EXTERNAL_IDS } from "@/lib/external";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { EXTERNAL_IDS } from "@/shared/addresses/external";
 
 const messages = getMessages();
 const t = messages.external;

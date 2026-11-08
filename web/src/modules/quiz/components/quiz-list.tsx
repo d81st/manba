@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { LinkedParagraphs } from "@/components/linked-text";
-import { Badge } from "@/components/ui/badge";
-import { getMessages } from "@/i18n";
-import { cn } from "@/lib/utils";
+import { LinkedParagraphs } from "@/shared/content/linked-text";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages } from "@/shared/i18n";
+import { cn } from "@/shared/ui/utils";
 import type { QuizQuestion as Question } from "../quiz.types";
 import { Quiz, QuizQuestion } from "./quiz";
 import { AyahList } from "@/modules/quran";

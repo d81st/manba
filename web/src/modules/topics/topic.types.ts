@@ -1,6 +1,6 @@
 import type { TopicInput } from "./topic.validation";
 import type { Passage } from "./topic.passages";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 import type { SiraEvent, SiraPlace } from "@/modules/sira";
 import type { HadithRef } from "@/modules/hadith";
 

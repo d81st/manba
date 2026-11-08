@@ -3,13 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
 import { ParallelArticle } from "@/modules/origins";
 import { getParallel } from "@/modules/origins/server";
-import { isPreview } from "@/lib/preview";
-import { PreviewNote } from "@/components/preview";
+import { isPreview } from "@/shared/auth/preview";
+import { PreviewNote } from "@/shared/layout/preview";
 
 const messages = getMessages();
 const t = messages.origins;

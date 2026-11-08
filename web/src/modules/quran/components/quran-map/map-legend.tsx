@@ -1,4 +1,4 @@
-import { plural, type Messages } from "@/i18n";
+import { plural, type Messages } from "@/shared/i18n";
 import type { Lens } from "./map-types";
 
 // What the colors of the chosen lens mean.

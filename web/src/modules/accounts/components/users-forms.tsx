@@ -2,11 +2,11 @@
 
 import { CircleAlert, KeyRound } from "lucide-react";
 import { useActionState } from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { Messages } from "@/i18n/ru";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import type { Messages } from "@/shared/i18n/ru";
 import type { UserRow } from "../account.types";
 import { createUserAction, userAction, type UsersState } from "../server/user.actions";
 

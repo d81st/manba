@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
-import { Badge } from "@/components/ui/badge";
-import { getMessages } from "@/i18n";
+import { LinkedParagraphs, LinkedText } from "@/shared/content/linked-text";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages } from "@/shared/i18n";
 import type { PublicTerm } from "../../term.types";
 import { AyahList } from "@/modules/quran";
 import { HadithRefList } from "@/modules/hadith";

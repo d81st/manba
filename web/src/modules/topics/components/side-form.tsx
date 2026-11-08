@@ -2,9 +2,9 @@
 
 import { Plus } from "lucide-react";
 import { useActionState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import type { Messages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import type { Messages } from "@/shared/i18n";
 import { saveSideAction, type SideFormState } from "../server/side.actions";
 import type { Side } from "../topic.types";
 

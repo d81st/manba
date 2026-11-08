@@ -1,7 +1,7 @@
 // Marks the words two texts share, the way similar texts are found
 // (data/sources/links/README.md): a word is marked when it and the next word
 // form a pair of words that the other text also has. No database here.
-import { searchKey } from "@/lib/arabic";
+import { searchKey } from "@/shared/text/arabic";
 
 export type Piece = { text: string; shared: boolean };
 

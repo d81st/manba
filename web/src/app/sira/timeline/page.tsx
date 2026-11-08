@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { isPreview } from "@/lib/preview";
-import { PreviewNote } from "@/components/preview";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { isPreview } from "@/shared/auth/preview";
+import { PreviewNote } from "@/shared/layout/preview";
 import { formatReading, monthsFromHijra, type SiraEvent, SiraNav, SiraTimelineChart, SiraTimelineLegend, sortDates, SourceDot, sourceLabel } from "@/modules/sira";
 import { getSiraData } from "@/modules/sira/server";
 

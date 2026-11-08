@@ -1,8 +1,8 @@
 import "server-only";
 import type pg from "pg";
-import { db } from "@/lib/db";
-import type { InputProblem } from "@/lib/input";
-import { formatRefs, parseRefs } from "@/lib/refs";
+import { db } from "@/shared/db";
+import type { InputProblem } from "@/shared/forms/input";
+import { formatRefs, parseRefs } from "@/shared/addresses/refs";
 import type { SaveResult } from "../term.types";
 import type { TermInput } from "../term.validation";
 import { getTermForEdit } from "./term.queries";

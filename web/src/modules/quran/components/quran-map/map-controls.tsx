@@ -1,10 +1,10 @@
 "use client";
 
 import { ZoomIn, ZoomOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/shared/ui/button";
+import { Label } from "@/shared/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/shared/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { LENSES, MAX_CELL, MIN_CELL, type Lens, type MapStrings, type Order } from "./map-types";
 
 // The lens, the order of the suras and the zoom.

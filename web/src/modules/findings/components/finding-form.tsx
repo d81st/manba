@@ -1,18 +1,18 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import type { Messages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
+import type { Messages } from "@/shared/i18n";
 import { FINDING_STATUSES, type FindingInput } from "../finding.validation";
-import { Field } from "@/components/ui/field";
-import { ChoiceSelect } from "@/components/ui/choice-select";
+import { Field } from "@/shared/ui/field";
+import { ChoiceSelect } from "@/shared/ui/choice-select";
 import { saveFindingAction, type FindingFormState } from "../server/finding.actions";
-import { FormNotes, messageOf } from "@/components/form-kit";
+import { FormNotes, messageOf } from "@/shared/forms/form-kit";
 
 const EMPTY: FindingInput = {
   status: "new",

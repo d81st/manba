@@ -1,6 +1,6 @@
-import { defaultLocale } from "@/i18n";
-import { formatExternalRefs } from "@/lib/external";
-import { formatRefs } from "@/lib/refs";
+import { defaultLocale } from "@/shared/i18n";
+import { formatExternalRefs } from "@/shared/addresses/external";
+import { formatRefs } from "@/shared/addresses/refs";
 import type { ParallelSummary } from "../parallel.types";
 
 export const LOCALE = defaultLocale;

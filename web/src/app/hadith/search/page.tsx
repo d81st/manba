@@ -4,12 +4,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getMessages, plural } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { COLLECTIONS, hadithAnchor, hadithPath, parseHadithQuery, refLabel, schemeOf } from "@/lib/hadith-query";
-import { highlight, likePatterns } from "@/lib/quran-query";
+import { Page } from "@/shared/layout/page";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
+import { getMessages, plural } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { COLLECTIONS, hadithAnchor, hadithPath, parseHadithQuery, refLabel, schemeOf } from "@/shared/addresses/hadith-query";
+import { highlight, likePatterns } from "@/shared/addresses/quran-query";
 import { HADITH_SEARCH_LIMIT, HadithSearchForm } from "@/modules/hadith";
 import { searchHadith } from "@/modules/hadith/server";
 

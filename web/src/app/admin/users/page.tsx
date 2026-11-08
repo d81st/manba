@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { requireAdmin } from "@/lib/auth";
-import { isDatabaseConfigured } from "@/lib/db";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { requireAdmin } from "@/shared/auth/auth";
+import { isDatabaseConfigured } from "@/shared/db";
 import { listUsers } from "@/modules/accounts/server";
 import { CreateUserForm, UserRowForm } from "@/modules/accounts";
 

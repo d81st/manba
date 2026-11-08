@@ -1,17 +1,17 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import type { Messages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Textarea } from "@/shared/ui/textarea";
+import type { Messages } from "@/shared/i18n";
 import { BASES, DEGREES, PARALLEL_KINDS, PARALLEL_STATUSES, type ParallelInput, TRADITIONS } from "../parallel.validation";
-import { Field } from "@/components/ui/field";
-import { ChoiceSelect } from "@/components/ui/choice-select";
+import { Field } from "@/shared/ui/field";
+import { ChoiceSelect } from "@/shared/ui/choice-select";
 import { saveParallelAction, type ParallelFormState } from "../server/parallel.actions";
-import { slugify } from "@/lib/input";
-import { FormNotes, messageOf } from "@/components/form-kit";
+import { slugify } from "@/shared/forms/input";
+import { FormNotes, messageOf } from "@/shared/forms/form-kit";
 
 const EMPTY: ParallelInput = {
   slug: "",

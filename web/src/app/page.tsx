@@ -16,11 +16,11 @@ import {
   SquareLibrary,
 } from "lucide-react";
 import Link from "next/link";
-import { Page } from "@/components/page";
-import { SiteHeader } from "@/components/site-header";
-import { Badge } from "@/components/ui/badge";
-import { getMessages, type Messages } from "@/i18n";
-import { cn } from "@/lib/utils";
+import { Page } from "@/shared/layout/page";
+import { SiteHeader } from "@/shared/layout/site-header";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages, type Messages } from "@/shared/i18n";
+import { cn } from "@/shared/ui/utils";
 
 const t = getMessages();
 

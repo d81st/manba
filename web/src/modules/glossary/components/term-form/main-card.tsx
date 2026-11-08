@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { slugify } from "@/lib/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { Field } from "@/shared/ui/field";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
+import { slugify } from "@/shared/forms/input";
 import type { TermInput } from "../../term.validation";
 import type { AdminStrings, ErrorOf, SetField } from "./form-types";
 

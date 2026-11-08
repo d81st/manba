@@ -3,12 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { Badge } from "@/components/ui/badge";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { isPreview } from "@/lib/preview";
-import { PreviewNote } from "@/components/preview";
+import { Page } from "@/shared/layout/page";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { isPreview } from "@/shared/auth/preview";
+import { PreviewNote } from "@/shared/layout/preview";
 import { approxCommonEra, formatReading, SiraNav, sortDates, SourceDot, sourceLabel, SourceLink } from "@/modules/sira";
 import { getSiraData } from "@/modules/sira/server";
 

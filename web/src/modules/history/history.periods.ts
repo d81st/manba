@@ -1,4 +1,4 @@
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import type { HistoryEvent } from "./history.types";
 import { placeYear } from "./history.calendar";
 

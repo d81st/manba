@@ -1,7 +1,7 @@
 import "server-only";
-import { bookPath, formatBookRef, isBook } from "@/lib/book-query";
-import { db } from "@/lib/db";
-import { formatHadithRef, hadithPath } from "@/lib/hadith-query";
+import { bookPath, formatBookRef, isBook } from "@/shared/addresses/book-query";
+import { db } from "@/shared/db";
+import { formatHadithRef, hadithPath } from "@/shared/addresses/hadith-query";
 import type { Concept, SourceHit } from "../assistant.types";
 import { level, like, MAX_SOURCES, PER_CONCEPT } from "./assistant.sql";
 

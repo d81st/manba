@@ -1,8 +1,8 @@
 // Validation of the topic and side forms. No database access here, so everything is unit-tested.
 import { z } from "zod";
 import { TOPIC_CATEGORIES, TOPIC_STATUSES } from "./topic.constants";
-import { parseRefs } from "@/lib/refs";
-import { type InputProblem, RECOGNITIONS } from "@/lib/input";
+import { parseRefs } from "@/shared/addresses/refs";
+import { type InputProblem, RECOGNITIONS } from "@/shared/forms/input";
 
 const trimmed = (max: number) => z.string().trim().max(max);
 

@@ -2,8 +2,8 @@
 // reading a post's address. No database here, so it is unit-tested; that the
 // fragments and topics exist is checked on saving (server/video.commands.ts).
 import { z } from "zod";
-import { parseRefs } from "@/lib/refs";
-import type { InputProblem } from "@/lib/input";
+import { parseRefs } from "@/shared/addresses/refs";
+import type { InputProblem } from "@/shared/forms/input";
 
 export const VIDEO_STATUSES = ["draft", "review", "published"] as const;
 export type Platform = "youtube" | "telegram" | "other";

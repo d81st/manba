@@ -2,18 +2,18 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import { startTransition, useActionState, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import type { Messages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
+import type { Messages } from "@/shared/i18n";
 import { PERSON_RELATION_KINDS, SIRA_STATUSES, type PersonInput, type PersonRelationInput } from "../sira.validation";
-import { Field } from "@/components/ui/field";
+import { Field } from "@/shared/ui/field";
 import { savePersonAction, type SiraFormState } from "../server/sira.actions";
-import { ChoiceSelect } from "@/components/ui/choice-select";
-import { slugify } from "@/lib/input";
-import { FormNotes, messageOf } from "@/components/form-kit";
+import { ChoiceSelect } from "@/shared/ui/choice-select";
+import { slugify } from "@/shared/forms/input";
+import { FormNotes, messageOf } from "@/shared/forms/form-kit";
 
 type RelationRow = PersonRelationInput & { key: number };
 let nextKey = 1;

@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { GLOSSARY_TAG } from "../term.constants";
 import type { PublicTerm, RefAyah, TermSummary } from "../term.types";
 import { LOCALE, SUMMARY } from "./term.sql";

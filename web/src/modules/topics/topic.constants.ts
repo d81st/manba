@@ -1,4 +1,4 @@
-import { TERM_STATUSES } from "@/lib/input";
+import { TERM_STATUSES } from "@/shared/forms/input";
 
 // Cache tag of everything shown on topic pages: saving a topic or a side refreshes it.
 export const TOPICS_TAG = "topics";

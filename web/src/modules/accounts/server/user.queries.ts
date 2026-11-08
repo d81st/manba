@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import type { UserRow } from "../account.types";
 
 export async function listUsers(): Promise<UserRow[]> {

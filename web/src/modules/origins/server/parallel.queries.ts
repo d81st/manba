@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { PARALLELS_TAG } from "../parallel.constants";
 import { formatAnyRefs } from "../parallel.refs";
 import type { ParallelForEdit, ParallelSummary } from "../parallel.types";

@@ -4,7 +4,7 @@
 // role or disabling raises session_version, which ends that account's older
 // sessions (checked in proxy.ts). Changes go to the journal without passwords.
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import {
     checkNewPassword,
     hashPassword,
@@ -12,8 +12,8 @@ import {
     normalizeLogin,
     temporaryPassword,
     verifyPassword
-} from "@/lib/passwords";
-import type { Role } from "@/lib/session";
+} from "@/shared/auth/passwords";
+import type { Role } from "@/shared/auth/session";
 import type { ChangeResult, CreateResult } from "../account.types";
 
 async function journal(id: number, action: string, value: object, actor: string) {

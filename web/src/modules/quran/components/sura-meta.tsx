@@ -1,6 +1,6 @@
-import { getMessages, plural } from "@/i18n";
+import { getMessages, plural } from "@/shared/i18n";
 import type { SuraSummary } from "../quran.types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/utils";
 
 const t = getMessages().quran;
 

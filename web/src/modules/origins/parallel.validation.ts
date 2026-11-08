@@ -3,9 +3,9 @@
 // database access here, so everything is unit-tested; that the addresses
 // exist is checked on saving (lib/parallels.ts).
 import { z } from "zod";
-import { isExternal, parseExternalRef } from "@/lib/external";
-import { parseRefs } from "@/lib/refs";
-import { type InputProblem, TERM_STATUSES } from "@/lib/input";
+import { isExternal, parseExternalRef } from "@/shared/addresses/external";
+import { parseRefs } from "@/shared/addresses/refs";
+import { type InputProblem, TERM_STATUSES } from "@/shared/forms/input";
 
 export const PARALLEL_STATUSES = TERM_STATUSES;
 export const TRADITIONS = ["judaism", "christianity", "zoroastrianism", "arabia", "greek", "roman", "persian", "other"] as const;

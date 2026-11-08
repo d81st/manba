@@ -1,6 +1,6 @@
 import "server-only";
-import { db } from "@/lib/db";
-import { COLLECTION_ORDER, hadithPath, refLabel, schemeOf } from "@/lib/hadith-query";
+import { db } from "@/shared/db";
+import { COLLECTION_ORDER, hadithPath, refLabel, schemeOf } from "@/shared/addresses/hadith-query";
 import { shortTitle } from "../hadith.format";
 import { REVIEW_PAGE_SIZE, type PairSide, type ReviewFilter, type ReviewList, type ReviewPair } from "../hadith.links";
 import { CURRENT_VERDICTS } from "./link-review.sql";

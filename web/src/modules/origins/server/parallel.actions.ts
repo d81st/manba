@@ -2,11 +2,11 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { PARALLELS_TAG } from "../parallel.constants";
 import { saveParallel } from "./parallel.commands";
 import { checkParallelInput } from "../parallel.validation";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export type ParallelFormState = { problems: InputProblem[]; saved?: boolean };
 

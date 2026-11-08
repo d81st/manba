@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/utils";
 
 export type ListedAyah = { address: string; sura: number; ayah: number; suraName: string; text: string };
 

@@ -2,11 +2,11 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { TOPICS_TAG } from "../topic.constants";
 import { checkTopicInput } from "../topic.validation";
 import { deleteDraftTopic, saveTopic } from "./topic.commands";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export type TopicFormState = { problems: InputProblem[]; saved?: boolean };
 

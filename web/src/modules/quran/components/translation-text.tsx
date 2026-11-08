@@ -1,4 +1,4 @@
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import { parseTranslation } from "../quran.translation-markup";
 
 const t = getMessages().quran.translation;

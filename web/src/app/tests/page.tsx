@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
 import { levelKey, QuizList } from "@/modules/quiz";
 import { getQuizQuestions } from "@/modules/quiz/server";
-import { isPreview } from "@/lib/preview";
-import { PreviewBar } from "@/components/preview";
+import { isPreview } from "@/shared/auth/preview";
+import { PreviewBar } from "@/shared/layout/preview";
 
 const messages = getMessages();
 const t = messages.tests;

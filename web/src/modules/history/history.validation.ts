@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { parseBookRef } from "@/lib/book-query";
-import { type InputProblem, TERM_STATUSES } from "@/lib/input";
+import { parseBookRef } from "@/shared/addresses/book-query";
+import { type InputProblem, TERM_STATUSES } from "@/shared/forms/input";
 
 export const HISTORY_STATUSES = TERM_STATUSES;
 

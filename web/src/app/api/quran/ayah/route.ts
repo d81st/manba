@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
-import { getSession } from "@/lib/auth";
-import { isDatabaseConfigured } from "@/lib/db";
+import { getSession } from "@/shared/auth/auth";
+import { isDatabaseConfigured } from "@/shared/db";
 import { getAyahs } from "@/modules/quran/server";
 
 // One ayah for the map card: GET /api/quran/ayah?a=2:255.

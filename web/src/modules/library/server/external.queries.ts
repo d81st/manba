@@ -1,6 +1,6 @@
 import "server-only";
-import { db } from "@/lib/db";
-import { EXTERNAL_WORKS, type ExternalWork, externalBook } from "@/lib/external";
+import { db } from "@/shared/db";
+import { EXTERNAL_WORKS, type ExternalWork, externalBook } from "@/shared/addresses/external";
 import type { ExternalVerse } from "../external.types";
 
 export async function getExternalContents(work: ExternalWork) {

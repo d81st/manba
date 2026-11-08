@@ -1,4 +1,4 @@
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import type { MainPassage, PublicTopic } from "../../topic.types";
 import { SectionHeading } from "./section-heading";
 import { AyahList } from "@/modules/quran";

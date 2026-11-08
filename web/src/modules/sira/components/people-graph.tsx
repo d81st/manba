@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import type { Messages } from "@/i18n";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { Label } from "@/shared/ui/label";
+import type { Messages } from "@/shared/i18n";
 import type { CoMention } from "../sira.graph";
 
 type Person = {

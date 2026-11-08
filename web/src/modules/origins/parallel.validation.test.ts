@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { externalLabel, formatExternalRefs, linkExternal, parseExternalRef } from "@/lib/external";
+import { externalLabel, formatExternalRefs, linkExternal, parseExternalRef } from "@/shared/addresses/external";
 import { checkParallelInput, parseAnyRefs } from "./parallel.validation";
-import { plainKey } from "@/lib/plain-key";
+import { plainKey } from "@/shared/text/plain-key";
 
 // Fictional test data: not a real link, basis or reading.
 const link = {

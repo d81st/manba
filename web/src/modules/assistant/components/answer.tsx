@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { getMessages } from "@/i18n";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/shared/ui/badge";
+import { getMessages } from "@/shared/i18n";
+import { cn } from "@/shared/ui/utils";
 import type { AssistantResult, SourceHit } from "../assistant.types";
 import { AnswerGraph } from "./answer-graph";
 import { Examples } from "./ask-form";

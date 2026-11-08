@@ -1,7 +1,7 @@
 import "server-only";
 import type pg from "pg";
-import { db } from "@/lib/db";
-import type { InputProblem } from "@/lib/input";
+import { db } from "@/shared/db";
+import type { InputProblem } from "@/shared/forms/input";
 import { quoteFound, type CheckedEvent, type CheckedPerson, type PlaceInput } from "../sira.validation";
 import { LOCALE } from "./sira.sql";
 import { getEventForEdit, getPersonForEdit, getPlaceForEdit } from "./sira.queries";

@@ -1,6 +1,6 @@
 // Shared pieces of the assistant queries (internal to the module's server side).
 import "server-only";
-import { defaultLocale } from "@/i18n";
+import { defaultLocale } from "@/shared/i18n";
 
 export const LOCALE = defaultLocale;
 

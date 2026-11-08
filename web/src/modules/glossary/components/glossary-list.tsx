@@ -3,11 +3,11 @@
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import type { Messages } from "@/i18n";
-import { searchKey } from "@/lib/arabic";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/shared/ui/badge";
+import { Input } from "@/shared/ui/input";
+import type { Messages } from "@/shared/i18n";
+import { searchKey } from "@/shared/text/arabic";
+import { cn } from "@/shared/ui/utils";
 import type { TermSummary } from "../term.types";
 
 // Latin letters without diacritics, Cyrillic lowercased, Arabic folded.

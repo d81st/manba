@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { platformOf, telegramPost } from "../video.validation";
 
 // Whether the post is still there. YouTube answers its oEmbed address with

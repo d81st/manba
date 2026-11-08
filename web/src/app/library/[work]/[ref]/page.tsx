@@ -4,10 +4,10 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { bookAnchor, bookLabel, parseBookPath } from "@/lib/book-query";
-import { isDatabaseConfigured } from "@/lib/db";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { bookAnchor, bookLabel, parseBookPath } from "@/shared/addresses/book-query";
+import { isDatabaseConfigured } from "@/shared/db";
 import { getBookWork, locatePage } from "@/modules/library/server";
 import { sectionHref } from "@/modules/library";
 

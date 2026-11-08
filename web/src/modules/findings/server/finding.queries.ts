@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { FINDINGS_TAG } from "../finding.constants";
 import type { Finding } from "../finding.types";
 import { COLUMNS } from "./finding.sql";

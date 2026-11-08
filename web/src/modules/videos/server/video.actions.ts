@@ -2,12 +2,12 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/shared/auth/auth";
 import { VIDEOS_TAG } from "../video.constants";
 import { checkVideoInput } from "../video.validation";
 import { checkLinks } from "./video-links";
 import { saveVideo } from "./video.commands";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export type VideoFormState = { problems: InputProblem[]; saved?: boolean };
 

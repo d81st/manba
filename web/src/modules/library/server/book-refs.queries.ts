@@ -1,5 +1,5 @@
 import "server-only";
-import { bookScheme } from "@/lib/book-query";
+import { bookScheme } from "@/shared/addresses/book-query";
 
 // "Ибн Касир 2:64" names an ayah that the comment 2:63 covers: such
 // references become the comment's address. Others are left as they are.

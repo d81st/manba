@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { getMessages } from "@/i18n";
+import { getMessages } from "@/shared/i18n";
 import type { RefItem } from "../parallel.types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/ui/utils";
 import { HadithRefList } from "@/modules/hadith";
 
 const t = getMessages().external;

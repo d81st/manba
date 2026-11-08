@@ -2,10 +2,10 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/auth";
-import { withDrafts } from "@/lib/preview-path";
-import { safeNext } from "@/lib/safe-next";
-import { createPreviewToken, PREVIEW_COOKIE, PREVIEW_MAX_AGE } from "@/lib/session";
+import { requireAdmin } from "@/shared/auth/auth";
+import { withDrafts } from "@/shared/auth/preview-path";
+import { safeNext } from "@/shared/auth/safe-next";
+import { createPreviewToken, PREVIEW_COOKIE, PREVIEW_MAX_AGE } from "@/shared/auth/session";
 
 // Opens a reader page with drafts. The cookie, not the query alone, is the permit.
 export async function enablePreview(formData: FormData) {

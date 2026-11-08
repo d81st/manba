@@ -1,7 +1,7 @@
 // Validation of the glossary form. No database access here, so everything is unit-tested.
 import { z } from "zod";
-import { RECOGNITIONS, TERM_STATUSES, type InputProblem } from "@/lib/input";
-import { parseRefs } from "@/lib/refs";
+import { RECOGNITIONS, TERM_STATUSES, type InputProblem } from "@/shared/forms/input";
+import { parseRefs } from "@/shared/addresses/refs";
 import { RELATION_KINDS } from "./term.constants";
 
 const trimmed = (max: number) => z.string().trim().max(max);

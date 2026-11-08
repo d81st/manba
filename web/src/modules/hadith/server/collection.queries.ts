@@ -1,7 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
-import { COLLECTION_ORDER, schemeOf } from "@/lib/hadith-query";
+import { db } from "@/shared/db";
+import { COLLECTION_ORDER, schemeOf } from "@/shared/addresses/hadith-query";
 import { HADITH_TAG } from "../hadith.constants";
 import { shortTitle } from "../hadith.format";
 import type { Collection } from "../hadith.types";

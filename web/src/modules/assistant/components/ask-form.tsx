@@ -1,8 +1,8 @@
 import { Search } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { getMessages } from "@/i18n";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { getMessages } from "@/shared/i18n";
 import { MAX_QUESTION } from "../assistant.analysis";
 
 const t = getMessages().assistant;

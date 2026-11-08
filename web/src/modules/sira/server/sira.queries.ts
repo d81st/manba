@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import { SIRA_TAG } from "../sira.constants";
 import { coMentions, type CoMention } from "../sira.graph";
 import type { EventForEdit, PersonForEdit, SiraData, SiraEvent, SiraPerson, SiraPlace, SiraRelation } from "../sira.types";

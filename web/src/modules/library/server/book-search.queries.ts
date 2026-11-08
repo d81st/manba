@@ -1,7 +1,7 @@
 import "server-only";
-import { bookLabel } from "@/lib/book-query";
-import { db } from "@/lib/db";
-import { matchConditions } from "@/lib/search-sql";
+import { bookLabel } from "@/shared/addresses/book-query";
+import { db } from "@/shared/db";
+import { matchConditions } from "@/shared/text/search-sql";
 import { primaryVersion } from "@/modules/hadith/server";
 import { BOOK_SEARCH_LIMIT } from "../library.constants";
 import type { BookHit } from "../library.types";

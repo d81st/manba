@@ -1,7 +1,7 @@
 import "server-only";
-import { bookLabel, bookPath, isBook } from "@/lib/book-query";
-import { db } from "@/lib/db";
-import { hadithPath, refLabel, schemeOf } from "@/lib/hadith-query";
+import { bookLabel, bookPath, isBook } from "@/shared/addresses/book-query";
+import { db } from "@/shared/db";
+import { hadithPath, refLabel, schemeOf } from "@/shared/addresses/hadith-query";
 import { shortTitle } from "../hadith.format";
 import type { HadithRef } from "../hadith.types";
 import { PATH } from "./hadith.sql";

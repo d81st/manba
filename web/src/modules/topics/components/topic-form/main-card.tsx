@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChoiceSelect } from "@/components/ui/choice-select";
-import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { ChoiceSelect } from "@/shared/ui/choice-select";
+import { Field } from "@/shared/ui/field";
+import { Input } from "@/shared/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Textarea } from "@/shared/ui/textarea";
 import { TOPIC_CATEGORIES } from "../../topic.constants";
 import type { TopicInput } from "../../topic.validation";
 import type { AdminStrings, ErrorOf, SetField } from "./form-types";
-import { slugify } from "@/lib/input";
+import { slugify } from "@/shared/forms/input";
 
 // Title, permanent id, question, category, place on the map and the main texts.
 export function MainCard({

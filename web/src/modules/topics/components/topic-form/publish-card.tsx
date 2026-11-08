@@ -1,9 +1,9 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Field } from "@/shared/ui/field";
+import { Input } from "@/shared/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { TOPIC_STATUSES } from "../../topic.constants";
 import type { TopicInput } from "../../topic.validation";
 import type { AdminStrings, ErrorOf, SetField } from "./form-types";

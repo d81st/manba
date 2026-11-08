@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import type { Side } from "../topic.types";
 import { LOCALE } from "./topic.sql";
 

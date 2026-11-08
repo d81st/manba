@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { SESSION_COOKIE } from "@/lib/session";
+import { SESSION_COOKIE } from "@/shared/auth/session";
 
 export async function signOut() {
   (await cookies()).delete(SESSION_COOKIE);

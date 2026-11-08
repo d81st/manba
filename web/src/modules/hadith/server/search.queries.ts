@@ -1,7 +1,7 @@
 import "server-only";
-import { db } from "@/lib/db";
-import { matchConditions } from "@/lib/search-sql";
-import { COLLECTION_ORDER } from "@/lib/hadith-query";
+import { db } from "@/shared/db";
+import { matchConditions } from "@/shared/text/search-sql";
+import { COLLECTION_ORDER } from "@/shared/addresses/hadith-query";
 import { HADITH_SEARCH_LIMIT } from "../hadith.constants";
 import { shortTitle } from "../hadith.format";
 import type { HadithHit } from "../hadith.types";

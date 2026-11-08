@@ -1,4 +1,4 @@
-import { defaultLocale } from "@/i18n";
+import { defaultLocale } from "@/shared/i18n";
 
 export const LOCALE = defaultLocale;
 

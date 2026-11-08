@@ -1,8 +1,8 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import type { SideInput } from "../topic.validation";
 import { LOCALE } from "./topic.sql";
-import type { InputProblem } from "@/lib/input";
+import type { InputProblem } from "@/shared/forms/input";
 
 export async function saveSide(id: number | null, input: SideInput, actor: string): Promise<InputProblem[]> {
   const client = await db().connect();

@@ -3,12 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { ScrollToHash } from "@/components/scroll-to-hash";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { EXTERNAL_WORKS, externalBook, isExternal } from "@/lib/external";
-import { cn } from "@/lib/utils";
+import { Page } from "@/shared/layout/page";
+import { ScrollToHash } from "@/shared/layout/scroll-to-hash";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { EXTERNAL_WORKS, externalBook, isExternal } from "@/shared/addresses/external";
+import { cn } from "@/shared/ui/utils";
 import { getExternalChapter } from "@/modules/library/server";
 
 const messages = getMessages();

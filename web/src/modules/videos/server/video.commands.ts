@@ -1,7 +1,7 @@
 import "server-only";
-import { db } from "@/lib/db";
-import { formatRefs } from "@/lib/refs";
-import type { InputProblem } from "@/lib/input";
+import { db } from "@/shared/db";
+import { formatRefs } from "@/shared/addresses/refs";
+import type { InputProblem } from "@/shared/forms/input";
 import { type CheckedVideo } from "../video.validation";
 import { COLUMNS } from "./video.sql";
 

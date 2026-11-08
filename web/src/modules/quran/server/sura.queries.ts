@@ -1,6 +1,6 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db } from "@/shared/db";
 import type { Attribution, Segment, Sura, SuraSummary } from "../quran.types";
 import { SURA_SUMMARY, type SummaryRow, toSummary, TRANSLATION } from "./quran.sql";
 

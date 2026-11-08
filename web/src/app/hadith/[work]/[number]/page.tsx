@@ -4,10 +4,10 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { Page } from "@/components/page";
-import { getMessages } from "@/i18n";
-import { isDatabaseConfigured } from "@/lib/db";
-import { hadithAnchor, hadithPath, parseRef, schemeOf } from "@/lib/hadith-query";
+import { Page } from "@/shared/layout/page";
+import { getMessages } from "@/shared/i18n";
+import { isDatabaseConfigured } from "@/shared/db";
+import { hadithAnchor, hadithPath, parseRef, schemeOf } from "@/shared/addresses/hadith-query";
 import { bookPageHref } from "@/modules/hadith";
 import { getCollection, locateHadith } from "@/modules/hadith/server";
 
