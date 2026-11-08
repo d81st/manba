@@ -1,6 +1,6 @@
 import "server-only";
 import { db, isDatabaseConfigured } from "@/lib/db";
-import { isLocked, WINDOW_MS, type FailureCounts } from "@/lib/login-limiter";
+import { isLocked, WINDOW_MS, type FailureCounts } from "../login.limiter";
 
 const WINDOW_SECONDS = WINDOW_MS / 1000;
 

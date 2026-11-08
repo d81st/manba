@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { readSessionToken, SESSION_COOKIE, type Session } from "@/lib/session";
-import { accountState } from "@/lib/users";
+import { accountState } from "@/lib/accounts";
 
 // The expiry check reads the clock: always at request time, never prerendered.
 async function sessionFromCookie(): Promise<Session | null> {

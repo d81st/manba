@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireSession } from "@/lib/auth";
-import { PasswordForm } from "./password-form";
+import { PasswordForm } from "@/modules/accounts";
 
 const t = getMessages().account;
 

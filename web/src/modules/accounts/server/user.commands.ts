@@ -1,67 +1,20 @@
-import "server-only";
 // Accounts besides the main administrator (migration 043). The administrator
 // creates an account with a temporary password and gives it to the person;
 // at the first login the person sets their own. Every change of password,
 // role or disabling raises session_version, which ends that account's older
 // sessions (checked in proxy.ts). Changes go to the journal without passwords.
+import "server-only";
 import { db } from "@/lib/db";
 import {
-  checkNewPassword,
-  hashPassword,
-  isValidLogin,
-  normalizeLogin,
-  temporaryPassword,
-  verifyPassword,
-  type PasswordProblem,
+    checkNewPassword,
+    hashPassword,
+    isValidLogin,
+    normalizeLogin,
+    temporaryPassword,
+    verifyPassword
 } from "@/lib/passwords";
-import type { Account, Role } from "@/lib/session";
-
-export type UserRow = {
-  id: number;
-  login: string;
-  role: Role;
-  disabled: boolean;
-  mustChangePassword: boolean;
-  createdAt: string;
-  createdBy: string;
-};
-
-// A dummy hash so that an unknown login takes as long as a wrong password.
-const DUMMY_HASH = "scrypt$16384$8$1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-
-export async function findAccount(loginRaw: string, password: string): Promise<(Account & { login: string }) | null> {
-  const login = normalizeLogin(loginRaw);
-  const { rows } = await db().query<{
-    id: string;
-    password_hash: string;
-    role: Role;
-    disabled: boolean;
-    must_change_password: boolean;
-    session_version: number;
-  }>("SELECT id, password_hash, role, disabled, must_change_password, session_version FROM users WHERE login = $1", [login]);
-  const row = rows[0];
-  const ok = await verifyPassword(password, row?.password_hash ?? DUMMY_HASH);
-  if (!row || !ok || row.disabled) return null;
-  return { login, uid: Number(row.id), role: row.role, ver: row.session_version, pc: row.must_change_password };
-}
-
-// What the proxy needs on every request of an account session.
-export async function accountState(uid: number) {
-  const { rows } = await db().query<{ role: Role; disabled: boolean; session_version: number; must_change_password: boolean }>(
-    "SELECT role, disabled, session_version, must_change_password FROM users WHERE id = $1",
-    [uid],
-  );
-  return rows[0] ?? null;
-}
-
-export async function listUsers(): Promise<UserRow[]> {
-  const { rows } = await db().query<UserRow>(
-    `SELECT id::int, login, role, disabled, must_change_password AS "mustChangePassword",
-            to_char(created_at, 'YYYY-MM-DD') AS "createdAt", created_by AS "createdBy"
-     FROM users ORDER BY login`,
-  );
-  return rows;
-}
+import type { Role } from "@/lib/session";
+import type { ChangeResult, CreateResult } from "../account.types";
 
 async function journal(id: number, action: string, value: object, actor: string) {
   await db().query(
@@ -69,8 +22,6 @@ async function journal(id: number, action: string, value: object, actor: string)
     [String(id), action, JSON.stringify(value), actor],
   );
 }
-
-export type CreateResult = { problem?: "login" | "taken" | "reserved"; password?: string; login?: string };
 
 export async function createUser(loginRaw: string, role: Role, actor: string): Promise<CreateResult> {
   const login = normalizeLogin(loginRaw);
@@ -116,8 +67,6 @@ export async function setRole(id: number, role: Role, actor: string) {
   );
   await journal(id, "updated", { role }, actor);
 }
-
-export type ChangeResult = { problem?: PasswordProblem | "current"; ver?: number };
 
 export async function changeOwnPassword(uid: number, current: string, next: string, repeat: string): Promise<ChangeResult> {
   const problem = checkNewPassword(next, repeat, current);

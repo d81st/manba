@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clientAddress, isLocked, MAX_ADDRESS, MAX_LOGIN, MAX_PAIR, MAX_TOTAL } from "./login-limiter";
+import { clientAddress, isLocked, MAX_ADDRESS, MAX_LOGIN, MAX_PAIR, MAX_TOTAL } from "./login.limiter";
 
 const open = { pair: 0, login: 0, address: 0, total: 0 };
 

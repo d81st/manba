@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Messages } from "@/i18n/ru";
-import type { UserRow } from "@/lib/users";
-import { createUserAction, userAction, type UsersState } from "./actions";
+import type { UserRow } from "../account.types";
+import { createUserAction, userAction, type UsersState } from "../server/user.actions";
 
 type T = Messages["admin"]["users"];
 

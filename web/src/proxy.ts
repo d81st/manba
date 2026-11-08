@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { readSessionToken, SESSION_COOKIE, type Session } from "@/lib/session";
-import { accountState } from "@/lib/users";
+import { accountState } from "@/lib/accounts";
 
 // Paths reachable without a session. Everything else requires login.
 const PUBLIC_PATHS = ["/login", "/api/health", "/robots.txt"];

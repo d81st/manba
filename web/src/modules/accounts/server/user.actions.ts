@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import type { Role } from "@/lib/session";
-import { createUser, resetPassword, setDisabled, setRole } from "@/lib/users";
+import { createUser, resetPassword, setDisabled, setRole } from "./user.commands";
 
 export type UsersState = {
   problem?: "login" | "taken" | "reserved";

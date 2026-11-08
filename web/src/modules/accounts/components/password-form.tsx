@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Messages } from "@/i18n/ru";
-import { changePasswordAction, type PasswordState } from "./actions";
+import { changePasswordAction, type PasswordState } from "../server/password.actions";
 
 export function PasswordForm({ t }: { t: Messages["account"] }) {
   const [state, action, pending] = useActionState<PasswordState, FormData>(changePasswordAction, {});

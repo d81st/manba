@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth";
 import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session";
-import { changeOwnPassword, type ChangeResult } from "@/lib/users";
+import type { ChangeResult } from "../account.types";
+import { changeOwnPassword } from "./user.commands";
 
 export type PasswordState = { problem?: NonNullable<ChangeResult["problem"]> | "mainAdmin"; saved?: boolean };
 

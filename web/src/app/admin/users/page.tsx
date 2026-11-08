@@ -5,8 +5,8 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listUsers } from "@/lib/users";
-import { CreateUserForm, UserRowForm } from "./users-forms";
+import { listUsers } from "@/modules/accounts/server";
+import { CreateUserForm, UserRowForm } from "@/modules/accounts";
 
 const messages = getMessages();
 const t = messages.admin.users;

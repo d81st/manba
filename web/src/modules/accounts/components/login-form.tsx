@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Messages } from "@/i18n/ru";
-import { login, type LoginState } from "./actions";
+import { login, type LoginState } from "../server/login.actions";
 
 export function LoginForm({ t }: { t: Messages["login"] }) {
   const next = useSearchParams().get("next") ?? "/";

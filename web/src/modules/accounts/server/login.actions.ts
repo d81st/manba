@@ -3,18 +3,18 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getMessages } from "@/i18n";
-import { clientAddress } from "@/lib/login-limiter";
-import { isLoginLocked, recordLoginFailure, recordLoginSuccess } from "@/lib/login-lockout";
+import { clientAddress } from "../login.limiter";
+import { isLoginLocked, recordLoginFailure, recordLoginSuccess } from "./login-lockout";
 import { isDatabaseConfigured } from "@/lib/db";
 import { safeNext } from "@/lib/safe-next";
 import {
-  createSessionToken,
-  credentialsMatch,
-  isConfigured,
-  SESSION_COOKIE,
-  SESSION_MAX_AGE,
+    createSessionToken,
+    credentialsMatch,
+    isConfigured,
+    SESSION_COOKIE,
+    SESSION_MAX_AGE,
 } from "@/lib/session";
-import { findAccount } from "@/lib/users";
+import { findAccount } from "@/lib/accounts";
 
 export type LoginState = { error?: string; login?: string };
 
