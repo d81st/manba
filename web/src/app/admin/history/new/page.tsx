@@ -5,8 +5,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listHistoryTopics } from "@/lib/history";
-import { HistoryEventForm } from "../event-form";
+import { listHistoryTopics } from "@/modules/history/server";
+import { HistoryEventForm } from "@/modules/history";
 
 const messages = getMessages();
 const t = messages.admin.history;

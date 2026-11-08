@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ceLabel, ceYears, checkHistoryEventInput, placeYear } from "./history-input";
+import { ceLabel, ceYears, placeYear } from "./history.calendar";
+import { checkHistoryEventInput } from "./history.validation";
 
 // Sample events are made up for the test (not source data).
 const event = {

@@ -7,11 +7,10 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
-import { getHistoryEventForEdit, listHistoryTopics } from "@/lib/history";
-import type { HistoryLayer } from "@/lib/history-input";
 import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
-import { HistoryEventForm } from "../event-form";
+import { getHistoryEventForEdit, listHistoryTopics } from "@/modules/history/server";
+import { HistoryEventForm, type HistoryLayer } from "@/modules/history";
 
 const messages = getMessages();
 const t = messages.admin.history;

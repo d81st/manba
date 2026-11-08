@@ -6,10 +6,10 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { ceLabel } from "@/lib/history-input";
-import { listHistoryForAdmin } from "@/lib/history";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
+import { ceLabel } from "@/modules/history";
+import { listHistoryForAdmin } from "@/modules/history/server";
 
 const messages = getMessages();
 const t = messages.admin.history;
