@@ -7,8 +7,8 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { getVideoForEdit } from "@/lib/videos";
-import { VideoForm } from "../video-form";
+import { getVideoForEdit } from "@/modules/videos/server";
+import { VideoForm } from "@/modules/videos";
 
 const messages = getMessages();
 const t = messages.admin.videos;

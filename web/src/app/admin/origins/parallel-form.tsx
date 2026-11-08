@@ -9,9 +9,9 @@ import type { Messages } from "@/i18n";
 import { BASES, DEGREES, PARALLEL_KINDS, PARALLEL_STATUSES, type ParallelInput, TRADITIONS } from "@/lib/parallels-input";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { FormNotes, messageOf } from "../sira/form-kit";
 import { saveParallelAction, type ParallelFormState } from "./actions";
 import { slugify } from "@/lib/input";
+import { FormNotes, messageOf } from "@/components/form-kit";
 
 const EMPTY: ParallelInput = {
   slug: "",

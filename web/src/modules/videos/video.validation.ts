@@ -1,6 +1,6 @@
 // Videos as additional material (migration 048): validation of the form and
 // reading a post's address. No database here, so it is unit-tested; that the
-// fragments and topics exist is checked on saving (lib/videos.ts).
+// fragments and topics exist is checked on saving (server/video.commands.ts).
 import { z } from "zod";
 import { parseRefs } from "@/lib/refs";
 import type { InputProblem } from "@/lib/input";

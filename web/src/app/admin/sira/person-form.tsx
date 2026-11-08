@@ -12,8 +12,8 @@ import { PERSON_RELATION_KINDS, SIRA_STATUSES, type PersonInput, type PersonRela
 import { Field } from "@/components/ui/field";
 import { savePersonAction, type SiraFormState } from "./actions";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { FormNotes, messageOf } from "./form-kit";
 import { slugify } from "@/lib/input";
+import { FormNotes, messageOf } from "@/components/form-kit";
 
 type RelationRow = PersonRelationInput & { key: number };
 let nextKey = 1;

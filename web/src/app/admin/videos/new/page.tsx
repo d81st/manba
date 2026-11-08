@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { VideoForm } from "../video-form";
+import { VideoForm } from "@/modules/videos";
 
 const messages = getMessages();
 const t = messages.admin.videos;

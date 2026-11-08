@@ -12,9 +12,9 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { bookPageHref, getBook, getCollection } from "@/lib/hadith";
 import { hadithAnchor, refLabel } from "@/lib/hadith-query";
 import { HadithAttribution } from "../../../attribution";
-import { VideoList } from "@/components/video-list";
-import { videosForAddresses } from "@/lib/videos";
 import { VerseLine } from "@/components/verse-line";
+import { VideoList } from "@/modules/videos";
+import { videosForAddresses } from "@/modules/videos/server";
 
 const t = getMessages().hadith;
 

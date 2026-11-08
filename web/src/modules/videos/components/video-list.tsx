@@ -1,7 +1,7 @@
 import { ExternalLink, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
-import type { PublicVideo } from "@/lib/videos";
+import type { PublicVideo } from "../video.types";
 import { cn } from "@/lib/utils";
 
 const t = getMessages().videos;

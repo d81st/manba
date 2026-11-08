@@ -1,5 +1,3 @@
-import { VideoList } from "@/components/video-list";
-import type { PublicVideo } from "@/lib/videos";
 import type { PublicTopic, TopicPlace } from "../../topic.types";
 import { TopicBadge } from "../topic-badges";
 import { CircumstancesSection } from "./circumstances-section";
@@ -7,6 +5,7 @@ import { MainTexts } from "./main-texts";
 import { PlaceSection } from "./place-section";
 import { PositionsSection } from "./positions-section";
 import { LinksSection, RelatedRefsSection } from "./related-sections";
+import { type PublicVideo, VideoList } from "@/modules/videos";
 
 // A published topic: the texts in full, their circumstances, the positions of
 // all sides, related places, videos and links. Data comes from the page.

@@ -12,8 +12,8 @@ import type { Messages } from "@/i18n";
 import { MAX_OPTIONS, QUIZ_STATUSES, type QuestionInput } from "@/lib/quiz-input";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { FormNotes, messageOf } from "../sira/form-kit";
 import { saveQuestionAction, type QuestionFormState } from "./actions";
+import { FormNotes, messageOf } from "@/components/form-kit";
 
 type OptionRow = QuestionInput["options"][number] & { key: number };
 let nextKey = 1;

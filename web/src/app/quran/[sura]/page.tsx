@@ -11,10 +11,10 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { getSura } from "@/lib/quran";
 import { QuranNav } from "../nav";
 import { SuraMeta } from "../sura-meta";
-import { VideoList } from "@/components/video-list";
-import { videosForAddresses } from "@/lib/videos";
 import { ScrollToHash } from "@/components/scroll-to-hash";
 import { TranslationText } from "@/components/translation-text";
+import { VideoList } from "@/modules/videos";
+import { videosForAddresses } from "@/modules/videos/server";
 
 // The commentary each ayah links to.
 const TAFSIR = "tafsir_ibn_kathir";

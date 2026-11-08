@@ -11,8 +11,8 @@ import type { Messages } from "@/i18n";
 import { FINDING_STATUSES, type FindingInput } from "@/lib/findings-input";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { FormNotes, messageOf } from "../sira/form-kit";
 import { saveFindingAction, type FindingFormState } from "./actions";
+import { FormNotes, messageOf } from "@/components/form-kit";
 
 const EMPTY: FindingInput = {
   status: "new",

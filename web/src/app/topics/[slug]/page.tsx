@@ -8,10 +8,10 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { isPreview } from "@/lib/preview";
-import { videosForTopic } from "@/lib/videos";
 import { TopicArticle } from "@/modules/topics";
 import { getPublishedTopic, getTopicPlace } from "@/modules/topics/server";
 import { PreviewNote } from "../../sira/shared";
+import { videosForTopic } from "@/modules/videos/server";
 
 const t = getMessages().topics;
 

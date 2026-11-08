@@ -8,8 +8,8 @@ import type { Messages } from "@/i18n";
 import type { PlaceInput } from "@/lib/sira-input";
 import { Field } from "@/components/ui/field";
 import { savePlaceAction, type SiraFormState } from "./actions";
-import { FormNotes, messageOf, NumberInput } from "./form-kit";
 import { slugify } from "@/lib/input";
+import { FormNotes, messageOf, NumberInput } from "@/components/form-kit";
 
 const EMPTY: PlaceInput = { slug: "", name: "", nameAr: "", lat: null, lon: null, coordSource: "", reason: "" };
 

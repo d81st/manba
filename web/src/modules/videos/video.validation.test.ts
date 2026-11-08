@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkVideoInput, platformOf, telegramPost } from "./videos-input";
+import { checkVideoInput, platformOf, telegramPost } from "./video.validation";
 
 // A made-up video for the test (not a real post).
 const video = { url: "https://www.youtube.com/watch?v=test0000000", title: "Вымышленное видео", status: "draft" };

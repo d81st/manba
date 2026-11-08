@@ -13,9 +13,9 @@ import { HISTORY_LAYERS, HISTORY_STATUSES, type HistoryDateInput, type HistoryEv
 import { HIJRI_MONTHS } from "@/lib/sira-dates";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { FormNotes, messageOf, NumberInput } from "../sira/form-kit";
 import { saveHistoryAction, type HistoryFormState } from "./actions";
 import { slugify } from "@/lib/input";
+import { FormNotes, messageOf, NumberInput } from "@/components/form-kit";
 
 type DateRow = HistoryDateInput & { key: number };
 let nextKey = 1;

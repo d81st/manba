@@ -14,8 +14,8 @@ import { EVENT_KINDS, SIRA_STATUSES, type EventDateInput, type EventInput } from
 import { Field } from "@/components/ui/field";
 import { saveEventAction, type SiraFormState } from "./actions";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { FormNotes, messageOf, NumberInput } from "./form-kit";
 import { slugify } from "@/lib/input";
+import { FormNotes, messageOf, NumberInput } from "@/components/form-kit";
 
 type DateRow = EventDateInput & { key: number };
 let nextKey = 1;

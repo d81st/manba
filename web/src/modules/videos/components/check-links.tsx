@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import type { Messages } from "@/i18n";
-import { checkLinksAction, type CheckState } from "./actions";
+import { checkLinksAction, type CheckState } from "../server/video.actions";
 
 export function CheckLinks({ t }: { t: Messages["admin"]["videos"] }) {
   const [state, action, pending] = useActionState<CheckState>(checkLinksAction, {});

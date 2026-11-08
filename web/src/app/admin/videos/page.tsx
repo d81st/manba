@@ -6,11 +6,10 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listVideos } from "@/lib/videos";
-import { VIDEO_STATUSES } from "@/lib/videos-input";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "../status-badge";
-import { CheckLinks } from "./check-links";
+import { listVideos } from "@/modules/videos/server";
+import { CheckLinks, VIDEO_STATUSES } from "@/modules/videos";
 
 const messages = getMessages();
 const t = messages.admin.videos;
