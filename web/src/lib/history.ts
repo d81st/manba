@@ -3,9 +3,9 @@ import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
 import { defaultLocale } from "@/i18n";
 import { db } from "@/lib/db";
-import type { InputProblem } from "@/lib/glossary-input";
 import type { CheckedHistoryEvent } from "@/lib/history-input";
 import { quoteFound } from "@/lib/sira-input";
+import type { InputProblem } from "@/lib/input";
 
 // «Историческая линия» (migration 022): events on layers, each date the quoted
 // words of a source with their address; nothing here is the site's own.

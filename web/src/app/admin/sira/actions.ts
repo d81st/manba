@@ -3,9 +3,9 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import type { InputProblem } from "@/lib/glossary-input";
 import { saveEvent, savePerson, savePlace, SIRA_TAG } from "@/lib/sira-events";
 import { checkEventInput, checkPersonInput, checkPlaceInput } from "@/lib/sira-input";
+import type { InputProblem } from "@/lib/input";
 
 export type SiraFormState = { problems: InputProblem[]; saved?: boolean };
 

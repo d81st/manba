@@ -3,9 +3,9 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import type { InputProblem } from "@/lib/glossary-input";
 import { QUIZ_TAG, saveQuestion } from "@/lib/quiz";
 import { checkQuestionInput } from "@/lib/quiz-input";
+import type { InputProblem } from "@/lib/input";
 
 export type QuestionFormState = { problems: InputProblem[]; saved?: boolean };
 

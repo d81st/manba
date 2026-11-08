@@ -4,7 +4,7 @@
 // saving (lib/history.ts).
 import { z } from "zod";
 import { parseBookRef } from "./book-query.ts";
-import { TERM_STATUSES, type InputProblem } from "./glossary-input.ts";
+import { type InputProblem, TERM_STATUSES } from "@/lib/input";
 
 export const HISTORY_STATUSES = TERM_STATUSES;
 export const HISTORY_LAYERS = ["rulers", "texts", "doctrine", "science"] as const;

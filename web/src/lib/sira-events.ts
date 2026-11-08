@@ -3,9 +3,9 @@ import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
 import { defaultLocale } from "@/i18n";
 import { db } from "@/lib/db";
-import type { InputProblem } from "@/lib/glossary-input";
 import { coMentions, type CoMention } from "@/lib/sira-graph";
 import { quoteFound, type CheckedEvent, type CheckedPerson, type PlaceInput } from "@/lib/sira-input";
+import type { InputProblem } from "@/lib/input";
 
 // Events, places and people of «Жизнеописание пророка» (migration 015): the
 // map, the timeline and the graph of people. Every date and relation is the

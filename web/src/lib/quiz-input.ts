@@ -2,7 +2,8 @@
 // question. No database access here, so everything is unit-tested; that the
 // fragments exist is checked on saving (lib/quiz.ts).
 import { z } from "zod";
-import { parseRefs, TERM_STATUSES, type InputProblem } from "./glossary-input.ts";
+import { parseRefs } from "@/lib/refs";
+import { type InputProblem, TERM_STATUSES } from "@/lib/input";
 
 export const QUIZ_STATUSES = TERM_STATUSES;
 export const MAX_OPTIONS = 8;

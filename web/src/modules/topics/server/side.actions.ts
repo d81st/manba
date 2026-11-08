@@ -2,10 +2,10 @@
 
 import { updateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
-import type { InputProblem } from "@/lib/glossary-input";
 import { TOPICS_TAG } from "../topic.constants";
 import { checkSideInput } from "../topic.validation";
 import { saveSide } from "./side.commands";
+import type { InputProblem } from "@/lib/input";
 
 export type SideFormState = { problems: InputProblem[]; saved?: boolean };
 

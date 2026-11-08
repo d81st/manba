@@ -5,8 +5,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listTermChoices } from "@/lib/glossary";
-import { TermForm } from "../term-form";
+import { listTermChoices } from "@/modules/glossary/server";
+import { TermForm } from "@/modules/glossary";
 
 const t = getMessages().admin;
 

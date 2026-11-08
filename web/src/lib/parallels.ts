@@ -4,9 +4,10 @@ import type pg from "pg";
 import { defaultLocale } from "@/i18n";
 import { db } from "@/lib/db";
 import { EXTERNAL_WORKS, externalHref, externalLabel, formatExternalRefs, isExternal } from "@/lib/external";
-import { formatRefs, type InputProblem } from "@/lib/glossary-input";
 import { getHadithRefs, type HadithRef } from "@/lib/hadith";
 import { type CheckedParallel, PARALLEL_REF_FIELDS, type ParallelInput, REF_ROLES } from "@/lib/parallels-input";
+import { formatRefs } from "@/lib/refs";
+import type { InputProblem } from "@/lib/input";
 
 // Links of «Истоки и связи» (db/migrations/017): reading for the pages, and
 // saving from the admin panel with every change in change_log.

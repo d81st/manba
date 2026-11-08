@@ -3,9 +3,9 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import type { InputProblem } from "@/lib/glossary-input";
 import { checkLinks, saveVideo, VIDEOS_TAG } from "@/lib/videos";
 import { checkVideoInput } from "@/lib/videos-input";
+import type { InputProblem } from "@/lib/input";
 
 export type VideoFormState = { problems: InputProblem[]; saved?: boolean };
 

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { FINDINGS_TAG, saveFinding } from "@/lib/findings";
 import { checkFindingInput } from "@/lib/findings-input";
-import type { InputProblem } from "@/lib/glossary-input";
+import type { InputProblem } from "@/lib/input";
 
 export type FindingFormState = { problems: InputProblem[]; saved?: boolean };
 

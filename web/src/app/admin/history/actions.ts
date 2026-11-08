@@ -3,9 +3,9 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import type { InputProblem } from "@/lib/glossary-input";
 import { HISTORY_TAG, saveHistoryEvent } from "@/lib/history";
 import { checkHistoryEventInput } from "@/lib/history-input";
+import type { InputProblem } from "@/lib/input";
 
 export type HistoryFormState = { problems: InputProblem[]; saved?: boolean };
 

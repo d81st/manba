@@ -4,8 +4,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listPublishedTerms } from "@/lib/glossary";
-import { GlossaryList } from "./glossary-list";
+import { listPublishedTerms } from "@/modules/glossary/server";
+import { GlossaryList } from "@/modules/glossary";
 
 const t = getMessages().glossary;
 

@@ -3,10 +3,10 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import type { InputProblem } from "@/lib/glossary-input";
 import { TOPICS_TAG } from "../topic.constants";
 import { checkTopicInput } from "../topic.validation";
 import { deleteDraftTopic, saveTopic } from "./topic.commands";
+import type { InputProblem } from "@/lib/input";
 
 export type TopicFormState = { problems: InputProblem[]; saved?: boolean };
 

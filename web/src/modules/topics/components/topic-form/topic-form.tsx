@@ -4,7 +4,6 @@ import { CircleAlert, CircleCheck, Trash2 } from "lucide-react";
 import { startTransition, useActionState, useState, useTransition } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import type { InputProblem } from "@/lib/glossary-input";
 import { deleteTopicAction, saveTopicAction, type TopicFormState } from "../../server/topic.actions";
 import type { TopicInput } from "../../topic.validation";
 import { CircumstancesCard } from "./circumstances-card";
@@ -13,6 +12,7 @@ import { LinksCard } from "./links-card";
 import { MainCard } from "./main-card";
 import { PositionsCard, withKeys } from "./positions-card";
 import { PublishCard } from "./publish-card";
+import type { InputProblem } from "@/lib/input";
 
 const EMPTY: TopicInput = {
   slug: "",

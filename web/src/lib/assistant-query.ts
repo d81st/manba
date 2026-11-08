@@ -3,8 +3,8 @@
 // unit-tested; the widening by the glossary and the synonyms and the search
 // are in lib/assistant.ts.
 import { searchKey } from "./arabic.ts";
-import { parseRefs } from "./glossary-input.ts";
 import { plainKey } from "./plain-key.ts";
+import { parseRefs } from "@/lib/refs";
 
 export const MAX_QUESTION = 300;
 const MAX_WORDS = 8;

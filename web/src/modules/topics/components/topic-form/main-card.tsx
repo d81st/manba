@@ -7,10 +7,10 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { slugify } from "@/lib/glossary-input";
 import { TOPIC_CATEGORIES } from "../../topic.constants";
 import type { TopicInput } from "../../topic.validation";
 import type { AdminStrings, ErrorOf, SetField } from "./form-types";
+import { slugify } from "@/lib/input";
 
 // Title, permanent id, question, category, place on the map and the main texts.
 export function MainCard({

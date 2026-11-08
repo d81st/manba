@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { Messages } from "@/i18n";
-import { slugify } from "@/lib/glossary-input";
 import type { PlaceInput } from "@/lib/sira-input";
 import { Field } from "@/components/ui/field";
 import { savePlaceAction, type SiraFormState } from "./actions";
 import { FormNotes, messageOf, NumberInput } from "./form-kit";
+import { slugify } from "@/lib/input";
 
 const EMPTY: PlaceInput = { slug: "", name: "", nameAr: "", lat: null, lon: null, coordSource: "", reason: "" };
 

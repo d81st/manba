@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import type { Messages } from "@/i18n";
 import { searchKey } from "@/lib/arabic";
-import type { TermSummary } from "@/lib/glossary";
 import { cn } from "@/lib/utils";
+import type { TermSummary } from "../term.types";
 
 // Latin letters without diacritics, Cyrillic lowercased, Arabic folded.
 function normalize(text: string) {

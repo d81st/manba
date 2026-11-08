@@ -6,9 +6,9 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
-import { listTermChoices } from "@/lib/glossary";
 import { TopicForm } from "@/modules/topics";
 import { listSides, listTopicChoices } from "@/modules/topics/server";
+import { listTermChoices } from "@/modules/glossary/server";
 
 const t = getMessages().admin;
 

@@ -1,8 +1,9 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
-import { formatRefs, type InputProblem } from "@/lib/glossary-input";
 import { platformOf, telegramPost, type CheckedVideo, type Platform, type VideoInput } from "@/lib/videos-input";
+import { formatRefs } from "@/lib/refs";
+import type { InputProblem } from "@/lib/input";
 
 // Videos as additional material (migration 048): links to posts next to the
 // fragments and topics they are about. A video is never an argument.

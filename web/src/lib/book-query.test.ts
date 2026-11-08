@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { linkAddresses, parseRefs, formatRefs } from "./glossary-input.ts";
 import { bookAnchor, bookPath, formatBookRef, pageLabel, parseBookQuery, parseBookRef, parsePageRef } from "./book-query.ts";
+import { formatRefs, linkAddresses, parseRefs } from "@/lib/refs";
 
 describe("book references by volume and page", () => {
   it("reads pages and pieces of a page", () => {

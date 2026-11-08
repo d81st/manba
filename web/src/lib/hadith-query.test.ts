@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { linkAddresses } from "./glossary-input.ts";
 import {
   formatHadithRef,
   hadithAnchor,
@@ -11,6 +10,7 @@ import {
   refLabel,
   variantLetters,
 } from "./hadith-query.ts";
+import { linkAddresses } from "@/lib/refs";
 
 const ref = (work: string, ...path: number[]) => ({ kind: "ref", work, path });
 

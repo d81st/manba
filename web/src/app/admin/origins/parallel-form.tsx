@@ -6,12 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
-import { slugify } from "@/lib/glossary-input";
 import { BASES, DEGREES, PARALLEL_KINDS, PARALLEL_STATUSES, type ParallelInput, TRADITIONS } from "@/lib/parallels-input";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
 import { FormNotes, messageOf } from "../sira/form-kit";
 import { saveParallelAction, type ParallelFormState } from "./actions";
+import { slugify } from "@/lib/input";
 
 const EMPTY: ParallelInput = {
   slug: "",

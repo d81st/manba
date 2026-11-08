@@ -2,11 +2,12 @@ import "server-only";
 import type pg from "pg";
 import { resolveBookRefs } from "@/lib/books";
 import { db } from "@/lib/db";
-import { formatRefs, parseRefs, type InputProblem } from "@/lib/glossary-input";
 import type { SaveResult } from "../topic.types";
 import type { TopicInput } from "../topic.validation";
 import { getTopicForEdit } from "./topic.queries";
 import { LOCALE, type RefRole } from "./topic.sql";
+import { formatRefs, parseRefs } from "@/lib/refs";
+import type { InputProblem } from "@/lib/input";
 
 async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
   if (addresses.length === 0) return [];

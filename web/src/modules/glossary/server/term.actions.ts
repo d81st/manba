@@ -3,8 +3,10 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { deleteDraftTerm, GLOSSARY_TAG, saveTerm } from "@/lib/glossary";
-import { checkTermInput, type InputProblem } from "@/lib/glossary-input";
+import type { InputProblem } from "@/lib/input";
+import { GLOSSARY_TAG } from "../term.constants";
+import { checkTermInput } from "../term.validation";
+import { deleteDraftTerm, saveTerm } from "./term.commands";
 
 export type TermFormState = { problems: InputProblem[]; saved?: boolean };
 

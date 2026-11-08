@@ -1,10 +1,10 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
-import { formatRefs } from "@/lib/glossary-input";
 import { TOPICS_TAG } from "../topic.constants";
 import type { TopicForEdit, TopicSummary } from "../topic.types";
 import { LOCALE, SUMMARY, type RefRole } from "./topic.sql";
+import { formatRefs } from "@/lib/refs";
 
 // Lists and the edit form; the public page of one topic is in topic-page.queries.ts.
 

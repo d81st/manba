@@ -8,8 +8,8 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { RECOGNITIONS } from "@/lib/glossary-input";
 import type { AdminStrings, ErrorOf, Position } from "./form-types";
+import { RECOGNITIONS } from "@/lib/input";
 
 let nextKey = 1;
 

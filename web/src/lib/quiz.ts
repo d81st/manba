@@ -3,9 +3,10 @@ import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
 import { defaultLocale } from "@/i18n";
 import { db } from "@/lib/db";
-import { formatRefs, type InputProblem } from "@/lib/glossary-input";
 import { getHadithRefs, type HadithRef } from "@/lib/hadith";
 import { type CheckedQuestion, questionLevel } from "@/lib/quiz-input";
+import { formatRefs } from "@/lib/refs";
+import type { InputProblem } from "@/lib/input";
 
 // «Тесты» (migration 023): questions built from fragments of the sources.
 

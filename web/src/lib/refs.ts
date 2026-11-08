@@ -1,35 +1,11 @@
-// Validation of the glossary form and text helpers. No database access here,
-// so everything is unit-tested.
-import { z } from "zod";
+// References to places of the library written by hand ("2:255", "Бухари 3951",
+// "Ибн Хишам 1:235"): reading, writing back and turning into links. No database here.
 import { BOOK_REFERENCE, formatBookRef, isBook, parseBookPath, parseBookRef, referencedBook } from "./book-query.ts";
 import { formatHadithRef, HADITH_REFERENCE, parseHadithRef, parseRef, referencedWork, schemeOf } from "./hadith-query.ts";
 import { parseQuery } from "./quran-query.ts";
 
-export const TERM_STATUSES = ["draft", "review", "published", "retired"] as const;
-export const RECOGNITIONS = ["tradition", "research_majority", "minority"] as const;
-export const RELATION_KINDS = ["related", "broader", "narrower", "opposite"] as const;
+// Longest ayah range accepted in one reference.
 const MAX_RANGE = 30;
-
-// Russian letters in links, so a Russian title gives a readable address.
-const CYRILLIC: Record<string, string> = {
-  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i", й: "y", к: "k", л: "l",
-  м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "kh", ц: "ts", ч: "ch", ш: "sh",
-  щ: "shch", ъ: "", ы: "y", ь: "", э: "e", ю: "yu", я: "ya",
-};
-
-// "Nāsikh" -> "nasikh", "Джихад" -> "dzhikhad": the permanent id used in links.
-export function slugify(text: string) {
-  const slug = text
-    .toLowerCase()
-    .replace(/[а-яё]/g, (letter) => CYRILLIC[letter] ?? "")
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .toLowerCase()
-    .replace(/[ʿʾ'’`]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return /^[a-z]/.test(slug) ? slug : slug ? `t-${slug}` : "";
-}
 
 // "2:106, 16:101-102, Бухари 3951" -> quran.2.106, quran.16.101, quran.16.102,
 // bukhari.3951: ayahs and hadiths of the library.
@@ -132,61 +108,4 @@ export function linkAddresses(text: string): TextPiece[] {
   }
   if (last < text.length) pieces.push({ text: text.slice(last) });
   return pieces;
-}
-
-const trimmed = (max: number) => z.string().trim().max(max);
-
-const definitionSchema = z.object({
-  holder: trimmed(200).min(1, "definitionHolder"),
-  recognition: z.enum(RECOGNITIONS),
-  text: trimmed(4000).min(1, "definitionText"),
-  sourceNote: trimmed(500).default(""),
-  refs: trimmed(2000).default(""),
-});
-
-export const termSchema = z.object({
-  slug: trimmed(80).regex(/^[a-z][a-z0-9-]*$/, "slug"),
-  arabic: trimmed(200).min(1, "arabic"),
-  transliteration: trimmed(200).min(1, "transliteration"),
-  translation: trimmed(200).min(1, "translation"),
-  short: trimmed(600).min(1, "short"),
-  detail: trimmed(20000).default(""),
-  isBasic: z.boolean().default(false),
-  basicOrder: z.number().int().positive().nullable().default(null),
-  status: z.enum(TERM_STATUSES),
-  refs: trimmed(4000).default(""),
-  related: z
-    .array(z.object({ id: z.number().int().positive(), kind: z.enum(RELATION_KINDS) }))
-    .max(50)
-    .default([]),
-  definitions: z.array(definitionSchema).max(20).default([]),
-  reason: trimmed(500).default(""),
-});
-
-export type TermInput = z.infer<typeof termSchema>;
-
-export type InputProblem = { field: string; code: string; detail?: string };
-
-// Checks that need no database: schema, references, first-50 order.
-export function checkTermInput(raw: unknown): { input?: TermInput; problems: InputProblem[] } {
-  const result = termSchema.safeParse(raw);
-  if (!result.success) {
-    return {
-      problems: result.error.issues.map((issue) => ({
-        field: issue.path.join("."),
-        code: issue.message.match(/^[a-zA-Z]+$/) ? issue.message : "invalid",
-      })),
-    };
-  }
-  const input = result.data;
-  const problems: InputProblem[] = [];
-  const badRefs = parseRefs(input.refs).invalid;
-  if (badRefs.length) problems.push({ field: "refs", code: "refs", detail: badRefs.join(", ") });
-  input.definitions.forEach((definition, i) => {
-    const bad = parseRefs(definition.refs).invalid;
-    if (bad.length) problems.push({ field: `definitions.${i}.refs`, code: "refs", detail: bad.join(", ") });
-  });
-  if (input.isBasic && !input.basicOrder) problems.push({ field: "basicOrder", code: "basicOrder" });
-  if (!input.isBasic) input.basicOrder = null;
-  return { input, problems };
 }

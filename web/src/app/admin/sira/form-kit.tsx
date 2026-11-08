@@ -4,7 +4,7 @@ import { CircleAlert, CircleCheck } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import type { Messages } from "@/i18n";
-import type { InputProblem } from "@/lib/glossary-input";
+import type { InputProblem } from "@/lib/input";
 
 export type SiraStrings = Messages["admin"]["sira"];
 // What FormNotes and messageOf need: the forms of the sira and of «Истоки и связи» share them.

@@ -1,7 +1,7 @@
 // Russian strings of the topics module; i18n/ru.ts puts them in place
 // (messages.topics and messages.admin.topics / topicForm / topicErrors / sides).
 
-export const topicsRu = {
+const topics = {
   title: "Темы",
   intro: "Вопросы, о которых говорят источники. В каждой теме — сами тексты полностью, обстоятельства и позиции разных сторон со степенью признания.",
   allCategories: "Все темы",
@@ -37,6 +37,10 @@ export const topicsRu = {
   related: "Связанные темы",
 };
 
+// Top-level groups of messages.
+export const topicsRu = { topics };
+
+// Groups of messages.admin.
 export const topicsAdminRu = {
   topics: {
     title: "Темы",

@@ -1,125 +1,13 @@
 import "server-only";
-import { cacheLife, cacheTag } from "next/cache";
 import type pg from "pg";
-import { defaultLocale } from "@/i18n";
 import { resolveBookRefs } from "@/lib/books";
 import { db } from "@/lib/db";
-import { getHadithRefs, type HadithRef } from "@/lib/hadith";
-import {
-  formatRefs,
-  parseRefs,
-  RELATION_KINDS,
-  type InputProblem,
-  type TermInput,
-} from "@/lib/glossary-input";
-
-export const GLOSSARY_TAG = "glossary";
-const LOCALE = defaultLocale;
-
-type RelationKind = (typeof RELATION_KINDS)[number];
-
-// The same link seen from the other term.
-const INVERSE: Record<RelationKind, RelationKind> = {
-  related: "related",
-  opposite: "opposite",
-  broader: "narrower",
-  narrower: "broader",
-};
-
-export type TermSummary = {
-  id: number;
-  slug: string;
-  arabic: string;
-  transliteration: string;
-  translation: string;
-  short: string;
-  status: string;
-  isBasic: boolean;
-  basicOrder: number | null;
-  updatedAt: string;
-  updatedBy: string;
-};
-
-const SUMMARY = `
-  SELECT t.id::int, t.slug, t.arabic, t.transliteration, x.translation, x.short, t.status,
-         t.is_basic AS "isBasic", t.basic_order AS "basicOrder",
-         t.updated_at::text AS "updatedAt", t.updated_by AS "updatedBy"
-  FROM terms t JOIN term_texts x ON x.term_id = t.id AND x.locale = '${LOCALE}'`;
-
-// ============ Admin ============
-
-export async function listTermsForAdmin(status?: string): Promise<TermSummary[]> {
-  const { rows } = await db().query<TermSummary>(
-    `${SUMMARY} WHERE ($1::text IS NULL OR t.status = $1) ORDER BY t.updated_at DESC`,
-    [status ?? null],
-  );
-  return rows;
-}
-
-export type TermForEdit = TermInput & { id: number; relatedNames: Record<number, string> };
-
-export async function getTermForEdit(id: number): Promise<TermForEdit | null> {
-  const term = await db().query(
-    `SELECT t.*, x.translation, x.short, x.detail FROM terms t
-     JOIN term_texts x ON x.term_id = t.id AND x.locale = $2 WHERE t.id = $1`,
-    [id, LOCALE],
-  );
-  const row = term.rows[0];
-  if (!row) return null;
-
-  const refs = await db().query<{ definition_id: string | null; address: string }>(
-    `SELECT definition_id, address::text FROM term_refs WHERE term_id = $1 ORDER BY position`,
-    [id],
-  );
-  const definitions = await db().query(
-    `SELECT id, holder, recognition, text, source_note FROM term_definitions
-     WHERE term_id = $1 AND locale = $2 ORDER BY position`,
-    [id, LOCALE],
-  );
-  const related = await db().query<{ id: number; kind: RelationKind; name: string }>(
-    `SELECT r.related_id::int AS id, r.kind, x.translation AS name
-     FROM term_relations r JOIN term_texts x ON x.term_id = r.related_id AND x.locale = $2
-     WHERE r.term_id = $1 ORDER BY x.translation`,
-    [id, LOCALE],
-  );
-  const refsOf = (definitionId: string | null) =>
-    formatRefs(refs.rows.filter((r) => r.definition_id === definitionId).map((r) => r.address));
-
-  return {
-    id,
-    slug: row.slug,
-    arabic: row.arabic,
-    transliteration: row.transliteration,
-    translation: row.translation,
-    short: row.short,
-    detail: row.detail,
-    isBasic: row.is_basic,
-    basicOrder: row.basic_order,
-    status: row.status,
-    refs: refsOf(null),
-    related: related.rows.map((r) => ({ id: r.id, kind: r.kind })),
-    relatedNames: Object.fromEntries(related.rows.map((r) => [r.id, r.name])),
-    definitions: definitions.rows.map((d) => ({
-      holder: d.holder,
-      recognition: d.recognition,
-      text: d.text,
-      sourceNote: d.source_note,
-      refs: refsOf(String(d.id)),
-    })),
-    reason: "",
-  };
-}
-
-// Terms to pick as related ones (any status, so drafts can be linked).
-export async function listTermChoices(): Promise<{ id: number; name: string }[]> {
-  const { rows } = await db().query<{ id: number; name: string }>(
-    `SELECT t.id::int, x.translation || ' · ' || t.transliteration AS name
-     FROM terms t JOIN term_texts x ON x.term_id = t.id AND x.locale = $1
-     WHERE t.status <> 'retired' ORDER BY x.translation`,
-    [LOCALE],
-  );
-  return rows;
-}
+import type { InputProblem } from "@/lib/input";
+import { formatRefs, parseRefs } from "@/lib/refs";
+import type { SaveResult } from "../term.types";
+import type { TermInput } from "../term.validation";
+import { getTermForEdit } from "./term.queries";
+import { INVERSE, LOCALE } from "./term.sql";
 
 async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
   if (addresses.length === 0) return [];
@@ -133,8 +21,6 @@ async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
   );
   return rows.map((r) => r.address);
 }
-
-export type SaveResult = { id?: number; problems: InputProblem[] };
 
 // Creates (id = null) or updates a term in one transaction, with a journal entry.
 export async function saveTerm(id: number | null, input: TermInput, actor: string): Promise<SaveResult> {
@@ -296,97 +182,4 @@ export async function deleteDraftTerm(id: number, actor: string) {
   } finally {
     client.release();
   }
-}
-
-// ============ Public ============
-
-export async function listPublishedTerms(): Promise<TermSummary[]> {
-  "use cache";
-  cacheTag(GLOSSARY_TAG);
-  cacheLife("hours");
-  const { rows } = await db().query<TermSummary>(
-    `${SUMMARY} WHERE t.status = 'published' ORDER BY lower(x.translation)`,
-  );
-  return rows;
-}
-
-export type RefAyah = { address: string; sura: number; ayah: number; suraName: string; text: string };
-export type PublicDefinition = {
-  holder: string;
-  recognition: string;
-  text: string;
-  sourceNote: string;
-  refs: RefAyah[];
-  hadiths: HadithRef[];
-};
-export type PublicTerm = TermSummary & {
-  detail: string;
-  refs: RefAyah[];
-  hadiths: HadithRef[];
-  definitions: PublicDefinition[];
-  related: { slug: string; translation: string; transliteration: string; kind: RelationKind }[];
-};
-
-export async function getPublishedTerm(slug: string): Promise<PublicTerm | null> {
-  "use cache";
-  cacheTag(GLOSSARY_TAG);
-  cacheLife("hours");
-  const summary = await db().query<TermSummary & { detail: string }>(
-    `SELECT s.*, x.detail FROM (${SUMMARY} WHERE t.slug = $1 AND t.status = 'published') s
-     JOIN term_texts x ON x.term_id = s.id AND x.locale = '${LOCALE}'`,
-    [slug],
-  );
-  const term = summary.rows[0];
-  if (!term) return null;
-
-  // Referenced ayahs with the primary text and the sura name; hadiths with their texts.
-  const refs = await db().query<{ definition_id: string | null; address: string; text: string; sura_name: string }>(
-    `SELECT r.definition_id, r.address::text, t.content AS text, s.names->>'translit' AS sura_name
-     FROM term_refs r
-     JOIN texts t ON t.address = r.address
-     JOIN text_versions v ON v.id = t.version_id AND v.is_primary AND v.status = 'published'
-       AND v.work_id = 'quran' AND v.language = 'ar'
-     JOIN addresses s ON s.address = subpath(r.address, 0, 2)
-     WHERE r.term_id = $1 ORDER BY r.position`,
-    [term.id],
-  );
-  const hadithRefs = await db().query<{ definition_id: string | null; address: string }>(
-    `SELECT definition_id, address::text FROM term_refs
-     WHERE term_id = $1 AND NOT address <@ 'quran'::extensions.ltree ORDER BY position`,
-    [term.id],
-  );
-  const hadiths = await getHadithRefs([...new Set(hadithRefs.rows.map((r) => r.address))]);
-  const hadithsOf = (definitionId: string | null) =>
-    hadithRefs.rows.filter((r) => r.definition_id === definitionId).flatMap((r) => hadiths.get(r.address) ?? []);
-  const toAyah = (row: { address: string; text: string; sura_name: string }): RefAyah => {
-    const [, sura, ayah] = row.address.split(".").map(Number);
-    return { address: row.address, sura, ayah, suraName: row.sura_name, text: row.text };
-  };
-  const definitions = await db().query(
-    `SELECT id, holder, recognition, text, source_note FROM term_definitions
-     WHERE term_id = $1 AND locale = $2 ORDER BY position`,
-    [term.id, LOCALE],
-  );
-  const related = await db().query(
-    `SELECT t.slug, x.translation, t.transliteration, r.kind
-     FROM term_relations r JOIN terms t ON t.id = r.related_id AND t.status = 'published'
-     JOIN term_texts x ON x.term_id = t.id AND x.locale = $2
-     WHERE r.term_id = $1 ORDER BY x.translation`,
-    [term.id, LOCALE],
-  );
-
-  return {
-    ...term,
-    refs: refs.rows.filter((r) => r.definition_id === null).map(toAyah),
-    hadiths: hadithsOf(null),
-    definitions: definitions.rows.map((d) => ({
-      holder: d.holder,
-      recognition: d.recognition,
-      text: d.text,
-      sourceNote: d.source_note,
-      refs: refs.rows.filter((r) => r.definition_id === String(d.id)).map(toAyah),
-      hadiths: hadithsOf(String(d.id)),
-    })),
-    related: related.rows,
-  };
 }

@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listTermsForAdmin } from "@/lib/glossary";
-import { TERM_STATUSES } from "@/lib/glossary-input";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "../status-badge";
+import { TERM_STATUSES } from "@/lib/input";
+import { listTermsForAdmin } from "@/modules/glossary/server";
 
 const t = getMessages().admin;
 

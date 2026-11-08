@@ -4,7 +4,8 @@
 // exist is checked on saving (lib/parallels.ts).
 import { z } from "zod";
 import { isExternal, parseExternalRef } from "./external.ts";
-import { parseRefs, TERM_STATUSES, type InputProblem } from "./glossary-input.ts";
+import { parseRefs } from "@/lib/refs";
+import { type InputProblem, TERM_STATUSES } from "@/lib/input";
 
 export const PARALLEL_STATUSES = TERM_STATUSES;
 export const TRADITIONS = ["judaism", "christianity", "zoroastrianism", "arabia", "greek", "roman", "persian", "other"] as const;

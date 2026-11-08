@@ -4,7 +4,7 @@
 // saving (lib/sira-events.ts).
 import { z } from "zod";
 import { parseBookRef } from "./book-query.ts";
-import { TERM_STATUSES, type InputProblem } from "./glossary-input.ts";
+import { type InputProblem, TERM_STATUSES } from "@/lib/input";
 
 export const SIRA_STATUSES = TERM_STATUSES;
 export const EVENT_KINDS = ["life", "expedition"] as const;

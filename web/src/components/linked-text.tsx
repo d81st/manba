@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { bookPath } from "@/lib/book-query";
 import { linkExternal } from "@/lib/external";
-import { linkAddresses } from "@/lib/glossary-input";
 import { hadithPath } from "@/lib/hadith-query";
+import { linkAddresses } from "@/lib/refs";
 
 // Text where ayah addresses ("2:106"), hadith references ("Бухари 3951"),
 // book pages ("Ибн Хишам 1:235") and verses of other religions' texts

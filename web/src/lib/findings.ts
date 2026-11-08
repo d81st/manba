@@ -3,8 +3,8 @@ import { cacheLife, cacheTag } from "next/cache";
 import { formatBookRef, isBook } from "@/lib/book-query";
 import { db } from "@/lib/db";
 import type { CheckedFinding } from "@/lib/findings-input";
-import type { InputProblem } from "@/lib/glossary-input";
 import { formatHadithRef } from "@/lib/hadith-query";
+import type { InputProblem } from "@/lib/input";
 
 // «Новые находки» and «Не найдено в источниках» (migration 025).
 

@@ -8,12 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
-import { slugify } from "@/lib/glossary-input";
 import { PERSON_RELATION_KINDS, SIRA_STATUSES, type PersonInput, type PersonRelationInput } from "@/lib/sira-input";
 import { Field } from "@/components/ui/field";
 import { savePersonAction, type SiraFormState } from "./actions";
 import { ChoiceSelect } from "@/components/ui/choice-select";
 import { FormNotes, messageOf } from "./form-kit";
+import { slugify } from "@/lib/input";
 
 type RelationRow = PersonRelationInput & { key: number };
 let nextKey = 1;
