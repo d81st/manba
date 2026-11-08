@@ -7,8 +7,8 @@ import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
 import { listTermChoices } from "@/lib/glossary";
-import { listSides, listTopicChoices } from "@/lib/topics";
-import { TopicForm } from "../topic-form";
+import { TopicForm } from "@/modules/topics";
+import { listSides, listTopicChoices } from "@/modules/topics/server";
 
 const t = getMessages().admin;
 

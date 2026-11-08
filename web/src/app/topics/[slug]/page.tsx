@@ -4,22 +4,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { AyahList } from "@/components/ayah-list";
-import { HadithRefList } from "@/components/hadith-ref-list";
-import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
 import { Page } from "@/components/page";
-import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { isPreview } from "@/lib/preview";
-import { getSiraData } from "@/lib/sira-events";
-import { getPublishedTopic, type MainPassage } from "@/lib/topics";
 import { videosForTopic } from "@/lib/videos";
-import { VideoList } from "@/components/video-list";
+import { TopicArticle } from "@/modules/topics";
+import { getPublishedTopic, getTopicPlace } from "@/modules/topics/server";
 import { PreviewNote } from "../../sira/shared";
 
-const messages = getMessages();
-const t = messages.topics;
+const t = getMessages().topics;
 
 export const metadata: Metadata = { title: t.title };
 
@@ -39,234 +33,20 @@ export default function TopicPage({ params, searchParams }: PageProps<"/topics/[
   );
 }
 
-function Heading({ children }: { children: React.ReactNode }) {
-  return <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{children}</h2>;
-}
-
-async function Topic({
-  params,
-  searchParams,
-}: {
-  params: PageProps<"/topics/[slug]">["params"];
-  searchParams: PageProps<"/topics/[slug]">["searchParams"];
-}) {
+async function Topic({ params, searchParams }: Pick<PageProps<"/topics/[slug]">, "params" | "searchParams">) {
   await connection();
   const { slug } = await params;
   const preview = await isPreview(await searchParams);
   if (!/^[a-z][a-z0-9-]*$/.test(slug) || !isDatabaseConfigured()) notFound();
   const topic = await getPublishedTopic(slug, preview);
   if (!topic) notFound();
-  const videos = await videosForTopic(slug);
-
+  const [place, videos] = await Promise.all([topic.place ? getTopicPlace(topic.place) : null, videosForTopic(slug)]);
   return (
-    <article className="mt-3 space-y-8">
-      <PreviewNote preview={preview && topic.status !== "published"} />
-      <header className="space-y-2 border-b pb-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl font-semibold">{topic.title}</h1>
-          {topic.category === "hard" && <Badge variant="secondary">{t.hardBadge}</Badge>}
-          {topic.category === "quran_text" && (
-            <Link href="/quran-text" className="no-underline">
-              <Badge variant="outline">{t.quranTextBadge}</Badge>
-            </Link>
-          )}
-          {topic.category === "sira" && (
-            <Link href="/sira" className="no-underline">
-              <Badge variant="outline">{t.siraBadge}</Badge>
-            </Link>
-          )}
-          {topic.category === "cities" && (
-            <Link href="/cities" className="no-underline">
-              <Badge variant="outline">{t.citiesBadge}</Badge>
-            </Link>
-          )}
-          {topic.category === "testimony" && (
-            <Link href="/origins#testimonies" className="no-underline">
-              <Badge variant="outline">{t.testimonyBadge}</Badge>
-            </Link>
-          )}
-        </div>
-        <p className="text-lg text-muted-foreground">{topic.question}</p>
-      </header>
-
-      {topic.place && <TopicPlace slug={topic.place} />}
-
-      {(topic.main.length > 0 || topic.mainHadiths.length > 0) && (
-        <section>
-          <Heading>{t.texts}</Heading>
-          <div className="space-y-6">
-            {topic.main.map((passage) => (
-              <Passage key={`${passage.sura}-${passage.from}`} passage={passage} />
-            ))}
-            {topic.mainHadiths.length > 0 && (
-              <div className="rounded-xl border bg-card px-4 shadow-sm">
-                <HadithRefList hadiths={topic.mainHadiths} className="border-t-0" />
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {(topic.circumstances ||
-        topic.circumstancesRefs.length > 0 ||
-        topic.circumstancesHadiths.length > 0 ||
-        topic.circumstancesNote) && (
-        <section>
-          <Heading>{t.circumstances}</Heading>
-          {topic.circumstances && <LinkedParagraphs text={topic.circumstances} />}
-          {topic.circumstancesRefs.length > 0 && (
-            <AyahList ayahs={topic.circumstancesRefs} compact className="mt-3" />
-          )}
-          {topic.circumstancesHadiths.length > 0 && (
-            <HadithRefList hadiths={topic.circumstancesHadiths} className="mt-3" />
-          )}
-          {topic.circumstancesNote && (
-            <p className="mt-3 text-sm text-muted-foreground">
-              {t.sourceNote}: <LinkedText text={topic.circumstancesNote} />
-            </p>
-          )}
-        </section>
-      )}
-
-      <section>
-        <Heading>{t.positions}</Heading>
-        {topic.sides.length === 0 ? (
-          <p className="text-muted-foreground">{t.noPositions}</p>
-        ) : (
-          <div className="space-y-6">
-            {topic.sides.map((side) => (
-              <div key={side.title}>
-                <h3 className="mb-2 font-semibold">{side.title}</h3>
-                <ul className="space-y-4">
-                  {side.positions.map((position, i) => (
-                    <li key={i} className="rounded-xl border bg-card p-4 shadow-sm">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-medium">{position.holder}</span>
-                        <Badge variant={position.recognition === "minority" ? "outline" : "secondary"}>
-                          {messages.admin.recognitions[position.recognition as keyof typeof messages.admin.recognitions]}
-                        </Badge>
-                      </div>
-                      <div className="mt-2">
-                        <LinkedParagraphs text={position.text} />
-                      </div>
-                      {position.refs.length > 0 && <AyahList ayahs={position.refs} compact className="mt-3" />}
-                      {position.hadiths.length > 0 && <HadithRefList hadiths={position.hadiths} className="mt-3" />}
-                      {position.sourceNote && (
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {t.sourceNote}: <LinkedText text={position.sourceNote} />
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {(topic.relatedRefs.length > 0 || topic.relatedHadiths.length > 0) && (
-        <section>
-          <Heading>{t.relatedRefs}</Heading>
-          {topic.relatedRefs.length > 0 && <AyahList ayahs={topic.relatedRefs} compact />}
-          {topic.relatedHadiths.length > 0 && <HadithRefList hadiths={topic.relatedHadiths} className="mt-3" />}
-        </section>
-      )}
-
-      <VideoList videos={videos} />
-
-      {(topic.terms.length > 0 || topic.related.length > 0) && (
-        <section className="grid gap-6 sm:grid-cols-2">
-          {topic.terms.length > 0 && (
-            <div>
-              <Heading>{t.terms}</Heading>
-              <Chips items={topic.terms.map((term) => ({ href: `/glossary/${term.slug}`, label: term.translation }))} />
-            </div>
-          )}
-          {topic.related.length > 0 && (
-            <div>
-              <Heading>{t.related}</Heading>
-              <Chips items={topic.related.map((related) => ({ href: `/topics/${related.slug}`, label: related.title }))} />
-            </div>
-          )}
-        </section>
-      )}
-    </article>
-  );
-}
-
-// A main passage in full; the ayahs around it open on request.
-function Passage({ passage }: { passage: MainPassage }) {
-  return (
-    <div className="rounded-xl border bg-card px-4 shadow-sm">
-      {passage.before.length > 0 && (
-        <details>
-          <summary className="cursor-pointer py-2 text-sm text-muted-foreground">{t.contextBefore}</summary>
-          <AyahList ayahs={passage.before} compact muted />
-        </details>
-      )}
-      <AyahList ayahs={passage.ayahs} className={passage.before.length > 0 ? undefined : "border-t-0"} />
-      {passage.after.length > 0 && (
-        <details>
-          <summary className="cursor-pointer py-2 text-sm text-muted-foreground">{t.contextAfter}</summary>
-          <AyahList ayahs={passage.after} compact muted />
-        </details>
-      )}
-    </div>
-  );
-}
-
-function Chips({ items }: { items: { href: string; label: string }[] }) {
-  return (
-    <ul className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <li key={item.href}>
-          <Link
-            href={item.href}
-            className="inline-flex rounded-full border bg-card px-3 py-1 text-sm no-underline hover:bg-accent"
-          >
-            {item.label}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// The place of a topic (a city): where it is on the map and the published
-// events of the Prophet's life there.
-async function TopicPlace({ slug }: { slug: string }) {
-  const { places, events } = await getSiraData(false);
-  const place = places.find((p) => p.slug === slug);
-  if (!place) return null;
-  const here = events.filter((e) => e.place === slug);
-  return (
-    <section>
-      <Heading>{t.place}</Heading>
-      <p>
-        {place.name}{" "}
-        <span className="ar text-lg" lang="ar" dir="rtl">
-          {place.nameAr}
-        </span>
-        {place.lat !== null && (
-          <>
-            {" · "}
-            <Link href={`/cities#${place.slug}`}>{t.onMap}</Link>
-          </>
-        )}
-      </p>
-      {here.length > 0 && (
-        <>
-          <p className="mt-3 text-sm text-muted-foreground">{t.placeEvents}</p>
-          <ul className="mt-1 list-disc space-y-0.5 ps-5 text-sm">
-            {here.map((event) => (
-              <li key={event.id}>
-                <Link href={`/sira/events/${event.slug}`}>{event.title}</Link>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </section>
+    <TopicArticle
+      topic={topic}
+      place={place}
+      videos={videos}
+      notice={<PreviewNote preview={preview && topic.status !== "published"} />}
+    />
   );
 }

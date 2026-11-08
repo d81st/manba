@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
 import { MAX_OPTIONS, QUIZ_STATUSES, type QuestionInput } from "@/lib/quiz-input";
-import { Field } from "../field";
-import { ChoiceSelect, FormNotes, messageOf } from "../sira/form-kit";
+import { Field } from "@/components/ui/field";
+import { ChoiceSelect } from "@/components/ui/choice-select";
+import { FormNotes, messageOf } from "../sira/form-kit";
 import { saveQuestionAction, type QuestionFormState } from "./actions";
 
 type OptionRow = QuestionInput["options"][number] & { key: number };

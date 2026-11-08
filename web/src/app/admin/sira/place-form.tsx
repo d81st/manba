@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import type { Messages } from "@/i18n";
 import { slugify } from "@/lib/glossary-input";
 import type { PlaceInput } from "@/lib/sira-input";
-import { Field } from "../field";
+import { Field } from "@/components/ui/field";
 import { savePlaceAction, type SiraFormState } from "./actions";
 import { FormNotes, messageOf, NumberInput } from "./form-kit";
 

@@ -12,8 +12,9 @@ import type { Messages } from "@/i18n";
 import { slugify } from "@/lib/glossary-input";
 import { HISTORY_LAYERS, HISTORY_STATUSES, type HistoryDateInput, type HistoryEventInput } from "@/lib/history-input";
 import { HIJRI_MONTHS } from "@/lib/sira-dates";
-import { Field } from "../field";
-import { ChoiceSelect, FormNotes, messageOf, NumberInput } from "../sira/form-kit";
+import { Field } from "@/components/ui/field";
+import { ChoiceSelect } from "@/components/ui/choice-select";
+import { FormNotes, messageOf, NumberInput } from "../sira/form-kit";
 import { saveHistoryAction, type HistoryFormState } from "./actions";
 
 type DateRow = HistoryDateInput & { key: number };

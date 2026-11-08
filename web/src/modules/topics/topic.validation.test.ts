@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkSideInput, checkTopicInput, passagesOf } from "./topics-input.ts";
+import { checkSideInput, checkTopicInput } from "./topic.validation";
 
 // Fictional test data: not real topics or positions.
 const base = {
@@ -71,17 +71,6 @@ describe("checkTopicInput", () => {
     const { input } = checkTopicInput({ ...base, terms: [3, 3, 4], related: [7, 7] });
     expect(input?.terms).toEqual([3, 4]);
     expect(input?.related).toEqual([7]);
-  });
-});
-
-describe("passagesOf", () => {
-  it("joins consecutive ayahs of one sura", () => {
-    expect(passagesOf(["quran.9.29", "quran.9.30", "quran.2.190", "quran.2.192", "quran.3.1"])).toEqual([
-      { sura: 9, from: 29, to: 30 },
-      { sura: 2, from: 190, to: 190 },
-      { sura: 2, from: 192, to: 192 },
-      { sura: 3, from: 1, to: 1 },
-    ]);
   });
 });
 

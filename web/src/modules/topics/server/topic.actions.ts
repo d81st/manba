@@ -4,8 +4,9 @@ import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import type { InputProblem } from "@/lib/glossary-input";
-import { deleteDraftTopic, saveTopic, TOPICS_TAG } from "@/lib/topics";
-import { checkTopicInput } from "@/lib/topics-input";
+import { TOPICS_TAG } from "../topic.constants";
+import { checkTopicInput } from "../topic.validation";
+import { deleteDraftTopic, saveTopic } from "./topic.commands";
 
 export type TopicFormState = { problems: InputProblem[]; saved?: boolean };
 

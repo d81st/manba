@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getSiraData } from "@/lib/sira-events";
-import { listPublishedTopics, listTopicsForAdmin } from "@/lib/topics";
+import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server";
 import { isPreview } from "@/lib/preview";
 import { PreviewBar } from "../sira/shared";
 

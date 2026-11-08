@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listTopicsForAdmin } from "@/lib/topics";
-import { TOPIC_CATEGORIES, TOPIC_STATUSES } from "@/lib/topics-input";
+import { TOPIC_CATEGORIES, TOPIC_STATUSES } from "@/modules/topics";
+import { listTopicsForAdmin } from "@/modules/topics/server";
 import { Filters } from "../filters";
 import { StatusBadge } from "../status-badge";
 

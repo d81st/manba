@@ -9,7 +9,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { EXTERNAL_IDS } from "@/lib/external";
 import { listParallels } from "@/lib/parallels";
 import { TRADITIONS } from "@/lib/parallels-input";
-import { listPublishedTopics, listTopicsForAdmin } from "@/lib/topics";
+import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server";
 import { isPreview } from "@/lib/preview";
 import { PreviewBar } from "../sira/shared";
 

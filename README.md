@@ -6,6 +6,7 @@
 
 - [`docs/PLAN.md`](docs/PLAN.md) — план и журнал решений
 - [`docs/ADDRESSES.md`](docs/ADDRESSES.md) — схема адресов (Коран утверждён, остальное на утверждении)
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — устройство кода сайта: модули и их правила
 - [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) — таблицы библиотеки и правила загрузки
 - [`docs/SOURCES.md`](docs/SOURCES.md) — открытые корпуса-кандидаты и их лицензии
 - [`docs/GLOSSARY_GUIDE.md`](docs/GLOSSARY_GUIDE.md), [`docs/DRAFTS_GUIDE.md`](docs/DRAFTS_GUIDE.md) — как заполнять словарь и черновики тем

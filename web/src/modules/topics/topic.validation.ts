@@ -1,17 +1,7 @@
-// Validation of the topic form. No database access here, so everything is unit-tested.
+// Validation of the topic and side forms. No database access here, so everything is unit-tested.
 import { z } from "zod";
-import { parseRefs, RECOGNITIONS, TERM_STATUSES, type InputProblem } from "./glossary-input.ts";
-
-export const TOPIC_STATUSES = TERM_STATUSES;
-// Topics of the section «История текста Корана» (quran_text) are also listed
-// on its own page, /quran-text; cards of people and events of «Жизнеописание
-// пророка» (sira), on /sira; the cities of «Священные города» (cities), on
-// /cities; early non-Muslim testimonies about Islam (testimony), on /origins;
-// «Ислам и наука» (science — a scholar, science_claims — a claim that a text
-// foretells a discovery), on /science.
-export const TOPIC_CATEGORIES = ["general", "hard", "quran_text", "sira", "cities", "testimony", "science", "science_claims"] as const;
-// Ayahs shown before and after each main passage.
-export const CONTEXT_AYAHS = 3;
+import { parseRefs, RECOGNITIONS, type InputProblem } from "@/lib/glossary-input";
+import { TOPIC_CATEGORIES, TOPIC_STATUSES } from "./topic.constants";
 
 const trimmed = (max: number) => z.string().trim().max(max);
 
@@ -88,27 +78,15 @@ export function hasOutsideSource(note: string) {
   return /https:\/\/\S+/.test(note);
 }
 
-// Consecutive ayahs of one sura, so a passage can be shown with the ayahs around it.
-export type Passage = { sura: number; from: number; to: number };
-
-export function passagesOf(addresses: string[]): Passage[] {
-  const passages: Passage[] = [];
-  for (const address of addresses) {
-    const [, sura, ayah] = address.split(".").map(Number);
-    const last = passages.at(-1);
-    if (last && last.sura === sura && last.to + 1 === ayah) last.to = ayah;
-    else passages.push({ sura, from: ayah, to: ayah });
-  }
-  return passages;
-}
-
 export const sideSchema = z.object({
   slug: trimmed(40).regex(/^[a-z][a-z0-9-]*$/, "slug"),
   title: trimmed(100).min(1, "title"),
   position: z.coerce.number().int().min(0).max(999),
 });
 
-export function checkSideInput(raw: unknown): { input?: z.infer<typeof sideSchema>; problems: InputProblem[] } {
+export type SideInput = z.infer<typeof sideSchema>;
+
+export function checkSideInput(raw: unknown): { input?: SideInput; problems: InputProblem[] } {
   const result = sideSchema.safeParse(raw);
   if (result.success) return { input: result.data, problems: [] };
   return {

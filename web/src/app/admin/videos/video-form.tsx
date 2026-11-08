@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
 import { VIDEO_STATUSES, type VideoInput } from "@/lib/videos-input";
-import { Field } from "../field";
-import { ChoiceSelect, FormNotes, messageOf } from "../sira/form-kit";
+import { Field } from "@/components/ui/field";
+import { ChoiceSelect } from "@/components/ui/choice-select";
+import { FormNotes, messageOf } from "../sira/form-kit";
 import { saveVideoAction, type VideoFormState } from "./actions";
 
 const EMPTY: VideoInput = { url: "", title: "", channel: "", language: "", note: "", refs: "", topics: "", status: "draft" };

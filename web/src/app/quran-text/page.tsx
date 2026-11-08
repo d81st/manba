@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listPublishedTopics } from "@/lib/topics";
+import { listPublishedTopics } from "@/modules/topics/server";
 
 const messages = getMessages();
 const t = messages.quranText;

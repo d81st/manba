@@ -6,7 +6,8 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listPublishedTopics, listTopicsForAdmin, type TopicSummary } from "@/lib/topics";
+import type { TopicSummary } from "@/modules/topics";
+import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server";
 import { isPreview } from "@/lib/preview";
 import { PreviewBar } from "../sira/shared";
 

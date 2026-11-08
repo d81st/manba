@@ -5,8 +5,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listSides } from "@/lib/topics";
-import { SideForm } from "./side-form";
+import { SideForm } from "@/modules/topics";
+import { listSides } from "@/modules/topics/server";
 
 const t = getMessages().admin;
 

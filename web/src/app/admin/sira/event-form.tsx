@@ -12,9 +12,10 @@ import type { Messages } from "@/i18n";
 import { slugify } from "@/lib/glossary-input";
 import { HIJRI_MONTHS } from "@/lib/sira-dates";
 import { EVENT_KINDS, SIRA_STATUSES, type EventDateInput, type EventInput } from "@/lib/sira-input";
-import { Field } from "../field";
+import { Field } from "@/components/ui/field";
 import { saveEventAction, type SiraFormState } from "./actions";
-import { ChoiceSelect, FormNotes, messageOf, NumberInput } from "./form-kit";
+import { ChoiceSelect } from "@/components/ui/choice-select";
+import { FormNotes, messageOf, NumberInput } from "./form-kit";
 
 type DateRow = EventDateInput & { key: number };
 let nextKey = 1;

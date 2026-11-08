@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
 import { FINDING_STATUSES, type FindingInput } from "@/lib/findings-input";
-import { Field } from "../field";
-import { ChoiceSelect, FormNotes, messageOf } from "../sira/form-kit";
+import { Field } from "@/components/ui/field";
+import { ChoiceSelect } from "@/components/ui/choice-select";
+import { FormNotes, messageOf } from "../sira/form-kit";
 import { saveFindingAction, type FindingFormState } from "./actions";
 
 const EMPTY: FindingInput = {

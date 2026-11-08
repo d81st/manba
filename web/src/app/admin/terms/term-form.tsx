@@ -19,7 +19,7 @@ import {
   type InputProblem,
   type TermInput,
 } from "@/lib/glossary-input";
-import { Field } from "../field";
+import { Field } from "@/components/ui/field";
 import { deleteTermAction, saveTermAction, type TermFormState } from "./actions";
 
 type Definition = TermInput["definitions"][number] & { key: number };

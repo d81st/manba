@@ -8,7 +8,7 @@ import { getMessages, plural } from "@/i18n";
 import { getBookWork } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 import { SIRA_PERIODS, SIRA_WORK } from "@/lib/sira";
-import { listPublishedTopics } from "@/lib/topics";
+import { listPublishedTopics } from "@/modules/topics/server";
 import { BookSearchForm } from "../library/[work]/search-form";
 
 const messages = getMessages();

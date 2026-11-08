@@ -5,9 +5,8 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Messages } from "@/i18n";
-import { saveSideAction, type SideFormState } from "./actions";
-
-type Side = { id: number; slug: string; title: string; position: number; used: number };
+import { saveSideAction, type SideFormState } from "../server/side.actions";
+import type { Side } from "../topic.types";
 
 // One row of the sides list, or (side = null) the row that adds a new side.
 export function SideForm({ side, nextPosition, t }: { side: Side | null; nextPosition: number; t: Messages["admin"]["sides"] }) {

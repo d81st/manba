@@ -10,10 +10,10 @@ import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { listChoices } from "@/lib/sira-events";
 import { listTermChoices } from "@/lib/glossary";
-import { getTopicForEdit, listSides, listTopicChoices } from "@/lib/topics";
+import { TopicForm } from "@/modules/topics";
+import { getTopicForEdit, listSides, listTopicChoices } from "@/modules/topics/server";
 import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
-import { TopicForm } from "../topic-form";
 
 const t = getMessages().admin;
 
