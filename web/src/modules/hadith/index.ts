@@ -10,3 +10,4 @@ export type * from "./hadith.types";
 export { HadithAttribution } from "./components/attribution";
 export { HadithRefList } from "./components/hadith-ref-list";
 export { HadithSearchForm } from "./components/search-form";
+export { SimilarGraph } from "./components/similar-graph";

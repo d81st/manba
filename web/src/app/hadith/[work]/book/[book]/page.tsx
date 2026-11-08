@@ -13,7 +13,7 @@ import { hadithAnchor, refLabel } from "@/shared/addresses/hadith-query";
 import { VerseLine } from "@/shared/content/verse-line";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
-import { bookPageHref, HadithAttribution } from "@/modules/hadith";
+import { bookPageHref, HadithAttribution, SimilarGraph } from "@/modules/hadith";
 import { getBook, getCollection } from "@/modules/hadith/server";
 
 const t = getMessages().hadith;
@@ -165,6 +165,7 @@ async function BookText({
                           </li>
                         ))}
                       </ul>
+                      <SimilarGraph address={[work, ...hadith.path].join(".")} />
                       <Link
                         href={`/admin/links?status=all&q=${[work, ...hadith.path].join(".")}`}
                         className="mt-2 inline-block text-xs"
