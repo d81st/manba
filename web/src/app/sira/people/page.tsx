@@ -55,7 +55,6 @@ async function People({ searchParams }: Pick<PageProps<"/sira/people">, "searchP
         <p className="mt-6 text-muted-foreground">{t.empty}</p>
       ) : (
         <PeopleGraph
-          size={GRAPH}
           positions={positions}
           people={people.map((p) => ({
             slug: p.slug,

@@ -49,6 +49,12 @@
   --sira-tabari: #8a4fc7;
   --sira-land: #ece8dc;
   --sira-sea: #e4edf2;
+  /* Kinds of nodes in the graphs (shared/graph): the same validated set as the
+     sources of the sira, so both themes follow it. */
+  --graph-1: var(--sira-ibn-hisham);
+  --graph-2: var(--sira-waqidi);
+  --graph-3: var(--sira-khalifa);
+  --graph-4: var(--sira-tabari);
 
   --font-ui: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   /* Placeholder stack for Arabic outside the Quran pages; to be vetted. */

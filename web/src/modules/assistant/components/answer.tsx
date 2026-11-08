@@ -9,6 +9,15 @@ import { TranslationText } from "@/modules/quran";
 
 const t = getMessages().assistant;
 
+// What the colors of the graph mean (the same tokens as in answer-graph.tsx).
+const LEGEND: [string, string][] = [
+  ["--primary", t.legendWords],
+  ["--graph-3", t.kinds.term],
+  ["--graph-2", t.kinds.topic],
+  ["--graph-1", t.quran],
+  ["--graph-4", t.hadith],
+];
+
 // What the assistant found: the words it searched for (widened by the glossary
 // and synonyms), then the pages of the site and the fragments of the sources,
 // as a list or as a graph. No text of its own.
@@ -69,9 +78,15 @@ export function Answer({
           {view === "graph" ? (
             <section className="mt-4">
               <p className="mb-2 text-sm text-muted-foreground">{t.graphHint}</p>
-              <div className="overflow-x-auto rounded-xl border bg-card p-3">
-                <AnswerGraph result={result} />
-              </div>
+              <AnswerGraph result={result} label={t.graphLabel} />
+              <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                {LEGEND.map(([token, label]) => (
+                  <span key={token} className="inline-flex items-center gap-1.5">
+                    <span className="inline-block size-2.5 rounded-full" style={{ background: `var(${token})` }} />
+                    {label}
+                  </span>
+                ))}
+              </p>
             </section>
           ) : (
             <div className="mt-4 space-y-8">

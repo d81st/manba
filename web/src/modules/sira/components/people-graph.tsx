@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { GraphView, type GraphPalette } from "@/shared/graph/graph-view";
+import type { GraphData } from "@/shared/graph/graph.types";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Label } from "@/shared/ui/label";
 import type { Messages } from "@/shared/i18n";
@@ -18,18 +20,22 @@ type Person = {
 type Relation = { a: string; b: string; kind: string; quote: string; note: string; href: string; ref: string; draft: boolean };
 type Strings = Messages["sira"]["peoplePage"] & { relationKinds: Messages["sira"]["relationKinds"]; draft: string };
 
-// The graph of people: relations stated by the sources as solid lines,
-// "mentioned together" as dashed ones; a click shows a person's relations
-// with the quoted words.
+// Relations stated by the sources in the main color, "mentioned together" in a
+// paler one (shown on request or for the chosen person).
+const PALETTE: GraphPalette = {
+  nodes: { person: "--primary" },
+  edges: { relation: "--primary", together: "--muted-foreground" },
+};
+
+// The graph of people: relations stated by the sources and "mentioned
+// together"; a click shows a person's relations with the quoted words.
 export function PeopleGraph({
-  size,
   positions,
   people,
   relations,
   pairs,
   t,
 }: {
-  size: { width: number; height: number };
   positions: Record<string, [number, number]>;
   people: Person[];
   relations: Relation[];
@@ -39,8 +45,25 @@ export function PeopleGraph({
   const [selected, setSelected] = useState<string | null>(null);
   const [together, setTogether] = useState(false);
   const byslug = new Map(people.map((p) => [p.slug, p]));
-  const top = Math.max(1, ...pairs.map((p) => p.count));
-  const touches = (e: { a: string; b: string }) => !selected || e.a === selected || e.b === selected;
+  const data = useMemo<GraphData>(() => {
+    const top = Math.max(1, ...pairs.map((p) => p.count));
+    return {
+      nodes: people
+        .filter((p) => positions[p.slug])
+        .map((p) => ({
+          id: p.slug,
+          label: p.name.split(",")[0],
+          x: positions[p.slug][0],
+          y: positions[p.slug][1],
+          kind: "person",
+          muted: p.draft,
+        })),
+      edges: [
+        ...relations.map((r) => ({ source: r.a, target: r.b, kind: "relation", weight: 0.6 })),
+        ...pairs.map((p) => ({ source: p.a, target: p.b, kind: "together", weight: (0.8 * p.count) / top })),
+      ],
+    };
+  }, [people, relations, pairs, positions]);
   const person = selected ? byslug.get(selected) : null;
   const own = selected ? relations.filter((r) => r.a === selected || r.b === selected) : [];
   const near = selected ? pairs.filter((p) => p.a === selected || p.b === selected).slice(0, 10) : [];
@@ -59,85 +82,42 @@ export function PeopleGraph({
             {t.showTogether}
           </Label>
         </div>
-        <div className="overflow-x-auto rounded-xl border bg-card">
-          <svg viewBox={`0 0 ${size.width} ${size.height}`} className="block h-auto w-full min-w-[640px]" role="img" aria-label={t.title}>
-            {pairs
-              .filter((p) => together || (selected && (p.a === selected || p.b === selected)))
-              .map((p) => {
-                const [a, b] = [positions[p.a], positions[p.b]];
-                if (!a || !b) return null;
-                return (
-                  <line
-                    key={`${p.a}-${p.b}`}
-                    x1={a[0]}
-                    y1={a[1]}
-                    x2={b[0]}
-                    y2={b[1]}
-                    strokeDasharray="4 4"
-                    strokeWidth={0.5 + (3 * p.count) / top}
-                    className={`stroke-muted-foreground ${touches(p) ? "opacity-60" : "opacity-10"}`}
-                  >
-                    <title>{`${byslug.get(p.a)?.name} — ${byslug.get(p.b)?.name}: ${p.count} ${t.togetherHint}`}</title>
-                  </line>
-                );
-              })}
-            {relations.map((r, i) => {
-              const [a, b] = [positions[r.a], positions[r.b]];
-              if (!a || !b) return null;
-              return (
-                <line
-                  key={i}
-                  x1={a[0]}
-                  y1={a[1]}
-                  x2={b[0]}
-                  y2={b[1]}
-                  strokeWidth={2}
-                  className={`stroke-primary ${touches(r) ? "opacity-90" : "opacity-15"}`}
-                />
-              );
-            })}
-            {people.map((p) => {
-              const at = positions[p.slug];
-              if (!at) return null;
-              const active = p.slug === selected;
-              return (
-                <g
-                  key={p.slug}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={active}
-                  onClick={() => setSelected(active ? null : p.slug)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setSelected(active ? null : p.slug);
-                    }
-                  }}
-                  className="cursor-pointer outline-none"
-                >
-                  <circle
-                    cx={at[0]}
-                    cy={at[1]}
-                    r={active ? 10 : 7}
-                    strokeWidth={2}
-                    strokeDasharray={p.draft ? "3 2" : undefined}
-                    className={active ? "fill-primary stroke-foreground" : "fill-card stroke-primary"}
-                  />
-                  <text
-                    x={at[0]}
-                    y={at[1] - 13}
-                    textAnchor="middle"
-                    strokeWidth={3}
-                    paintOrder="stroke"
-                    className="fill-foreground stroke-card text-[13px]"
-                  >
-                    {p.name.split(",")[0]}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-        </div>
+        <GraphView
+          data={data}
+          palette={PALETTE}
+          selected={selected}
+          onSelect={(id) => setSelected(id === selected ? null : id)}
+          labels="all"
+          hideEdge={(e) => e.kind === "together" && !together && !(selected && (e.source === selected || e.target === selected))}
+          filterKey={`${together}-${selected}`}
+          className="h-[min(70vh,640px)]"
+          ariaLabel={t.title}
+        />
+        <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="inline-block h-0.5 w-5 bg-primary" /> {t.legendRelation}
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="inline-block h-0.5 w-5 bg-muted-foreground opacity-60" /> {t.legendTogether}
+          </span>
+        </p>
+        <nav aria-label={t.listLabel} className="mt-3 flex flex-wrap gap-1.5 text-sm">
+          {people.map((p) => (
+            <button
+              key={p.slug}
+              type="button"
+              aria-pressed={p.slug === selected}
+              onClick={() => setSelected(p.slug === selected ? null : p.slug)}
+              className={
+                p.slug === selected
+                  ? "rounded-full border border-primary bg-primary px-2.5 py-0.5 text-primary-foreground"
+                  : "rounded-full border px-2.5 py-0.5 hover:bg-accent"
+              }
+            >
+              {p.name.split(",")[0]}
+            </button>
+          ))}
+        </nav>
       </div>
       <aside className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
         {!person ? (

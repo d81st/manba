@@ -14,6 +14,16 @@ import { accountsAdminRu, accountsRu } from "@/modules/accounts/i18n";
 
 // Interface strings only. Source texts are stored in the database, never here.
 export const ru = {
+  // Controls of every graph (shared/graph).
+  graph: {
+    zoomIn: "Приблизить",
+    zoomOut: "Отдалить",
+    reset: "Показать весь граф",
+    loading: "Граф загружается…",
+    wheel: "Чтобы приблизить граф, крутите колёсико с нажатой клавишей Ctrl",
+    appleWheel: "Чтобы приблизить граф, крутите колёсико с нажатой клавишей ⌘",
+    touch: "Чтобы двигать граф, используйте два пальца",
+  },
   ...accountsRu,
   ...libraryRu,
   ...hadithRu,
