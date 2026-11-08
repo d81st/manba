@@ -8,7 +8,7 @@ import { Page } from "@/shared/layout/page";
 import { getMessages } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
 import { isPreview } from "@/shared/auth/preview";
-import { TopicArticle } from "@/modules/topics";
+import { TopicArticle, topicGraph } from "@/modules/topics";
 import { getPublishedTopic, getTopicPlace } from "@/modules/topics/server";
 import { videosForTopic } from "@/modules/videos/server";
 import { PreviewNote } from "@/shared/layout/preview";
@@ -46,6 +46,7 @@ async function Topic({ params, searchParams }: Pick<PageProps<"/topics/[slug]">,
       topic={topic}
       place={place}
       videos={videos}
+      schema={topicGraph(topic)}
       notice={<PreviewNote preview={preview && topic.status !== "published"} />}
     />
   );

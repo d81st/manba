@@ -13,18 +13,18 @@ const recognitions = messages.admin.recognitions;
 // Positions of all sides, grouped by side, each with its degree of recognition.
 export function PositionsSection({ sides }: { sides: PublicTopic["sides"] }) {
   return (
-    <section>
+    <section id="positions" className="scroll-mt-4">
       <SectionHeading>{t.positions}</SectionHeading>
       {sides.length === 0 ? (
         <p className="text-muted-foreground">{t.noPositions}</p>
       ) : (
         <div className="space-y-6">
-          {sides.map((side) => (
-            <div key={side.title}>
+          {sides.map((side, i) => (
+            <div key={side.title} id={`side-${i}`} className="scroll-mt-4">
               <h3 className="mb-2 font-semibold">{side.title}</h3>
               <ul className="space-y-4">
-                {side.positions.map((position, i) => (
-                  <PositionCard key={i} position={position} />
+                {side.positions.map((position, j) => (
+                  <PositionCard key={j} id={`position-${i}-${j}`} position={position} />
                 ))}
               </ul>
             </div>
@@ -35,9 +35,9 @@ export function PositionsSection({ sides }: { sides: PublicTopic["sides"] }) {
   );
 }
 
-function PositionCard({ position }: { position: PublicPosition }) {
+function PositionCard({ id, position }: { id: string; position: PublicPosition }) {
   return (
-    <li className="rounded-xl border bg-card p-4 shadow-sm">
+    <li id={id} className="scroll-mt-4 rounded-xl border bg-card p-4 shadow-sm target:border-primary target:ring-2 target:ring-ring/40">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-medium">{position.holder}</span>
         <Badge variant={position.recognition === "minority" ? "outline" : "secondary"}>

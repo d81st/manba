@@ -10,7 +10,7 @@ const t = getMessages().topics;
 export function MainTexts({ topic }: { topic: PublicTopic }) {
   if (topic.main.length === 0 && topic.mainHadiths.length === 0) return null;
   return (
-    <section>
+    <section id="texts" className="scroll-mt-4">
       <SectionHeading>{t.texts}</SectionHeading>
       <div className="space-y-6">
         {topic.main.map((passage) => (

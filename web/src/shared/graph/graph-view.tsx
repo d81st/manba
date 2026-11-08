@@ -52,9 +52,11 @@ export function GraphView({
   const [hovered, setHovered] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   // The latest handlers, so sigma's listeners never call stale ones.
-  const handlers = useRef({ onSelect, hideEdge, open: (href: string) => router.push(href) });
+  // A link inside the page ("#position-0-1") moves to it; others open the page.
+  const openHref = (href: string) => (href.startsWith("#") ? (window.location.hash = href) : router.push(href));
+  const handlers = useRef({ onSelect, hideEdge, open: openHref });
   useEffect(() => {
-    handlers.current = { onSelect, hideEdge, open: (href: string) => router.push(href) };
+    handlers.current = { onSelect, hideEdge, open: openHref };
   });
 
   // Build the graph and the renderer once per data set.

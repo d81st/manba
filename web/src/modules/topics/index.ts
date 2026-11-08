@@ -3,6 +3,7 @@
 export { CONTEXT_AYAHS, LIST_FILTERS, TOPICS_TAG, TOPIC_CATEGORIES, TOPIC_STATUSES } from "./topic.constants";
 export type { ListFilter, TopicCategory } from "./topic.constants";
 export { filterTopics, listFilterOf } from "./topic.filters";
+export { topicGraph } from "./topic.graph";
 export { passagesOf, type Passage } from "./topic.passages";
 export { checkSideInput, checkTopicInput, hasOutsideSource, topicSchema } from "./topic.validation";
 export type { SideInput, TopicInput } from "./topic.validation";
