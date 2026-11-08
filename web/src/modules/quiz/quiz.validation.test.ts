@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { checkQuestionInput, levelKey, questionLevel } from "./quiz-input";
+import { levelKey, questionLevel } from "./quiz.levels";
+import { checkQuestionInput } from "./quiz.validation";
 
 // A made-up question for the test (not a real test question).
 const question = {

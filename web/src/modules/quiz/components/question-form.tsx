@@ -9,10 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
-import { MAX_OPTIONS, QUIZ_STATUSES, type QuestionInput } from "@/lib/quiz-input";
+import { MAX_OPTIONS, QUIZ_STATUSES, type QuestionInput } from "../quiz.validation";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { saveQuestionAction, type QuestionFormState } from "./actions";
+import { saveQuestionAction, type QuestionFormState } from "../server/quiz.actions";
 import { FormNotes, messageOf } from "@/components/form-kit";
 
 type OptionRow = QuestionInput["options"][number] & { key: number };

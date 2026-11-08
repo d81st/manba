@@ -6,10 +6,10 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listQuestionsForAdmin } from "@/lib/quiz";
-import { levelKey } from "@/lib/quiz-input";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
+import { listQuestionsForAdmin } from "@/modules/quiz/server";
+import { levelKey } from "@/modules/quiz";
 
 const messages = getMessages();
 const t = messages.admin.tests;

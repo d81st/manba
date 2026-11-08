@@ -6,11 +6,10 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { getQuestionForEdit, listQuizChoices } from "@/lib/quiz";
-import type { QuestionInput } from "@/lib/quiz-input";
 import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
-import { QuestionForm } from "../question-form";
+import { getQuestionForEdit, listQuizChoices } from "@/modules/quiz/server";
+import { QuestionForm, type QuestionInput } from "@/modules/quiz";
 
 const messages = getMessages();
 const t = messages.admin.tests;

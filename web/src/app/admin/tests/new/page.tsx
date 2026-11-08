@@ -5,8 +5,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listQuizChoices } from "@/lib/quiz";
-import { QuestionForm } from "../question-form";
+import { listQuizChoices } from "@/modules/quiz/server";
+import { QuestionForm } from "@/modules/quiz";
 
 const messages = getMessages();
 const t = messages.admin.tests;
