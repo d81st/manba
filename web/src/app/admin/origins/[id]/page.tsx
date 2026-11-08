@@ -7,10 +7,10 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { getParallelForEdit } from "@/lib/parallels";
 import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
-import { ParallelForm } from "../parallel-form";
+import { getParallelForEdit } from "@/modules/origins/server";
+import { ParallelForm } from "@/modules/origins";
 
 const messages = getMessages();
 const t = messages.admin.origins;

@@ -3,7 +3,7 @@
 // database access here, so everything is unit-tested; that the addresses
 // exist is checked on saving (lib/parallels.ts).
 import { z } from "zod";
-import { isExternal, parseExternalRef } from "./external.ts";
+import { isExternal, parseExternalRef } from "@/lib/external";
 import { parseRefs } from "@/lib/refs";
 import { type InputProblem, TERM_STATUSES } from "@/lib/input";
 

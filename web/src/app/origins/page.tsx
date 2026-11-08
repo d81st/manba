@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { EXTERNAL_IDS } from "@/lib/external";
-import { listParallels } from "@/lib/parallels";
-import { TRADITIONS } from "@/lib/parallels-input";
 import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server";
 import { isPreview } from "@/lib/preview";
 import { PreviewBar } from "../sira/shared";
+import { listParallels } from "@/modules/origins/server";
+import { TRADITIONS } from "@/modules/origins";
 
 const messages = getMessages();
 const t = messages.origins;

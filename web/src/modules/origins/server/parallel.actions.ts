@@ -3,8 +3,9 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { PARALLELS_TAG, saveParallel } from "@/lib/parallels";
-import { checkParallelInput } from "@/lib/parallels-input";
+import { PARALLELS_TAG } from "../parallel.constants";
+import { saveParallel } from "./parallel.commands";
+import { checkParallelInput } from "../parallel.validation";
 import type { InputProblem } from "@/lib/input";
 
 export type ParallelFormState = { problems: InputProblem[]; saved?: boolean };

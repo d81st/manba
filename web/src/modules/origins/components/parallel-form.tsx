@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
-import { BASES, DEGREES, PARALLEL_KINDS, PARALLEL_STATUSES, type ParallelInput, TRADITIONS } from "@/lib/parallels-input";
+import { BASES, DEGREES, PARALLEL_KINDS, PARALLEL_STATUSES, type ParallelInput, TRADITIONS } from "../parallel.validation";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { saveParallelAction, type ParallelFormState } from "./actions";
+import { saveParallelAction, type ParallelFormState } from "../server/parallel.actions";
 import { slugify } from "@/lib/input";
 import { FormNotes, messageOf } from "@/components/form-kit";
 

@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { ParallelForm } from "../parallel-form";
+import { ParallelForm } from "@/modules/origins";
 
 const messages = getMessages();
 const t = messages.admin.origins;

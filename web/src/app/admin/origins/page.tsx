@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listParallelsForAdmin } from "@/lib/parallels";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
+import { listParallelsForAdmin } from "@/modules/origins/server";
 
 const messages = getMessages();
 const t = messages.admin.origins;
