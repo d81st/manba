@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkEventInput, checkPersonInput, checkPlaceInput, quoteFound, splitForms } from "./sira-input.ts";
+import { checkEventInput, checkPersonInput, checkPlaceInput, quoteFound, splitForms } from "./sira.validation";
 
 // Fictional test data: not real events, quotes or dates.
 const event = {

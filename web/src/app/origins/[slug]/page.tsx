@@ -9,7 +9,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { ParallelArticle } from "@/modules/origins";
 import { getParallel } from "@/modules/origins/server";
 import { isPreview } from "@/lib/preview";
-import { PreviewNote } from "../../sira/shared";
+import { PreviewNote } from "@/components/preview";
 
 const messages = getMessages();
 const t = messages.origins;

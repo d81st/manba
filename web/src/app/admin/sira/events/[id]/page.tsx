@@ -7,10 +7,10 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
-import { getEventForEdit, listChoices } from "@/lib/sira-events";
 import { PreviewLink } from "../../../preview-link";
 import { StatusBadge } from "../../../status-badge";
-import { EventForm } from "../../event-form";
+import { getEventForEdit, listChoices } from "@/modules/sira/server";
+import { EventForm } from "@/modules/sira";
 
 const messages = getMessages();
 const t = messages.admin.sira;

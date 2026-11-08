@@ -9,9 +9,9 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { EXTERNAL_IDS } from "@/lib/external";
 import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server";
 import { isPreview } from "@/lib/preview";
-import { PreviewBar } from "../sira/shared";
 import { listParallels } from "@/modules/origins/server";
 import { TRADITIONS } from "@/modules/origins";
+import { PreviewBar } from "@/components/preview";
 
 const messages = getMessages();
 const t = messages.origins;

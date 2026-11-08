@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SIRA_PERIODS, periodOf } from "./sira.ts";
+import { SIRA_PERIODS, periodOf } from "./sira.periods";
 
 describe("periods of the Sira", () => {
   it("cover all 264 sections of the book, in order, without gaps", () => {

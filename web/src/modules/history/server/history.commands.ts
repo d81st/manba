@@ -1,11 +1,11 @@
 import "server-only";
 import type pg from "pg";
 import { db } from "@/lib/db";
-import { quoteFound } from "@/lib/sira-input";
 import type { InputProblem } from "@/lib/input";
 import type { CheckedHistoryEvent } from "../history.validation";
 import { LOCALE } from "./history.sql";
 import { getHistoryEventForEdit } from "./history.queries";
+import { quoteFound } from "@/modules/sira";
 
 type Saved = { id?: number; problems: InputProblem[] };
 

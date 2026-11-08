@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { approxCommonEra, formatReading, monthsFromHijra } from "./sira-dates.ts";
+import { approxCommonEra, formatReading, monthsFromHijra } from "./sira.dates";
 
 const date = (year: number | null, month: number | null = null, day: number | null = null, age: number | null = null) => ({
   year,

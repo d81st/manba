@@ -2,12 +2,12 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { bookPath, formatBookRef } from "@/lib/book-query";
-import { HIJRI_MONTHS } from "@/lib/sira-dates";
 import { cn } from "@/lib/utils";
 import { ceLabel } from "../history.calendar";
 import { groupByPeriod, SCALES, type Scale } from "../history.periods";
 import type { HistoryDate, HistoryEvent } from "../history.types";
 import { HISTORY_LAYERS, type HistoryLayer } from "../history.validation";
+import { HIJRI_MONTHS } from "@/modules/sira";
 
 const messages = getMessages();
 const t = messages.history;

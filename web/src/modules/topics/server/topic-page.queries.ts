@@ -2,11 +2,11 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
 import { getHadithRefs } from "@/lib/hadith";
-import { getSiraData } from "@/lib/sira-events";
 import { CONTEXT_AYAHS, TOPICS_TAG } from "../topic.constants";
 import { passagesOf } from "../topic.passages";
 import type { MainPassage, PublicPosition, PublicTopic, TopicAyah, TopicPlace, TopicSummary } from "../topic.types";
 import { LOCALE, SUMMARY, type RefRole } from "./topic.sql";
+import { getSiraData } from "@/modules/sira/server";
 
 type AyahRow = { address: string; text: string; sura_name: string };
 

@@ -7,10 +7,10 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { approxCommonEra, formatReading } from "@/lib/sira-dates";
-import { getSiraData } from "@/lib/sira-events";
 import { isPreview } from "@/lib/preview";
-import { PreviewNote, SiraNav, SourceDot, SourceLink, sortDates, sourceLabel } from "../../shared";
+import { PreviewNote } from "@/components/preview";
+import { approxCommonEra, formatReading, SiraNav, sortDates, SourceDot, sourceLabel, SourceLink } from "@/modules/sira";
+import { getSiraData } from "@/modules/sira/server";
 
 const messages = getMessages();
 const t = messages.sira;

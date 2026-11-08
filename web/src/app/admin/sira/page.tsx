@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { getSiraForAdmin } from "@/lib/sira-events";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
+import { getSiraForAdmin } from "@/modules/sira/server";
 
 const messages = getMessages();
 const t = messages.admin.sira;

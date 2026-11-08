@@ -5,8 +5,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listChoices } from "@/lib/sira-events";
-import { PersonForm } from "../../person-form";
+import { listChoices } from "@/modules/sira/server";
+import { PersonForm } from "@/modules/sira";
 
 const messages = getMessages();
 const t = messages.admin.sira;

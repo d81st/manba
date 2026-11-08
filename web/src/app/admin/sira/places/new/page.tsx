@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { PlaceForm } from "../../place-form";
+import { PlaceForm } from "@/modules/sira";
 
 const messages = getMessages();
 const t = messages.admin.sira;

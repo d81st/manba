@@ -10,8 +10,8 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { isPreview } from "@/lib/preview";
 import { TopicArticle } from "@/modules/topics";
 import { getPublishedTopic, getTopicPlace } from "@/modules/topics/server";
-import { PreviewNote } from "../../sira/shared";
 import { videosForTopic } from "@/modules/videos/server";
+import { PreviewNote } from "@/components/preview";
 
 const t = getMessages().topics;
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { searchKey } from "./arabic.ts";
-import { coMentions, forceLayout, nameMatcher } from "./sira-graph.ts";
+import { searchKey } from "@/lib/arabic";
+import { coMentions, forceLayout, nameMatcher } from "./sira.graph";
 
 // Fictional test data: made-up sentences, not a real text.
 describe("nameMatcher", () => {

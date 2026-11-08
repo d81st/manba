@@ -8,7 +8,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { levelKey, QuizList } from "@/modules/quiz";
 import { getQuizQuestions } from "@/modules/quiz/server";
 import { isPreview } from "@/lib/preview";
-import { PreviewBar } from "../sira/shared";
+import { PreviewBar } from "@/components/preview";
 
 const messages = getMessages();
 const t = messages.tests;

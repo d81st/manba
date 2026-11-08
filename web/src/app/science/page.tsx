@@ -9,7 +9,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import type { TopicSummary } from "@/modules/topics";
 import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server";
 import { isPreview } from "@/lib/preview";
-import { PreviewBar } from "../sira/shared";
+import { PreviewBar } from "@/components/preview";
 
 const messages = getMessages();
 const t = messages.science;

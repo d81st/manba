@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { Messages } from "@/i18n";
-import type { PlaceInput } from "@/lib/sira-input";
+import type { PlaceInput } from "../sira.validation";
 import { Field } from "@/components/ui/field";
-import { savePlaceAction, type SiraFormState } from "./actions";
+import { savePlaceAction, type SiraFormState } from "../server/sira.actions";
 import { slugify } from "@/lib/input";
 import { FormNotes, messageOf, NumberInput } from "@/components/form-kit";
 

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { type MapView, RegionMap } from "@/components/region-map";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getSiraData, type SiraEvent, type SiraPlace } from "@/lib/sira-events";
 import { isPreview } from "@/lib/preview";
-import { PreviewNote, SiraNav } from "../shared";
+import { PreviewNote } from "@/components/preview";
+import { PlaceCard, type SiraEvent, SiraNav } from "@/modules/sira";
+import { getSiraData } from "@/modules/sira/server";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -93,28 +93,5 @@ async function SiraMap({ searchParams }: Pick<PageProps<"/sira/map">, "searchPar
       </div>
       <p className="mt-6 text-xs text-muted-foreground">{t.mapPage.credit}</p>
     </>
-  );
-}
-
-function PlaceCard({ place, events, suffix }: { place: SiraPlace; events: SiraEvent[]; suffix: string }) {
-  return (
-    <section
-      id={place.slug}
-      className="scroll-mt-4 rounded-xl border bg-card p-3 text-card-foreground shadow-sm target:border-primary target:ring-2 target:ring-ring/40"
-    >
-      <h3 className="flex flex-wrap items-baseline justify-between gap-2 font-medium">
-        <span>{place.name}</span>
-        <span className="ar text-lg font-normal" lang="ar" dir="rtl">
-          {place.nameAr}
-        </span>
-      </h3>
-      <ul className="mt-1 space-y-0.5 text-sm">
-        {events.map((event) => (
-          <li key={event.id}>
-            <Link href={`/sira/events/${event.slug}${suffix}`}>{event.title}</Link>
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }

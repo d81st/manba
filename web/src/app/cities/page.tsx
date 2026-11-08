@@ -7,10 +7,10 @@ import { type MapView, RegionMap } from "@/components/region-map";
 import { Badge } from "@/components/ui/badge";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getSiraData } from "@/lib/sira-events";
 import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server";
 import { isPreview } from "@/lib/preview";
-import { PreviewBar } from "../sira/shared";
+import { PreviewBar } from "@/components/preview";
+import { getSiraData } from "@/modules/sira/server";
 
 const messages = getMessages();
 const t = messages.cities;

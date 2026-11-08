@@ -5,10 +5,10 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listChoices } from "@/lib/sira-events";
 import { TopicForm } from "@/modules/topics";
 import { listSides, listTopicChoices } from "@/modules/topics/server";
 import { listTermChoices } from "@/modules/glossary/server";
+import { listChoices } from "@/modules/sira/server";
 
 const t = getMessages().admin;
 

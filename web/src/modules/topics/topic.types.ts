@@ -1,8 +1,8 @@
 import type { HadithRef } from "@/lib/hadith";
-import type { SiraEvent, SiraPlace } from "@/lib/sira-events";
 import type { TopicInput } from "./topic.validation";
 import type { Passage } from "./topic.passages";
 import type { InputProblem } from "@/lib/input";
+import type { SiraEvent, SiraPlace } from "@/modules/sira";
 
 // A side whose positions a topic shows (Sunni, Shia, researchers…).
 export type Side = { id: number; slug: string; title: string; position: number; used: number };

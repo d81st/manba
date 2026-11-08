@@ -7,7 +7,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { HISTORY_LAYERS, HistoryTimeline, SCALES, type Scale } from "@/modules/history";
 import { getHistoryEvents } from "@/modules/history/server";
 import { isPreview } from "@/lib/preview";
-import { PreviewBar } from "../sira/shared";
+import { PreviewBar } from "@/components/preview";
 
 const messages = getMessages();
 const t = messages.history;

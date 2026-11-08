@@ -7,9 +7,9 @@ import { Page } from "@/components/page";
 import { getMessages, plural } from "@/i18n";
 import { getBookWork } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
-import { SIRA_PERIODS, SIRA_WORK } from "@/lib/sira";
 import { listPublishedTopics } from "@/modules/topics/server";
 import { BookSearchForm } from "../library/[work]/search-form";
+import { SIRA_PERIODS, SIRA_WORK } from "@/modules/sira";
 
 const messages = getMessages();
 const t = messages.sira;

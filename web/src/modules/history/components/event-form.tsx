@@ -10,12 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
 import { HISTORY_LAYERS, HISTORY_STATUSES, type HistoryDateInput, type HistoryEventInput } from "../history.validation";
-import { HIJRI_MONTHS } from "@/lib/sira-dates";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
 import { saveHistoryAction, type HistoryFormState } from "../server/history.actions";
 import { slugify } from "@/lib/input";
 import { FormNotes, messageOf, NumberInput } from "@/components/form-kit";
+import { HIJRI_MONTHS } from "@/modules/sira";
 
 type DateRow = HistoryDateInput & { key: number };
 let nextKey = 1;

@@ -7,11 +7,10 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
 import { formatBookRef } from "@/lib/book-query";
-import { getPersonForEdit, listChoices } from "@/lib/sira-events";
-import type { PersonRelationInput } from "@/lib/sira-input";
 import { PreviewLink } from "../../../preview-link";
 import { StatusBadge } from "../../../status-badge";
-import { PersonForm } from "../../person-form";
+import { getPersonForEdit, listChoices } from "@/modules/sira/server";
+import { PersonForm, type PersonRelationInput } from "@/modules/sira";
 
 const messages = getMessages();
 const t = messages.admin.sira;

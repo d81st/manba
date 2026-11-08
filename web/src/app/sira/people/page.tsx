@@ -4,11 +4,10 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getCoMentions, getSiraData } from "@/lib/sira-events";
-import { forceLayout } from "@/lib/sira-graph";
 import { isPreview } from "@/lib/preview";
-import { pageOf, PreviewNote, SiraNav } from "../shared";
-import { PeopleGraph } from "./people-graph";
+import { forceLayout, pageOf, PeopleGraph, SiraNav } from "@/modules/sira";
+import { PreviewNote } from "@/components/preview";
+import { getCoMentions, getSiraData } from "@/modules/sira/server";
 
 const messages = getMessages();
 const t = messages.sira;
