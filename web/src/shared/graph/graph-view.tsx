@@ -77,6 +77,7 @@ export function GraphView({
           x: node.x,
           y: -node.y, // sigma's y axis points up
           size: node.size ?? 8,
+          baseSize: node.size ?? 8,
           label: node.label,
           kind: node.kind,
           href: node.href,
@@ -101,7 +102,10 @@ export function GraphView({
           sharedGestureTouchMessage: t.touch,
           enableNodeDrag: false,
           labelRenderedSizeThreshold: labels === "all" ? 0 : 6,
-          stagePadding: 90,
+          // Room for labels at the edges; less on a phone.
+          stagePadding: element.clientWidth < 600 ? 28 : 90,
+          // Node sizes in screen pixels, whatever the scale of the layout.
+          itemSizesReference: "screen",
         },
         styles: {
           nodes: [
@@ -158,7 +162,8 @@ export function GraphView({
       const base = colors.nodes[attrs.kind as string] ?? colors.faded;
       // Away from the focus: much paler; a draft: a little paler.
       const color = near.size > 0 && !near.has(node) ? mix(base, colors.card, 0.8) : attrs.muted ? mix(base, colors.card, 0.35) : base;
-      return { ...attrs, color, size: node === selected ? 12 : 8 };
+      const baseSize = attrs.baseSize as number;
+      return { ...attrs, color, size: node === selected ? baseSize + 4 : baseSize };
     });
     graph.updateEachEdgeAttributes((edge, attrs, source, target) => {
       const base = colors.edges[attrs.kind as string] ?? colors.faded;

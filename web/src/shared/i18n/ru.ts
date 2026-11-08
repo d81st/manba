@@ -11,9 +11,11 @@ import { quranRu } from "@/modules/quran/i18n";
 import { hadithAdminRu, hadithRu } from "@/modules/hadith/i18n";
 import { libraryRu } from "@/modules/library/i18n";
 import { accountsAdminRu, accountsRu } from "@/modules/accounts/i18n";
+import { knowledgeRu } from "@/modules/knowledge/i18n";
 
 // Interface strings only. Source texts are stored in the database, never here.
 export const ru = {
+  ...knowledgeRu,
   // Controls of every graph (shared/graph).
   graph: {
     zoomIn: "Приблизить",
@@ -136,6 +138,7 @@ export const ru = {
     soon: "в разработке",
     open: "открыть",
     sections: {
+      knowledgeMap: "Карта знаний",
       library: "Библиотека",
       encyclopedia: "Энциклопедия",
       quranMap: "Карта Корана",

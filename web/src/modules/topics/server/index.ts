@@ -7,3 +7,4 @@ export { getPublishedTopic, getTopicPlace } from "./topic-page.queries";
 export { deleteDraftTopic, saveTopic } from "./topic.commands";
 export { listSides } from "./side.queries";
 export { saveSide } from "./side.commands";
+export { listTopicLinks } from "./topic-links.queries";

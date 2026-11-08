@@ -14,6 +14,7 @@ import {
   ScrollText,
   SearchX,
   SquareLibrary,
+  Waypoints,
 } from "lucide-react";
 import Link from "next/link";
 import { Page } from "@/shared/layout/page";
@@ -27,6 +28,7 @@ const t = getMessages();
 type SectionKey = keyof Messages["home"]["sections"];
 
 const ICONS: Record<SectionKey, LucideIcon> = {
+  knowledgeMap: Waypoints,
   library: BookOpen,
   encyclopedia: Library,
   quranMap: Map,
@@ -45,6 +47,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
 
 // Sections that already have pages.
 const LINKS: Partial<Record<SectionKey, string>> = {
+  knowledgeMap: "/knowledge",
   library: "/library",
   quranMap: "/quran/map",
   glossary: "/glossary",
