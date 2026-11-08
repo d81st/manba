@@ -8,8 +8,8 @@ import { ScrollToHash } from "@/components/scroll-to-hash";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { EXTERNAL_WORKS, externalBook, isExternal } from "@/lib/external";
-import { getExternalChapter } from "@/lib/external-texts";
 import { cn } from "@/lib/utils";
+import { getExternalChapter } from "@/modules/library/server";
 
 const messages = getMessages();
 const t = messages.external;

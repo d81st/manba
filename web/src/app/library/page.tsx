@@ -6,9 +6,10 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { BOOK_CATEGORIES, listBookWorks } from "@/lib/books";
 import { COLLECTIONS } from "@/lib/hadith-query";
 import { listCollections } from "@/modules/hadith/server";
+import { BOOK_CATEGORIES } from "@/modules/library";
+import { listBookWorks } from "@/modules/library/server";
 
 const messages = getMessages();
 const t = messages.library;

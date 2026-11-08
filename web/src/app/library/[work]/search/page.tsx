@@ -8,11 +8,11 @@ import { Page } from "@/components/page";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getMessages, plural } from "@/i18n";
 import { bookPath, parseBookQuery } from "@/lib/book-query";
-import { BOOK_SEARCH_LIMIT, type BookWork, getBookWork, searchBook } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
 import { searchKey } from "@/lib/arabic";
 import { highlight, likePatterns } from "@/lib/quran-query";
-import { BookSearchForm } from "../search-form";
+import { BOOK_SEARCH_LIMIT, BookSearchForm, type BookWork } from "@/modules/library";
+import { getBookWork, searchBook } from "@/modules/library/server";
 
 const messages = getMessages();
 const t = messages.library.book;

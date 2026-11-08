@@ -1,6 +1,5 @@
 import "server-only";
 import type pg from "pg";
-import { resolveBookRefs } from "@/lib/books";
 import { db } from "@/lib/db";
 import type { InputProblem } from "@/lib/input";
 import { formatRefs, parseRefs } from "@/lib/refs";
@@ -8,6 +7,7 @@ import type { SaveResult } from "../term.types";
 import type { TermInput } from "../term.validation";
 import { getTermForEdit } from "./term.queries";
 import { INVERSE, LOCALE } from "./term.sql";
+import { resolveBookRefs } from "@/modules/library/server";
 
 async function missingAddresses(client: pg.PoolClient, addresses: string[]) {
   if (addresses.length === 0) return [];

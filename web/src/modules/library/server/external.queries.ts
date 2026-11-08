@@ -1,9 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { EXTERNAL_WORKS, type ExternalWork, externalBook } from "@/lib/external";
-
-// Reading the texts of other religions: the books of a work with their
-// chapters, and a chapter with its original and translation side by side.
+import type { ExternalVerse } from "../external.types";
 
 export async function getExternalContents(work: ExternalWork) {
   const { rows } = await db().query<{ book: number; chapters: number }>(
@@ -16,8 +14,6 @@ export async function getExternalContents(work: ExternalWork) {
     return book ? [{ ...book, chapters: r.chapters }] : [];
   });
 }
-
-export type ExternalVerse = { n: number; address: string; original: string; translation: string };
 
 export async function getExternalChapter(work: ExternalWork, book: number, chapter: number) {
   const prefix = `${work}.${book}.${chapter}`;

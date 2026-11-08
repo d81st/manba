@@ -7,11 +7,11 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { ScrollToHash } from "@/components/scroll-to-hash";
 import { getMessages } from "@/i18n";
-import { getBookSection, getBookWork, sectionHref } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
-import { BookSearchForm } from "../../search-form";
 import { VerseLine } from "@/components/verse-line";
 import { HadithAttribution } from "@/modules/hadith";
+import { getBookSection, getBookWork } from "@/modules/library/server";
+import { BookSearchForm, sectionHref } from "@/modules/library";
 
 const messages = getMessages();
 const t = messages.library;

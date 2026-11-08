@@ -7,10 +7,10 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages, plural } from "@/i18n";
 import { BOOKS } from "@/lib/book-query";
-import { getBookWork } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
-import { BookSearchForm } from "./search-form";
 import { HadithAttribution } from "@/modules/hadith";
+import { getBookWork } from "@/modules/library/server";
+import { BookSearchForm } from "@/modules/library";
 
 const messages = getMessages();
 const t = messages.library;

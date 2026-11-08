@@ -7,7 +7,7 @@ import { Page } from "@/components/page";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { isExternal } from "@/lib/external";
-import { getExternalContents } from "@/lib/external-texts";
+import { getExternalContents } from "@/modules/library/server";
 
 const messages = getMessages();
 const t = messages.external;

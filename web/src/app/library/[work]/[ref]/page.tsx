@@ -7,8 +7,9 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { bookAnchor, bookLabel, parseBookPath } from "@/lib/book-query";
-import { getBookWork, locatePage, sectionHref } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
+import { getBookWork, locatePage } from "@/modules/library/server";
+import { sectionHref } from "@/modules/library";
 
 const messages = getMessages();
 const t = messages.library;
