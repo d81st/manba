@@ -2,8 +2,9 @@
 
 import { refresh, updateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
-import { HADITH_TAG } from "@/lib/hadith";
-import { reviewPair, VERDICTS } from "@/lib/hadith-links";
+import { HADITH_TAG } from "../hadith.constants";
+import { VERDICTS } from "../hadith.links";
+import { reviewPair } from "./link-review.commands";
 
 // A verdict on a pair of similar texts; hadith pages show it at once.
 export async function reviewPairAction(formData: FormData) {

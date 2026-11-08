@@ -1,10 +1,10 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
-import { getHadithRefs } from "@/lib/hadith";
 import { GLOSSARY_TAG } from "../term.constants";
 import type { PublicTerm, RefAyah, TermSummary } from "../term.types";
 import { LOCALE, SUMMARY } from "./term.sql";
+import { getHadithRefs } from "@/modules/hadith/server";
 
 export async function getPublishedTerm(slug: string): Promise<PublicTerm | null> {
   "use cache";

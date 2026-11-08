@@ -9,9 +9,9 @@ import { ScrollToHash } from "@/components/scroll-to-hash";
 import { getMessages } from "@/i18n";
 import { getBookSection, getBookWork, sectionHref } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
-import { HadithAttribution } from "../../../../hadith/attribution";
 import { BookSearchForm } from "../../search-form";
 import { VerseLine } from "@/components/verse-line";
+import { HadithAttribution } from "@/modules/hadith";
 
 const messages = getMessages();
 const t = messages.library;

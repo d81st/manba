@@ -8,11 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { listPairsForReview, REVIEW_STATUSES, type PairSide, type ReviewFilter, type ReviewPair } from "@/lib/hadith-links";
 import { COLLECTION_ORDER, COLLECTIONS, formatHadithRef, parseHadithRef } from "@/lib/hadith-query";
-import { markShared } from "@/lib/shared-words";
 import { Filters } from "../filters";
-import { reviewPairAction } from "./actions";
+import { listPairsForReview, reviewPairAction } from "@/modules/hadith/server";
+import { markShared, type PairSide, REVIEW_STATUSES, type ReviewFilter, type ReviewPair } from "@/modules/hadith";
 
 const t = getMessages().admin;
 

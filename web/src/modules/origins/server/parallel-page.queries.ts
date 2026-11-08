@@ -2,11 +2,12 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
 import { EXTERNAL_WORKS, externalHref, externalLabel, formatExternalRefs } from "@/lib/external";
-import { getHadithRefs, type HadithRef } from "@/lib/hadith";
 import { PARALLELS_TAG } from "../parallel.constants";
 import { isOutside } from "../parallel.refs";
 import type { PublicParallel, RefItem } from "../parallel.types";
 import { LOCALE, SUMMARY, type SummaryRow, toSummary } from "./parallel.sql";
+import { getHadithRefs } from "@/modules/hadith/server";
+import type { HadithRef } from "@/modules/hadith";
 
 export async function getParallel(slug: string, drafts: boolean): Promise<PublicParallel | null> {
   "use cache";

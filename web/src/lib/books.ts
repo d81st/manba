@@ -3,7 +3,8 @@ import { cacheLife, cacheTag } from "next/cache";
 import { bookAnchor, bookLabel, bookScheme } from "@/lib/book-query";
 import { db } from "@/lib/db";
 import { matchConditions } from "@/lib/search-sql";
-import { type Attribution, primaryVersion, shortTitle } from "@/lib/hadith";
+import { type Attribution, shortTitle } from "@/modules/hadith";
+import { primaryVersion } from "@/modules/hadith/server";
 
 // Books with their own references (docs/ADDRESSES.md): the Sira of Ibn Hisham,
 // Kitab al-Sab'a and Ansab al-ashraf by volume and page, the Tafsir of Ibn

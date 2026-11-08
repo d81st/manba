@@ -7,9 +7,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getCollection } from "@/lib/hadith";
-import { HadithAttribution } from "../attribution";
-import { HadithSearchForm } from "../search-form";
+import { getCollection } from "@/modules/hadith/server";
+import { HadithAttribution, HadithSearchForm } from "@/modules/hadith";
 
 const messages = getMessages();
 const t = messages.hadith;

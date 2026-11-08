@@ -9,8 +9,8 @@ import { getMessages, plural } from "@/i18n";
 import { BOOKS } from "@/lib/book-query";
 import { getBookWork } from "@/lib/books";
 import { isDatabaseConfigured } from "@/lib/db";
-import { HadithAttribution } from "../../hadith/attribution";
 import { BookSearchForm } from "./search-form";
+import { HadithAttribution } from "@/modules/hadith";
 
 const messages = getMessages();
 const t = messages.library;

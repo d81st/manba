@@ -8,10 +8,10 @@ import { Page } from "@/components/page";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { HADITH_SEARCH_LIMIT, searchHadith } from "@/lib/hadith";
 import { COLLECTIONS, hadithAnchor, hadithPath, parseHadithQuery, refLabel, schemeOf } from "@/lib/hadith-query";
 import { highlight, likePatterns } from "@/lib/quran-query";
-import { HadithSearchForm } from "../search-form";
+import { HADITH_SEARCH_LIMIT, HadithSearchForm } from "@/modules/hadith";
+import { searchHadith } from "@/modules/hadith/server";
 
 const messages = getMessages();
 const t = messages.hadith;

@@ -8,7 +8,7 @@ import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
 import { BOOK_CATEGORIES, listBookWorks } from "@/lib/books";
 import { COLLECTIONS } from "@/lib/hadith-query";
-import { listCollections } from "@/lib/hadith";
+import { listCollections } from "@/modules/hadith/server";
 
 const messages = getMessages();
 const t = messages.library;

@@ -1,5 +1,5 @@
-import type { HadithRef } from "@/lib/hadith";
 import type { ParallelInput } from "./parallel.validation";
+import type { HadithRef } from "@/modules/hadith";
 
 export type ParallelSummary = {
   id: number;

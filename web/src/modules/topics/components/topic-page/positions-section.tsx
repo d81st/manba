@@ -1,10 +1,10 @@
-import { HadithRefList } from "@/components/hadith-ref-list";
 import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import type { PublicPosition, PublicTopic } from "../../topic.types";
 import { SectionHeading } from "./section-heading";
 import { AyahList } from "@/modules/quran";
+import { HadithRefList } from "@/modules/hadith";
 
 const messages = getMessages();
 const t = messages.topics;

@@ -1,5 +1,5 @@
 import { getMessages } from "@/i18n";
-import type { Collection } from "@/lib/hadith";
+import type { Collection } from "../hadith.types";
 
 const t = getMessages().hadith;
 

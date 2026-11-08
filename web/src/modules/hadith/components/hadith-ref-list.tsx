@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getMessages } from "@/i18n";
-import type { HadithRef } from "@/lib/hadith";
+import type { HadithRef } from "../hadith.types";
 import { cn } from "@/lib/utils";
 import { VerseLine } from "@/components/verse-line";
 

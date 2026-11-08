@@ -1,7 +1,7 @@
-import type { HadithRef } from "@/lib/hadith";
 import type { InputProblem } from "@/lib/input";
 import type { RELATION_KINDS } from "./term.constants";
 import type { TermInput } from "./term.validation";
+import type { HadithRef } from "@/modules/hadith";
 
 export type RelationKind = (typeof RELATION_KINDS)[number];
 

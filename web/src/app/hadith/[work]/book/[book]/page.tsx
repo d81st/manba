@@ -9,12 +9,12 @@ import { ScrollToHash } from "@/components/scroll-to-hash";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { bookPageHref, getBook, getCollection } from "@/lib/hadith";
 import { hadithAnchor, refLabel } from "@/lib/hadith-query";
-import { HadithAttribution } from "../../../attribution";
 import { VerseLine } from "@/components/verse-line";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
+import { bookPageHref, HadithAttribution } from "@/modules/hadith";
+import { getBook, getCollection } from "@/modules/hadith/server";
 
 const t = getMessages().hadith;
 

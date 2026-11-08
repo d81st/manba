@@ -6,9 +6,9 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listCollections } from "@/lib/hadith";
 import { COLLECTIONS } from "@/lib/hadith-query";
-import { HadithSearchForm } from "./search-form";
+import { listCollections } from "@/modules/hadith/server";
+import { HadithSearchForm } from "@/modules/hadith";
 
 const messages = getMessages();
 const t = messages.hadith;

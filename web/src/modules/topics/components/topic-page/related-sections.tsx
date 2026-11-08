@@ -1,9 +1,9 @@
-import { HadithRefList } from "@/components/hadith-ref-list";
 import { getMessages } from "@/i18n";
 import type { PublicTopic } from "../../topic.types";
 import { Chips } from "./chips";
 import { SectionHeading } from "./section-heading";
 import { AyahList } from "@/modules/quran";
+import { HadithRefList } from "@/modules/hadith";
 
 const t = getMessages().topics;
 

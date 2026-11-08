@@ -1,4 +1,4 @@
-import type { HadithRef } from "@/lib/hadith";
+import type { HadithRef } from "@/modules/hadith";
 
 export type QuizAyah = { address: string; sura: number; ayah: number; suraName: string; text: string };
 

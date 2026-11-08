@@ -1,12 +1,12 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
-import { getHadithRefs } from "@/lib/hadith";
 import { formatRefs } from "@/lib/refs";
 import { QUIZ_TAG } from "../quiz.constants";
 import { questionLevel } from "../quiz.levels";
 import type { QuizQuestion } from "../quiz.types";
 import { LOCALE } from "./quiz.sql";
+import { getHadithRefs } from "@/modules/hadith/server";
 
 type Row = Omit<QuizQuestion, "level" | "ayahs" | "passages"> & { works: { sunni: number | null; shia: number | null }[] };
 

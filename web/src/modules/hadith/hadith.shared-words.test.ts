@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { markShared } from "./shared-words.ts";
+import { markShared } from "./hadith.shared-words";
 
 // Fictional test data: not real hadiths.
 describe("markShared", () => {
