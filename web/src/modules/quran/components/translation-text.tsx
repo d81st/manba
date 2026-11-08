@@ -1,5 +1,5 @@
 import { getMessages } from "@/i18n";
-import { parseTranslation } from "@/lib/translation-markup";
+import { parseTranslation } from "../quran.translation-markup";
 
 const t = getMessages().quran.translation;
 

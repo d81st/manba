@@ -5,10 +5,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { listSuras } from "@/lib/quran";
-import { QuranNav } from "./nav";
-import { SearchForm } from "./search-form";
-import { SuraMeta } from "./sura-meta";
+import { listSuras } from "@/modules/quran/server";
+import { QuranNav, SearchForm, SuraMeta } from "@/modules/quran";
 
 const t = getMessages().quran;
 

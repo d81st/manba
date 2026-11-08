@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseTranslation, translationPlain } from "./translation-markup";
+import { parseTranslation, translationPlain } from "./quran.translation-markup";
 
 // Sample strings are made up for the test (not a source text).
 describe("parseTranslation", () => {

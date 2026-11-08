@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 import { getSession } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { storyThread } from "@/lib/story-thread-data";
-import { storyBySlug } from "@/lib/story-threads";
+import { storyThread } from "@/modules/quran/server";
+import { storyBySlug } from "@/modules/quran";
 
 // The ayahs of a story thread for the map: GET /api/quran/thread?story=musa.
 export async function GET(request: NextRequest) {

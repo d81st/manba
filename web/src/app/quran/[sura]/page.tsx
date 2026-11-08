@@ -8,13 +8,11 @@ import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { bookPath } from "@/lib/book-query";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getSura } from "@/lib/quran";
-import { QuranNav } from "../nav";
-import { SuraMeta } from "../sura-meta";
 import { ScrollToHash } from "@/components/scroll-to-hash";
-import { TranslationText } from "@/components/translation-text";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
+import { getSura } from "@/modules/quran/server";
+import { QuranNav, SuraMeta, TranslationText } from "@/modules/quran";
 
 // The commentary each ayah links to.
 const TAFSIR = "tafsir_ibn_kathir";

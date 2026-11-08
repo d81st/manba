@@ -1,5 +1,5 @@
 import { getMessages, plural } from "@/i18n";
-import type { SuraSummary } from "@/lib/quran";
+import type { SuraSummary } from "../quran.types";
 import { cn } from "@/lib/utils";
 
 const t = getMessages().quran;

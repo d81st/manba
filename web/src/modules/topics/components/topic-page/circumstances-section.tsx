@@ -1,9 +1,9 @@
-import { AyahList } from "@/components/ayah-list";
 import { HadithRefList } from "@/components/hadith-ref-list";
 import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
 import { getMessages } from "@/i18n";
 import type { PublicTopic } from "../../topic.types";
 import { SectionHeading } from "./section-heading";
+import { AyahList } from "@/modules/quran";
 
 const t = getMessages().topics;
 

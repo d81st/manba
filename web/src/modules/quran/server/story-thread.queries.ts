@@ -1,9 +1,9 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
-import { inTextOrder, storyPattern, type Story } from "@/lib/story-threads";
+import { inTextOrder, storyPattern, type Story } from "../quran.story-threads";
 
-// The ayahs of a story thread (lib/story-threads.ts) and the published
+// The ayahs of a story thread (quran.story-threads.ts) and the published
 // parallels from «Истоки и связи» that touch them.
 export async function storyThread(story: Story): Promise<{ addresses: string[]; parallels: { slug: string; title: string }[] }> {
   "use cache";

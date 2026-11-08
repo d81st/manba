@@ -4,9 +4,8 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getMapData } from "@/lib/quran";
-import { QuranNav } from "../nav";
-import { QuranMap } from "./quran-map";
+import { getMapData } from "@/modules/quran/server";
+import { QuranMap, QuranNav } from "@/modules/quran";
 
 const t = getMessages().quran;
 

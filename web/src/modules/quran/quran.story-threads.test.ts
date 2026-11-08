@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { inTextOrder, STORIES, storyBySlug, storyPattern } from "./story-threads";
+import { inTextOrder, STORIES, storyBySlug, storyPattern } from "./quran.story-threads";
 
 describe("story threads", () => {
   it("matches a name as a whole word, with particles and the accusative alif", () => {

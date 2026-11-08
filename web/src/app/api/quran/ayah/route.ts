@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { getSession } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { getAyahs } from "@/lib/quran";
+import { getAyahs } from "@/modules/quran/server";
 
 // One ayah for the map card: GET /api/quran/ayah?a=2:255.
 // The proxy already requires a session; this checks again next to the text.

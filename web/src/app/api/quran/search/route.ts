@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 import { getSession } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/db";
-import { searchAddresses } from "@/lib/quran";
 import { likePatterns, parseQuery } from "@/lib/quran-query";
+import { searchAddresses } from "@/modules/quran/server";
 
 // Ayahs to light up on the map: GET /api/quran/search?q=... -> { kind, addresses }.
 export async function GET(request: NextRequest) {

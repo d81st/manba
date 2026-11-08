@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { TranslationText } from "@/components/translation-text";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { cn } from "@/lib/utils";
 import type { AssistantResult, SourceHit } from "../assistant.types";
 import { AnswerGraph } from "./answer-graph";
 import { Examples } from "./ask-form";
+import { TranslationText } from "@/modules/quran";
 
 const t = getMessages().assistant;
 

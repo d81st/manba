@@ -7,12 +7,9 @@ import { Page } from "@/components/page";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getMessages, plural } from "@/i18n";
 import { isDatabaseConfigured } from "@/lib/db";
-import { TranslationText } from "@/components/translation-text";
-import { getAyahs, SEARCH_LIMIT, searchText, searchTranslation, type SearchResult } from "@/lib/quran";
 import { highlight, highlightPlain, likePatterns, parseQuery } from "@/lib/quran-query";
-import { translationPlain } from "@/lib/translation-markup";
-import { QuranNav } from "../nav";
-import { SearchForm } from "../search-form";
+import { QuranNav, SEARCH_LIMIT, SearchForm, type SearchResult, translationPlain, TranslationText } from "@/modules/quran";
+import { getAyahs, searchText, searchTranslation } from "@/modules/quran/server";
 
 const t = getMessages().quran;
 

@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { AyahList } from "@/components/ayah-list";
 import { HadithRefList } from "@/components/hadith-ref-list";
 import { LinkedParagraphs, LinkedText } from "@/components/linked-text";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import type { PublicTerm } from "../../term.types";
+import { AyahList } from "@/modules/quran";
 
 const messages = getMessages();
 const t = messages.glossary;

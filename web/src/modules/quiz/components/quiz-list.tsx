@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { AyahList } from "@/components/ayah-list";
 import { HadithRefList } from "@/components/hadith-ref-list";
 import { LinkedParagraphs } from "@/components/linked-text";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +6,7 @@ import { getMessages } from "@/i18n";
 import { cn } from "@/lib/utils";
 import type { QuizQuestion as Question } from "../quiz.types";
 import { Quiz, QuizQuestion } from "./quiz";
+import { AyahList } from "@/modules/quran";
 
 const messages = getMessages();
 const t = messages.tests;

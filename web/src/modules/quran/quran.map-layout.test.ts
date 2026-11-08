@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { blockShape, cellPosition, hitTest, LABEL_HEIGHT, layoutMap } from "./quran-map-layout";
+import { blockShape, cellPosition, hitTest, LABEL_HEIGHT, layoutMap } from "./quran.map-layout";
 
 // Made-up sura sizes; the real ones come from the database.
 const suras = [
