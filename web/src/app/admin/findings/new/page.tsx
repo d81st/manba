@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Page } from "@/components/page";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { FindingForm } from "../finding-form";
+import { FindingForm } from "@/modules/findings";
 
 const messages = getMessages();
 const t = messages.admin.findings;

@@ -1,59 +1,8 @@
 import "server-only";
-import { cacheLife, cacheTag } from "next/cache";
-import { formatBookRef, isBook } from "@/lib/book-query";
 import { db } from "@/lib/db";
-import type { CheckedFinding } from "@/lib/findings-input";
-import { formatHadithRef } from "@/lib/hadith-query";
 import type { InputProblem } from "@/lib/input";
-
-// «Новые находки» and «Не найдено в источниках» (migration 025).
-
-export const FINDINGS_TAG = "findings";
-
-export type Finding = {
-  id: number;
-  status: string;
-  leadUrl: string;
-  leadDate: string;
-  claimedSource: string;
-  claimedText: string;
-  foundAddress: string | null;
-  searched: string;
-  note: string;
-  public: boolean;
-  updatedAt: string;
-};
-
-const COLUMNS = `id::int, status, lead_url AS "leadUrl", coalesce(to_char(lead_date, 'YYYY-MM-DD'), '') AS "leadDate",
-  claimed_source AS "claimedSource", claimed_text AS "claimedText", found_address::text AS "foundAddress",
-  searched, note, public, to_char(updated_at, 'DD.MM.YYYY') AS "updatedAt"`;
-
-export const foundLabel = (address: string) => {
-  const work = address.split(".")[0];
-  return work === "quran" ? address.split(".").slice(1).join(":") : isBook(work) ? formatBookRef(address) : formatHadithRef(address);
-};
-
-export async function listFindings(status?: string): Promise<Finding[]> {
-  const { rows } = await db().query<Finding>(
-    `SELECT ${COLUMNS} FROM findings WHERE ($1::text IS NULL OR status = $1) ORDER BY id DESC`,
-    [status ?? null],
-  );
-  return rows;
-}
-
-export async function getFinding(id: number): Promise<Finding | null> {
-  const { rows } = await db().query<Finding>(`SELECT ${COLUMNS} FROM findings WHERE id = $1`, [id]);
-  return rows[0] ?? null;
-}
-
-// The public section: checked leads whose text is not in the source named.
-export async function listPublicNotFound(): Promise<Finding[]> {
-  "use cache";
-  cacheTag(FINDINGS_TAG);
-  cacheLife("hours");
-  const { rows } = await db().query<Finding>(`SELECT ${COLUMNS} FROM findings WHERE public AND status = 'not_found' ORDER BY updated_at DESC`);
-  return rows;
-}
+import type { CheckedFinding } from "../finding.validation";
+import { getFinding } from "./finding.queries";
 
 export async function saveFinding(id: number | null, input: CheckedFinding, actor: string): Promise<{ id?: number; problems: InputProblem[] }> {
   const client = await db().connect();

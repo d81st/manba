@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Messages } from "@/i18n";
-import { FINDING_STATUSES, type FindingInput } from "@/lib/findings-input";
+import { FINDING_STATUSES, type FindingInput } from "../finding.validation";
 import { Field } from "@/components/ui/field";
 import { ChoiceSelect } from "@/components/ui/choice-select";
-import { saveFindingAction, type FindingFormState } from "./actions";
+import { saveFindingAction, type FindingFormState } from "../server/finding.actions";
 import { FormNotes, messageOf } from "@/components/form-kit";
 
 const EMPTY: FindingInput = {

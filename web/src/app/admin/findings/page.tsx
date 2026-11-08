@@ -6,9 +6,9 @@ import { Page } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { getMessages } from "@/i18n";
 import { requireAdmin } from "@/lib/auth";
-import { foundLabel, listFindings } from "@/lib/findings";
-import { FINDING_STATUSES } from "@/lib/findings-input";
 import { cn } from "@/lib/utils";
+import { FINDING_STATUSES, foundLabel } from "@/modules/findings";
+import { listFindings } from "@/modules/findings/server";
 
 const messages = getMessages();
 const t = messages.admin.findings;

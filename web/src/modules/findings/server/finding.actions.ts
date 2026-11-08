@@ -3,8 +3,9 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { FINDINGS_TAG, saveFinding } from "@/lib/findings";
-import { checkFindingInput } from "@/lib/findings-input";
+import { FINDINGS_TAG } from "../finding.constants";
+import { checkFindingInput } from "../finding.validation";
+import { saveFinding } from "./finding.commands";
 import type { InputProblem } from "@/lib/input";
 
 export type FindingFormState = { problems: InputProblem[]; saved?: boolean };

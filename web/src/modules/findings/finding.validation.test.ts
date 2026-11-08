@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkFindingInput, leadHost } from "./findings-input";
+import { checkFindingInput, leadHost } from "./finding.validation";
 
 // A made-up lead for the test (not a real finding).
 const finding = { status: "new", claimedSource: "Тестовый сборник, № 1", claimedText: "вымышленный текст" };

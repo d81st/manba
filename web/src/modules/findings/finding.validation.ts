@@ -1,6 +1,6 @@
 // «Новые находки» (migration 025): validation of the finding form. No database
 // here, so everything is unit-tested; that the found address exists is
-// checked on saving (lib/findings.ts).
+// checked on saving (server/finding.commands.ts).
 import { z } from "zod";
 import { parseRefs } from "@/lib/refs";
 import type { InputProblem } from "@/lib/input";
