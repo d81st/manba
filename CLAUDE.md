@@ -49,7 +49,7 @@
 
 ## Стек
 
-Next.js 16 (RTL, один сервис без отдельного бэкенда) · Tailwind 4 + shadcn/ui · PostgreSQL 17 на Neon, запасная копия в Supabase (`ltree`, `pg_trgm`; схемы `library` — тексты источников, `public` — данные админки) · поиск средствами PostgreSQL · графы на Sigma.js (`shared/graph`) · свои учётные записи · Render + GitHub Actions. Позже — хранилище сканов, CDN Cloudflare, `pgvector` для ассистента, Redis и WebSocket для дебатов. Подробно — `docs/PLAN.md`, «Стек сейчас»; новое в стек — с автором.
+Next.js 16 (RTL, один сервис без отдельного бэкенда) · Tailwind 4 + shadcn/ui · PostgreSQL 17 на Neon, запасная копия в Supabase (`ltree`, `pg_trgm`; схемы `library` — тексты источников, `public` — данные админки) · поиск средствами PostgreSQL · графы на Sigma.js (`shared/graph`), 3D-граф «Галактики» — 3d-force-graph · свои учётные записи · Render + GitHub Actions. Позже — хранилище сканов, CDN Cloudflare, `pgvector` для ассистента, Redis и WebSocket для дебатов. Подробно — `docs/PLAN.md`, «Стек сейчас»; новое в стек — с автором.
 
 ## Технические требования с первого дня
 

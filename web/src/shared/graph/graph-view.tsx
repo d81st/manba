@@ -8,15 +8,13 @@ import type Sigma from "sigma";
 import { getMessages } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/ui/utils";
-import { tokenColor } from "./graph-colors";
+import { mix, readColors, type GraphColors, type GraphPalette } from "./graph-colors";
 import type { GraphData } from "./graph.types";
 
 const t = getMessages().graph;
 
 // Theme tokens (globals.css) for the kinds of nodes and edges of one graph.
-export type GraphPalette = { nodes: Record<string, string>; edges: Record<string, string> };
-
-type Colors = { nodes: Record<string, string>; edges: Record<string, string>; faded: string; label: string; card: string };
+export type { GraphPalette };
 
 // A graph drawn with sigma (WebGL): zoom with the buttons, ctrl/⌘ + wheel or
 // two fingers; hovering or choosing a node keeps it and its neighbours bright.
@@ -48,7 +46,7 @@ export function GraphView({
   const container = useRef<HTMLDivElement>(null);
   const sigmaRef = useRef<Sigma | null>(null);
   const graphRef = useRef<Graph | null>(null);
-  const colorsRef = useRef<Colors | null>(null);
+  const colorsRef = useRef<GraphColors | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   // The latest handlers, so sigma's listeners never call stale ones.
@@ -213,24 +211,4 @@ export function GraphView({
       {!ready && <p className="absolute inset-0 grid place-items-center text-sm text-muted-foreground">{t.loading}</p>}
     </div>
   );
-}
-
-function readColors(element: Element, palette: GraphPalette): Colors {
-  const map = (tokens: Record<string, string>) =>
-    Object.fromEntries(Object.entries(tokens).map(([kind, token]) => [kind, tokenColor(element, token)]));
-  return {
-    nodes: map(palette.nodes),
-    edges: map(palette.edges),
-    faded: tokenColor(element, "--muted-foreground"),
-    label: tokenColor(element, "--foreground"),
-    card: tokenColor(element, "--card"),
-  };
-}
-
-// A color moved towards the background: how faded items look.
-function mix(color: string, background: string, amount = 0.75) {
-  const parse = (c: string) => (c.match(/\d+/g) ?? ["136", "136", "136"]).slice(0, 3).map(Number);
-  const [a, b] = [parse(color), parse(background)];
-  const out = a.map((v, i) => Math.round(v + (b[i] - v) * amount));
-  return `rgb(${out[0]}, ${out[1]}, ${out[2]})`;
 }

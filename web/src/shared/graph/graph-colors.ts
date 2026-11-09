@@ -21,3 +21,27 @@ export function tokenColor(element: Element, token: string): string {
   const value = getComputedStyle(element).getPropertyValue(token).trim();
   return resolveColor(value || "#888888");
 }
+
+// Theme tokens for the kinds of nodes and edges of one graph, and their colors.
+export type GraphPalette = { nodes: Record<string, string>; edges: Record<string, string> };
+export type GraphColors = { nodes: Record<string, string>; edges: Record<string, string>; faded: string; label: string; card: string };
+
+export function readColors(element: Element, palette: GraphPalette): GraphColors {
+  const map = (tokens: Record<string, string>) =>
+    Object.fromEntries(Object.entries(tokens).map(([kind, token]) => [kind, tokenColor(element, token)]));
+  return {
+    nodes: map(palette.nodes),
+    edges: map(palette.edges),
+    faded: tokenColor(element, "--muted-foreground"),
+    label: tokenColor(element, "--foreground"),
+    card: tokenColor(element, "--card"),
+  };
+}
+
+// A color moved towards the background: how faded items look.
+export function mix(color: string, background: string, amount = 0.75) {
+  const parse = (c: string) => (c.match(/\d+/g) ?? ["136", "136", "136"]).slice(0, 3).map(Number);
+  const [a, b] = [parse(color), parse(background)];
+  const out = a.map((v, i) => Math.round(v + (b[i] - v) * amount));
+  return `rgb(${out[0]}, ${out[1]}, ${out[2]})`;
+}

@@ -10,6 +10,7 @@ import {
   Map,
   MessageCircleQuestion,
   Network,
+  Orbit,
   Scale,
   ScrollText,
   SearchX,
@@ -29,6 +30,7 @@ type SectionKey = keyof Messages["home"]["sections"];
 
 const ICONS: Record<SectionKey, LucideIcon> = {
   knowledgeMap: Waypoints,
+  galaxy: Orbit,
   library: BookOpen,
   encyclopedia: Library,
   quranMap: Map,
@@ -48,6 +50,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
 // Sections that already have pages.
 const LINKS: Partial<Record<SectionKey, string>> = {
   knowledgeMap: "/knowledge",
+  galaxy: "/galaxy",
   library: "/library",
   quranMap: "/quran/map",
   glossary: "/glossary",
