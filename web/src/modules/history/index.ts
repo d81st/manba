@@ -3,9 +3,12 @@
 export { ceLabel, ceYears, placeYear } from "./history.calendar";
 export { HISTORY_TAG } from "./history.constants";
 export { groupByPeriod, SCALES, type Scale } from "./history.periods";
+export { RIBBON_LANES, type RibbonEvent, type RibbonLane } from "./history.ribbon";
+export { historyDateLabel, ribbonFromHistory, ribbonFromSira } from "./history.ribbon-data";
 export type { HistoryDate, HistoryEvent, HistoryEventForEdit } from "./history.types";
 export { checkHistoryEventInput, HISTORY_LAYERS, HISTORY_STATUSES, historyEventSchema } from "./history.validation";
 export type { CheckedHistoryEvent, HistoryDateInput, HistoryEventInput, HistoryLayer } from "./history.validation";
 
 export { HistoryEventForm } from "./components/event-form";
+export { HistoryRibbon } from "./components/history-ribbon";
 export { HistoryTimeline } from "./components/history-timeline";

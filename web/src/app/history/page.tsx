@@ -4,8 +4,9 @@ import { Suspense } from "react";
 import { Page } from "@/shared/layout/page";
 import { getMessages } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
-import { HISTORY_LAYERS, HistoryTimeline, SCALES, type Scale } from "@/modules/history";
+import { HISTORY_LAYERS, HistoryRibbon, HistoryTimeline, ribbonFromHistory, ribbonFromSira, SCALES, type Scale } from "@/modules/history";
 import { getHistoryEvents } from "@/modules/history/server";
+import { getSiraData } from "@/modules/sira/server";
 import { isPreview } from "@/shared/auth/preview";
 import { PreviewBar } from "@/shared/layout/preview";
 
@@ -15,8 +16,8 @@ const t = messages.history;
 export const metadata: Metadata = { title: t.title };
 
 // «Историческая линия» (docs/PLAN.md, migration 022): events on layers, each
-// with every dated reading of the sources; a period is a century, a decade or
-// a year of the common era.
+// with every dated reading of the sources, on a ribbon of time and as a list
+// (a period is a century, a decade or a year of the common era).
 export default function HistoryPage({ searchParams }: PageProps<"/history">) {
   return (
     <Page>
@@ -36,7 +37,11 @@ async function Timeline({ searchParams }: Pick<PageProps<"/history">, "searchPar
   const layer = HISTORY_LAYERS.find((l) => l === params.layer) ?? null;
   const scale: Scale = SCALES.find((s) => s === params.scale) ?? "century";
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
-  const events = (await getHistoryEvents(preview)).filter((e) => !layer || e.layer === layer);
+  const [all, sira] = await Promise.all([getHistoryEvents(preview), layer ? null : getSiraData(preview)]);
+  const events = all.filter((e) => !layer || e.layer === layer);
+  // The ribbon: the same events on a scale of years; with all layers, also
+  // the events of the Prophet's life (their own lane).
+  const ribbon = [...(sira ? ribbonFromSira(sira.events, preview) : []), ...ribbonFromHistory(events)];
 
   const query = (patch: Record<string, string | null>) => {
     const next = new URLSearchParams();
@@ -49,7 +54,14 @@ async function Timeline({ searchParams }: Pick<PageProps<"/history">, "searchPar
   return (
     <>
       <PreviewBar href="/history" preview={preview} />
-      <HistoryTimeline events={events} layer={layer} scale={scale} preview={preview} query={query} />
+      <HistoryTimeline
+        events={events}
+        layer={layer}
+        scale={scale}
+        preview={preview}
+        query={query}
+        ribbon={ribbon.length > 0 ? <HistoryRibbon events={ribbon} /> : null}
+      />
     </>
   );
 }

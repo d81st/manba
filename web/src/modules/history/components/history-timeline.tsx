@@ -3,11 +3,10 @@ import { Badge } from "@/shared/ui/badge";
 import { getMessages } from "@/shared/i18n";
 import { bookPath, formatBookRef } from "@/shared/addresses/book-query";
 import { cn } from "@/shared/ui/utils";
-import { ceLabel } from "../history.calendar";
 import { groupByPeriod, SCALES, type Scale } from "../history.periods";
+import { historyDateLabel } from "../history.ribbon-data";
 import type { HistoryDate, HistoryEvent } from "../history.types";
 import { HISTORY_LAYERS, type HistoryLayer } from "../history.validation";
-import { HIJRI_MONTHS } from "@/modules/sira";
 
 const messages = getMessages();
 const t = messages.history;
@@ -20,12 +19,14 @@ export function HistoryTimeline({
   scale,
   preview,
   query,
+  ribbon,
 }: {
   events: HistoryEvent[];
   layer: HistoryLayer | null;
   scale: Scale;
   preview: boolean;
   query: (patch: Record<string, string | null>) => string;
+  ribbon?: React.ReactNode; // the ribbon of time, shown between the filters and the list
 }) {
   const { groups, undated } = groupByPeriod(events, scale);
   return (
@@ -48,6 +49,7 @@ export function HistoryTimeline({
         </Chip>
       ))}
     </nav>
+    {ribbon}
 
     {events.length === 0 ? (
       <p className="mt-6 text-sm text-muted-foreground">
@@ -125,21 +127,12 @@ function EventCard({ event, preview }: { event: HistoryEvent; preview: boolean }
   );
 }
 
-function dateLabel(d: HistoryDate) {
-  const parts: string[] = [];
-  if (d.day) parts.push(String(d.day));
-  if (d.month) parts.push(HIJRI_MONTHS[d.month - 1]);
-  if (d.yearAh !== null) parts.push(`${d.yearAh < 0 ? `${-d.yearAh} до хиджры` : `${d.yearAh} ${t.ah}`} (≈ ${ceLabel(d.yearAh)})`);
-  else if (d.yearCe !== null) parts.push(String(d.yearCe));
-  return parts.join(" ");
-}
-
 function DateLine({ date }: { date: HistoryDate }) {
   const path = date.address.split(".").slice(1).map(Number);
   const work = date.address.split(".")[0];
   return (
     <li className="text-sm">
-      <span className="font-medium tabular-nums">{dateLabel(date) || "—"}</span>
+      <span className="font-medium tabular-nums">{historyDateLabel(date) || "—"}</span>
       {date.variant && <span className="text-muted-foreground"> · {t.variant}</span>}
       {date.holder && <span className="text-muted-foreground"> · {date.holder}</span>}
       {" · "}
