@@ -15,6 +15,10 @@ export type SourceHit = {
 
 export type PageHit = { kind: "term" | "topic" | "history" | "sira" | "quiz"; title: string; href: string; hint: string; concepts: number[] };
 
+// A book of the library where a word of the question stands: how many of its
+// fragments have it and the way to the search in that book.
+export type BookCount = { work: string; title: string; count: number; href: string; concept: number };
+
 export type GraphEdge = { from: string; to: string };
 
 export type AssistantResult = {

@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Badge } from "@/shared/ui/badge";
 import { getMessages } from "@/shared/i18n";
 import { cn } from "@/shared/ui/utils";
 import type { AssistantResult, SourceHit } from "../assistant.types";
 import { AnswerGraph } from "./answer-graph";
 import { Examples } from "./ask-form";
+import { BooksFound } from "./books-found";
 import { TranslationText } from "@/modules/quran";
 
 const t = getMessages().assistant;
@@ -31,6 +33,12 @@ export function Answer({
   href: (patch: Record<string, string>) => string;
 }) {
   const total = result.quran.length + result.hadith.length + result.pages.length;
+  // Read after the rest of the answer: the books are not in the search index.
+  const books = (
+    <Suspense fallback={<p className="text-sm text-muted-foreground">{t.booksLoading}</p>}>
+      <BooksFound concepts={result.concepts} />
+    </Suspense>
+  );
   const widened = result.concepts.flatMap((c) => c.ar.filter((a) => a !== c.label));
   return (
     <>
@@ -58,6 +66,7 @@ export function Answer({
         <>
           <p className="mt-6">{t.nothing}</p>
           <Examples />
+          <div className="mt-6">{books}</div>
         </>
       ) : (
         <>
@@ -113,6 +122,7 @@ export function Answer({
               )}
               <Sources title={t.quran} hits={result.quran} />
               <Sources title={t.hadith} hits={result.hadith} />
+              {books}
             </div>
           )}
         </>

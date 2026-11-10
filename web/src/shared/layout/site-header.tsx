@@ -1,8 +1,9 @@
-import { KeyRound, LogOut, Settings } from "lucide-react";
+import { KeyRound, LogOut, Search, Settings } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { signOut } from "@/app/actions";
 import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
 import { getMessages } from "@/shared/i18n";
 import { requireSession } from "@/shared/auth/auth";
 
@@ -16,6 +17,21 @@ export function SiteHeader() {
           <span className="text-lg font-semibold leading-tight">{t.appName}</span>
           <span className="text-sm text-muted-foreground">{t.appTagline}</span>
         </Link>
+        {/* One search for the whole site: the assistant finds the word or the
+            address in the Quran, the hadiths, the books, the topics and the glossary. */}
+        <form action="/assistant" role="search" className="order-last flex w-full gap-2 sm:order-none sm:w-auto sm:flex-1 sm:max-w-sm">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute start-2.5 top-2.5 size-4 text-muted-foreground" />
+            <Input
+              type="search"
+              name="q"
+              maxLength={300}
+              placeholder={t.assistant.headerPlaceholder}
+              aria-label={t.assistant.headerLabel}
+              className="ps-8"
+            />
+          </div>
+        </form>
         <Suspense fallback={<span className="text-sm text-muted-foreground">{t.home.loading}</span>}>
           <Account />
         </Suspense>
