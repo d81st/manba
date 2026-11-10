@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { readSessionToken, SESSION_COOKIE, type Session } from "@/shared/auth/session";
-import { accountState } from "@/shared/auth/accounts";
+import { accountState, ownerSessionValid } from "@/shared/auth/accounts";
 
 // Paths reachable without a session. Everything else requires login.
 const PUBLIC_PATHS = ["/login", "/api/health", "/robots.txt"];
@@ -15,9 +15,11 @@ function under(pathname: string, paths: string[]) {
 
 // An account's session is valid only while the account is enabled and its
 // session_version is the one in the cookie (a new password, role or
-// disabling raises it). The main administrator has no row to check.
+// disabling raises it). The main administrator's cookie carries the
+// owner_session_version, raised by "sign out".
 async function current(session: Session | null): Promise<Session | null> {
-  if (!session?.uid) return session;
+  if (!session) return null;
+  if (!session.uid) return (await ownerSessionValid(session)) ? session : null;
   try {
     const state = await accountState(session.uid);
     if (!state || state.disabled || state.session_version !== session.ver) return null;

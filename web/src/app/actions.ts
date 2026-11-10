@@ -2,9 +2,15 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { SESSION_COOKIE } from "@/shared/auth/session";
+import { endOwnerSessions } from "@/shared/auth/accounts";
+import { readSessionToken, SESSION_COOKIE } from "@/shared/auth/session";
 
+// Signing out removes the cookie; for the main administrator it also ends
+// every session of theirs, so a copied cookie stops working (migration 050).
 export async function signOut() {
-  (await cookies()).delete(SESSION_COOKIE);
+  const store = await cookies();
+  const session = readSessionToken(store.get(SESSION_COOKIE)?.value);
+  if (session && !session.uid) await endOwnerSessions();
+  store.delete(SESSION_COOKIE);
   redirect("/login");
 }

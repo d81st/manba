@@ -3,14 +3,17 @@ import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { readSessionToken, SESSION_COOKIE, type Session } from "@/shared/auth/session";
-import { accountState } from "@/shared/auth/accounts";
+import { accountState, ownerSessionValid } from "@/shared/auth/accounts";
 
 // The expiry check reads the clock: always at request time, never prerendered.
 async function sessionFromCookie(): Promise<Session | null> {
   await connection();
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   const session = readSessionToken(token);
-  if (!session?.uid) return session;
+  if (!session) return null;
+  // The main administrator: the cookie must carry the current number ("sign
+  // out" raises it, migration 050).
+  if (!session.uid) return (await ownerSessionValid(session)) ? session : null;
   // An account's role and disabling are read from the database, not trusted
   // from the cookie (the proxy checks the same before every page).
   const state = await accountState(session.uid);

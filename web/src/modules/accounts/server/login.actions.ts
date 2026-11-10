@@ -14,7 +14,7 @@ import {
     SESSION_COOKIE,
     SESSION_MAX_AGE,
 } from "@/shared/auth/session";
-import { findAccount } from "@/shared/auth/accounts";
+import { findAccount, ownerSessionVersion } from "@/shared/auth/accounts";
 
 export type LoginState = { error?: string; login?: string };
 
@@ -36,7 +36,7 @@ export async function login(
   let token: string | null = null;
   let mustChange = false;
   if (credentialsMatch(login, password)) {
-    token = createSessionToken(login);
+    token = createSessionToken(login, undefined, (await ownerSessionVersion()) ?? 0);
   } else if (isDatabaseConfigured()) {
     const account = await findAccount(login, password);
     if (account) {

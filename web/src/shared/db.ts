@@ -5,6 +5,10 @@ import pg from "pg";
 const store = globalThis as unknown as { dbPool?: pg.Pool };
 
 const SEARCH_PATH = "SET search_path TO public, library, extensions";
+// No query of the site may run longer than this: with five connections, a few
+// stuck searches would otherwise stop every page. The slowest honest query
+// (the galaxy of the library) takes a few seconds.
+const STATEMENT_TIMEOUT = "SET statement_timeout TO 20000";
 
 export function isDatabaseConfigured() {
   return Boolean(process.env.DATABASE_URL);
@@ -24,6 +28,7 @@ export function db() {
       // fails, the connection is closed and the caller gets the error.
       onConnect: async (client) => {
         await client.query(SEARCH_PATH);
+        await client.query(STATEMENT_TIMEOUT);
       },
     });
   }

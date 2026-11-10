@@ -13,9 +13,10 @@ export const PREVIEW_MAX_AGE = 60 * 60 * 12; // seconds
 
 export type Role = "admin" | "reader";
 
-// uid/ver/pc only for accounts in the users table: the account id, its
-// session_version (checked against the database on every request) and
-// "must change the temporary password".
+// uid/pc only for accounts in the users table: the account id and "must
+// change the temporary password". ver — the account's session_version, or for
+// the main administrator the owner_session_version; both are checked against
+// the database on every request.
 export type Session = { login: string; exp: number; role: Role; uid?: number; ver?: number; pc?: boolean };
 export type Account = { role: Role; uid: number; ver: number; pc: boolean };
 
@@ -52,13 +53,15 @@ export function credentialsMatch(login: string, password: string) {
   return loginOk && passwordOk;
 }
 
-export function createSessionToken(login: string, account?: Account) {
+// ownerVersion — for the main administrator: the owner_session_version the
+// cookie is issued under (shared/auth/accounts.ts).
+export function createSessionToken(login: string, account?: Account, ownerVersion = 0) {
   const key = signingKey();
   if (!key) return null;
   const exp = Math.floor(Date.now() / 1000) + SESSION_MAX_AGE;
   const session: Session = account
     ? { login, exp, role: account.role, uid: account.uid, ver: account.ver, ...(account.pc ? { pc: true } : {}) }
-    : { login, exp, role: "admin" };
+    : { login, exp, role: "admin", ver: ownerVersion };
   const payload = Buffer.from(JSON.stringify(session)).toString("base64url");
   return `${payload}.${sign(payload, key)}`;
 }
@@ -101,9 +104,12 @@ export function readSessionToken(token: string | undefined): Session | null {
       if (session.role !== "admin" && session.role !== "reader") return null;
       return session as Session;
     }
-    // The main administrator. Tokens issued before roles existed carry no role.
+    // The main administrator. Tokens issued before roles existed carry no
+    // role, those issued before owner_session_version carry no version (0).
     if (session.login !== process.env.SITE_LOGIN) return null;
-    return { login: session.login, exp: session.exp, role: "admin" };
+    const ver = session.ver === undefined ? 0 : session.ver;
+    if (!Number.isInteger(ver)) return null;
+    return { login: session.login, exp: session.exp, role: "admin", ver };
   } catch {
     return null;
   }

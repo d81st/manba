@@ -67,6 +67,11 @@ describe("session token", () => {
     expect(readSessionToken(createSessionToken("admin")!)?.role).toBe("admin");
   });
 
+  it("carries the owner's session number, 0 for cookies issued before it", () => {
+    expect(readSessionToken(createSessionToken("admin", undefined, 4)!)?.ver).toBe(4);
+    expect(readSessionToken(createSessionToken("admin")!)?.ver).toBe(0);
+  });
+
   it("carries an account's role, id and version", () => {
     const token = createSessionToken("reader.one", { role: "reader", uid: 7, ver: 3, pc: true })!;
     expect(readSessionToken(token)).toMatchObject({ login: "reader.one", role: "reader", uid: 7, ver: 3, pc: true });
