@@ -128,7 +128,7 @@ async function BookText({
               <li
                 key={hadithAnchor(hadith.path)}
                 id={hadithAnchor(hadith.path)}
-                className="flex scroll-mt-4 flex-col gap-1 border-t py-4 first:border-t-0 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
+                className="long-row flex scroll-mt-4 flex-col gap-1 border-t py-4 first:border-t-0 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
               >
                 <span className="flex min-w-20 shrink-0 flex-col gap-1">
                   <a

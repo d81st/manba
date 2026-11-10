@@ -172,3 +172,11 @@
   unicode-bidi: isolate;
   font-family: "Amiri Quran", var(--font-arabic);
 }
+
+/* Rows of long reading pages (ayahs of a sura, hadiths of a book): the
+   browser lays out and paints only the rows near the screen; the rest keep an
+   estimated height until they come close. Find-in-page and #anchors still work. */
+@utility long-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 14rem;
+}

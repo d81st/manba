@@ -87,7 +87,7 @@ async function SuraText({
             <li
               key={segment.address}
               id={`${sura.number}-${segment.number}`}
-              className="flex scroll-mt-4 flex-col gap-1 border-b py-4 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
+              className="long-row flex scroll-mt-4 flex-col gap-1 border-b py-4 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
             >
               <span className="flex min-w-16 shrink-0 gap-3 text-xs sm:flex-col sm:gap-1">
                 <a

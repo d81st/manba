@@ -90,7 +90,7 @@ async function Results({ parsed }: { parsed: ReturnType<typeof parseQuery> }) {
       </p>
       <ol className="mt-2 mb-6">
         {result.hits.map((hit) => (
-          <li key={hit.address} className="flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4">
+          <li key={hit.address} className="long-row flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4">
             <Link
               href={`/quran/${hit.sura}#${hit.sura}-${hit.ayah}`}
               className="min-w-24 shrink-0 text-xs tabular-nums text-muted-foreground no-underline"

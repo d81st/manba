@@ -103,7 +103,7 @@ async function Results({
       </p>
       <ol className="mt-2 mb-6">
         {result.hits.map((hit) => (
-          <li key={hit.label} className="flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4">
+          <li key={hit.label} className="long-row flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4">
             <span className="flex min-w-24 shrink-0 flex-col gap-0.5">
               <Link
                 href={bookPath(work, hit.path)}

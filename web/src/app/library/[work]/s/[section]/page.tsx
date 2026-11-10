@@ -143,7 +143,7 @@ async function SectionText({
               <li
                 key={piece.anchor}
                 id={piece.anchor}
-                className="flex scroll-mt-4 flex-col gap-1 border-t py-3 first:border-t-0 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
+                className="long-row flex scroll-mt-4 flex-col gap-1 border-t py-3 first:border-t-0 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
               >
                 <span className="flex min-w-24 shrink-0 flex-col gap-0.5">
                   <a href={`#${piece.anchor}`} className="text-sm font-medium tabular-nums no-underline">

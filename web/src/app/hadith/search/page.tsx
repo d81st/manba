@@ -71,7 +71,7 @@ async function Results({ words, diacritics }: { words: string[]; diacritics: boo
         {result.hits.map((hit) => (
           <li
             key={`${hit.work}-${hadithAnchor(hit.path)}`}
-            className="flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4"
+            className="long-row flex flex-col gap-1 border-b py-4 sm:flex-row sm:items-baseline sm:gap-4"
           >
             <Link
               href={hadithPath(hit.work, hit.path)}
