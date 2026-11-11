@@ -9,6 +9,7 @@
     "start": "node scripts/migrate.mjs && npm run db:import && next start",
     "lint": "eslint",
     "test": "vitest run",
+    "e2e": "playwright test",
     "db:migrate": "node scripts/migrate.mjs",
     "db:import": "node --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/import-sources.ts"
   },
@@ -37,6 +38,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20",
     "@types/pg": "^8.23.1",

@@ -117,3 +117,16 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'mishnah.he.vilna'")" = 4187
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'pre.he.sefaria'")" = 656
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM works WHERE canon = 'external'")" = 4
+
+      # The built site in a real browser, on the database prepared above:
+      # signing in, reading pages, anchors, searches, graphs, bookmarks, reports.
+      - name: Browser checks
+        run: |
+          npx playwright install --with-deps chromium
+          npm run e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-results
+          path: web/test-results
+          retention-days: 7
