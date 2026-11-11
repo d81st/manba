@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ReportButton } from "@/modules/reports";
 import { defaultLocale, getMessages } from "@/shared/i18n";
 // Interface font served from our own server (OFL), with Cyrillic.
 import "@fontsource-variable/inter";
@@ -15,7 +17,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={defaultLocale} dir="ltr">
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* "Report a mistake" on every page; it reads the address, so it waits in Suspense. */}
+        <Suspense fallback={null}>
+          <ReportButton />
+        </Suspense>
+      </body>
     </html>
   );
 }

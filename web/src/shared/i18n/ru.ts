@@ -13,11 +13,13 @@ import { libraryRu } from "@/modules/library/i18n";
 import { accountsAdminRu, accountsRu } from "@/modules/accounts/i18n";
 import { galaxyRu } from "@/modules/galaxy/i18n";
 import { knowledgeRu } from "@/modules/knowledge/i18n";
+import { reportsAdminRu, reportsRu } from "@/modules/reports/i18n";
 
 // Interface strings only. Source texts are stored in the database, never here.
 export const ru = {
   ...knowledgeRu,
   ...galaxyRu,
+  ...reportsRu,
   // Controls of every graph (shared/graph).
   graph: {
     zoomIn: "Приблизить",
@@ -49,6 +51,7 @@ export const ru = {
   },
   admin: {
     ...accountsAdminRu,
+    ...reportsAdminRu,
     ...hadithAdminRu,
     ...assistantAdminRu,
     ...siraAdminRu,
@@ -77,6 +80,8 @@ export const ru = {
       linksHint: "Пары похожих текстов из разных сборников, найденные автоматически: отметить, один ли это хадис.",
       history: "Историческая линия",
       historyHint: "События от пророка до наших дней по слоям: правители, тексты, учение, учёные. Каждая дата — слова источника.",
+      reports: "Сообщения об ошибках",
+      reportsHint: "Что читатели написали об ошибках на страницах: опечатки, даты, ссылки.",
       findings: "Новые находки",
       findingsHint: "Наводки извне (пост, видео) с текстом, который приписывают источнику: проверить по первоисточнику — подтверждено или не найдено.",
       assistant: "Ассистент: синонимы",
