@@ -122,7 +122,9 @@ jobs:
       # signing in, reading pages, anchors, searches, graphs, bookmarks, reports.
       - name: Browser checks
         run: |
-          npx playwright install --with-deps chromium
+          # The browser only: the runner image already has its system libraries,
+          # and the site serves its own fonts (no apt-get, which may be down).
+          npx playwright install chromium
           npm run e2e
       - uses: actions/upload-artifact@v4
         if: failure()
