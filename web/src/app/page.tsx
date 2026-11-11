@@ -1,5 +1,6 @@
 import {
   BookA,
+  Bookmark,
   BookOpen,
   FlaskConical,
   History,
@@ -18,6 +19,7 @@ import {
   Waypoints,
 } from "lucide-react";
 import Link from "next/link";
+import { ContinueReading } from "@/modules/bookmarks";
 import { Page } from "@/shared/layout/page";
 import { SiteHeader } from "@/shared/layout/site-header";
 import { Badge } from "@/shared/ui/badge";
@@ -45,6 +47,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
   tests: ListChecks,
   assistant: MessageCircleQuestion,
   notFound: SearchX,
+  bookmarks: Bookmark,
 };
 
 // Sections that already have pages.
@@ -65,6 +68,7 @@ const LINKS: Partial<Record<SectionKey, string>> = {
   tests: "/tests",
   assistant: "/assistant",
   notFound: "/not-found-in-sources",
+  bookmarks: "/bookmarks",
 };
 
 export default function Home() {
@@ -74,6 +78,7 @@ export default function Home() {
     <>
       <SiteHeader />
       <Page>
+        <ContinueReading />
         <h1 className="mt-8 mb-4 text-xl font-semibold">{t.home.sectionsTitle}</h1>
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map(([key, name]) => {

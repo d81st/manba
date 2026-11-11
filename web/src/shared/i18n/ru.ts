@@ -11,6 +11,7 @@ import { quranRu } from "@/modules/quran/i18n";
 import { hadithAdminRu, hadithRu } from "@/modules/hadith/i18n";
 import { libraryRu } from "@/modules/library/i18n";
 import { accountsAdminRu, accountsRu } from "@/modules/accounts/i18n";
+import { bookmarksRu } from "@/modules/bookmarks/i18n";
 import { galaxyRu } from "@/modules/galaxy/i18n";
 import { knowledgeRu } from "@/modules/knowledge/i18n";
 import { reportsAdminRu, reportsRu } from "@/modules/reports/i18n";
@@ -19,6 +20,7 @@ import { reportsAdminRu, reportsRu } from "@/modules/reports/i18n";
 export const ru = {
   ...knowledgeRu,
   ...galaxyRu,
+  ...bookmarksRu,
   ...reportsRu,
   // Controls of every graph (shared/graph).
   graph: {
@@ -168,6 +170,7 @@ export const ru = {
       tests: "Тесты",
       assistant: "Ассистент по источникам",
       notFound: "Не найдено в источниках",
+      bookmarks: "Закладки",
     },
   },
 };

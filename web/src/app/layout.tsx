@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { BookmarkButton, ReadingTracker } from "@/modules/bookmarks";
 import { ReportButton } from "@/modules/reports";
 import { defaultLocale, getMessages } from "@/shared/i18n";
 // Interface font served from our own server (OFL), with Cyrillic.
@@ -19,9 +20,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang={defaultLocale} dir="ltr">
       <body>
         {children}
-        {/* "Report a mistake" on every page; it reads the address, so it waits in Suspense. */}
+        {/* On every page: "add a bookmark", "report a mistake" and the memory of
+            "continue reading". They read the address, so they wait in Suspense. */}
         <Suspense fallback={null}>
+          <BookmarkButton />
           <ReportButton />
+          <ReadingTracker />
         </Suspense>
       </body>
     </html>
