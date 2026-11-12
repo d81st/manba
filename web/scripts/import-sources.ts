@@ -1227,6 +1227,56 @@ const ITQAN: HadithSource = {
   retrievedAt: "2026-10-31",
 };
 
+// Books the disputes about hard topics quote most (docs/PLAN.md, 12.11.2026):
+// loaded so that every quotation can be checked on the site, with its page.
+const IQTIDA_SIRAT: HadithSource = {
+  file: "0728IbnTaymiyya.IqtidaSirat.Shamela0011620-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0728IbnTaymiyya.IqtidaSirat.Shamela0011620-ara1:7c9c84d",
+  sourceId: "openiti.iqtida-sirat-shamela0011620",
+  sourceTitle: "OpenITI · 0728IbnTaymiyya.IqtidaSirat.Shamela0011620-ara1",
+  sourceVersion: "OpenITI/0750AH 7c9c84d (2026-11-12)",
+  sourceUrl: "https://github.com/OpenITI/0750AH",
+  notice: `${OPENITI_CITATION}. Text: 0728IbnTaymiyya.IqtidaSirat.Shamela0011620-ara1 — Iqtida' al-sirat al-mustaqim li-mukhalafat ashab al-jahim of Ibn Taymiyya, ed. Nasir 'Abd al-Karim al-'Aql, Dar 'Alam al-Kutub, Beirut, 7th ed., 1419/1999, 2 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "iqtida_sirat",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "اقتضاء الصراط المستقيم لمخالفة أصحاب الجحيم", ru: "Ибн Таймия, «Иктида ас-сират аль-мустаким»", "ru-short": "Иктида" },
+    authoritySunni: null,
+  },
+  versionId: "iqtida_sirat.ar.openiti",
+  versionTitle: "Арабский текст: изд. Насира Абд аль-Карима аль-Акля («Дар Алям аль-Кутуб», Бейрут, 7-е изд., 1419/1999), 2 тома, страницы издания (OpenITI)",
+  minItems: 900,
+  retrievedAt: "2026-11-12",
+};
+
+const AHKAM_DHIMMA: HadithSource = {
+  file: "0751IbnQayyimJawziyya.AhkamAhlDhimma.Shamela0021747-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0751IbnQayyimJawziyya.AhkamAhlDhimma.Shamela0021747-ara1:61b0c78",
+  sourceId: "openiti.ahkam-ahl-dhimma-shamela0021747",
+  sourceTitle: "OpenITI · 0751IbnQayyimJawziyya.AhkamAhlDhimma.Shamela0021747-ara1",
+  sourceVersion: "OpenITI/0775AH 61b0c78 (2026-11-12)",
+  sourceUrl: "https://github.com/OpenITI/0775AH",
+  notice: `${OPENITI_CITATION}. Text: 0751IbnQayyimJawziyya.AhkamAhlDhimma.Shamela0021747-ara1 — Ahkam ahl al-dhimma of Ibn Qayyim al-Jawziyya, ed. Yusuf ibn Ahmad al-Bakri and Shakir ibn Tawfiq al-'Aruri, Ramadi li-l-Nashr, Dammam, 1st ed., 1418/1997, 3 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "ahkam_dhimma",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "أحكام أهل الذمة", ru: "Ибн аль-Каййим, «Ахкам ахль аз-зимма»", "ru-short": "Ахкам" },
+    authoritySunni: null,
+  },
+  versionId: "ahkam_dhimma.ar.openiti",
+  versionTitle: "Арабский текст: изд. Юсуфа аль-Бакри и Шакира аль-Арури («Рамади ли-н-Нашр», Даммам, 1-е изд., 1418/1997), 3 тома, страницы издания (OpenITI)",
+  minItems: 1200,
+  retrievedAt: "2026-11-12",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA];
+
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 
 // Pairs of hadiths of different collections with shared wording
@@ -1715,6 +1765,7 @@ async function main() {
     for (const src of [MASAHIF, FADAIL_ABU_UBAYD, SABAA_IBN_MUJAHID, ANSAB_BALADHURI]) await importOpenitiHadith(client, src);
     for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
     for (const src of SCIENCE_BOOKS) await importOpenitiHadith(client, src);
+    for (const src of DISPUTE_BOOKS) await importOpenitiHadith(client, src);
     for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
     for (const src of EXTERNAL_ADDITIONS) await importExternalAdditions(client, src);
     await importSablukov(client);
