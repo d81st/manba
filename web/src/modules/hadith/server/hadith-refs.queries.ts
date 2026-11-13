@@ -51,7 +51,10 @@ export async function getHadithRefs(addresses: string[]): Promise<Map<string, Ha
        WHERE a.address <@ r.ref::extensions.ltree
        ORDER BY a.ordinal LIMIT ${REF_ITEMS}
      ) x
-     JOIN works w ON w.id = x.work_id AND w.category IN ('hadith', 'sira', 'tafsir', 'qiraat', 'history', 'sciences', 'theology')
+     -- Every book of the library except the Quran (its ayahs are read apart)
+     -- and the texts of other religions: a new section of the library (the law,
+     -- 13.11.2026) must not drop out of the references.
+     JOIN works w ON w.id = x.work_id AND w.category <> 'quran' AND w.canon <> 'external'
      ORDER BY r.ref, x.ordinal`,
     [addresses],
   );
