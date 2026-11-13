@@ -1275,7 +1275,30 @@ const AHKAM_DHIMMA: HadithSource = {
   retrievedAt: "2026-11-12",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA];
+const UMM_SHAFII: HadithSource = {
+  file: "0204Shafici.Umm.Shamela0001655-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0204Shafici.Umm.Shamela0001655-ara1:2cfdc8c",
+  sourceId: "openiti.umm-shafii-shamela0001655",
+  sourceTitle: "OpenITI · 0204Shafici.Umm.Shamela0001655-ara1",
+  sourceVersion: "OpenITI/0225AH 2cfdc8c (2026-11-13)",
+  sourceUrl: "https://github.com/OpenITI/0225AH",
+  notice: `${OPENITI_CITATION}. Text: 0204Shafici.Umm.Shamela0001655-ara1 — Kitab al-Umm of al-Shafi'i, Dar al-Ma'rifa, Beirut, 8 vols (no edition number), with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "umm_shafii",
+    category: "theology",
+    canon: "sunni",
+    titles: { ar: "الأم", ru: "аш-Шафии, «Китаб аль-Умм»", "ru-short": "Умм" },
+    authoritySunni: null,
+  },
+  versionId: "umm_shafii.ar.openiti",
+  versionTitle: "Арабский текст: изд. «Дар аль-Ма‘рифа» (Бейрут), 8 томов, страницы издания (OpenITI)",
+  minItems: 2000,
+  retrievedAt: "2026-11-13",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 

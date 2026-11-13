@@ -48,6 +48,7 @@ export const BOOKS: Record<string, { names: string[]; label: string; scheme: Boo
   itqan_suyuti: { names: ["иткан", "аль-иткан", "itqan"], label: "Иткан", scheme: "page" },
   iqtida_sirat: { names: ["иктида", "иктида ас-сират", "иктида ас-сират аль-мустаким", "iqtida"], label: "Иктида", scheme: "page" },
   ahkam_dhimma: { names: ["ахкам", "ахкам ахль аз-зимма", "ahkam ahl al-dhimma"], label: "Ахкам", scheme: "page" },
+  umm_shafii: { names: ["умм", "аль-умм", "китаб аль-умм", "umm"], label: "Умм", scheme: "page" },
 };
 export const BOOK_IDS = Object.keys(BOOKS);
 
