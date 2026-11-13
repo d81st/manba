@@ -1,24 +1,24 @@
 import "server-only";
 import { cacheLife } from "next/cache";
+import { BOOK_CATEGORIES } from "@/modules/library";
 import { db } from "@/shared/db";
 import type { BookCount } from "../assistant.types";
 import { like } from "./assistant.sql";
 
 // The other books of the library (commentary, the Prophet's life, history,
-// theology, sciences): for each subject of the question with an Arabic form,
+// theology, sciences, law): for each subject of the question with an Arabic form,
 // the books whose text has it and in how many fragments. The fragments
 // themselves are read in the search of that book, where the link leads.
 // These books are outside the trigram index (migration 021), so their text is
 // read through once for the whole question; the page shows this part after
 // the rest, and the answer is kept for a day.
-const CATEGORIES = ["sira", "tafsir", "qiraat", "history", "sciences", "theology"];
 const PER_SUBJECT = 6;
 
 // forms[i] — the Arabic search forms of the i-th subject (empty: not searched).
 export async function bookCounts(forms: string[][]): Promise<BookCount[]> {
   "use cache";
   cacheLife("days");
-  const params: unknown[] = [CATEGORIES];
+  const params: unknown[] = [BOOK_CATEGORIES];
   const subjects = forms.flatMap((list, concept) => {
     if (list.length === 0) return [];
     const sql = list.map((form) => `t.search_plain LIKE $${params.push(like(form))}`).join(" OR ");

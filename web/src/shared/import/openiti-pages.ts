@@ -13,7 +13,7 @@
 // in the page markers are read as the pages they plainly mean and reported
 // (the History of al-Tabari): a marker repeating the one before it is
 // dropped, one out of sequence between pages n and n + 2 is read as n + 1, and
-// an earlier page standing between pages n and n + 1 is dropped;
+// an earlier page standing between pages n and n + 1 (or n again) is dropped;
 // "startAt" — the body is read from the first line equal to it (an export
 // that repeats its opening pages, the Itqan of al-Suyuti); "tail" — text after
 // the last page marker is the next page (an export whose last page has no
@@ -77,8 +77,9 @@ export function repairPageMarkers(source: string) {
       b.page = a.page + 1;
     } else if (
       (b.volume === a.volume && b.page === a.page) ||
-      // A stray earlier page between pages n and n + 1 (the Itqan: 178, 68, 179).
-      (c && a.volume === b.volume && b.volume === c.volume && b.page < a.page && c.page === a.page + 1)
+      // A stray earlier page between pages n and n + 1 (the Itqan: 178, 68, 179)
+      // or between n and its repeat (al-Hidaya: 56, 45, 56).
+      (c && a.volume === b.volume && b.volume === c.volume && b.page < a.page && (c.page === a.page + 1 || c.page === a.page))
     ) {
       b.keep = false;
       repairs.push({ marker: `${b.volume}:${b.page}`, read: "" });

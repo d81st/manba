@@ -113,6 +113,8 @@ jobs:
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'iqtida_sirat.ar.openiti'")" = 1123
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'ahkam_dhimma.ar.openiti'")" = 1525
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'umm_shafii.ar.openiti'")" = 3894
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'hidaya.ar.openiti'")" = 977
+          test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'kharaj_abu_yusuf.ar.openiti'")" = 323
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tanakh.he.wlc'")" = 23206
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'tanakh.ru.synodal'")" = 23142
           test "$(psql "$DATABASE_URL" -tAq -c "$Q SELECT count(*) FROM texts WHERE version_id = 'nt.grc.sblgnt'")" = 7939

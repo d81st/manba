@@ -230,7 +230,7 @@ type HadithSource = {
   sourceUrl?: string; // the OpenITI repository, when not 0275AH
   work: {
     id: string;
-    category?: "hadith" | "sira" | "tafsir" | "qiraat" | "history" | "sciences" | "theology"; // hadith by default
+    category?: "hadith" | "sira" | "tafsir" | "qiraat" | "history" | "sciences" | "theology" | "fiqh"; // hadith by default
     canon: "sunni" | "shia";
     titles: Record<string, string>;
     authoritySunni: number | null;
@@ -1264,7 +1264,7 @@ const AHKAM_DHIMMA: HadithSource = {
   notice: `${OPENITI_CITATION}. Text: 0751IbnQayyimJawziyya.AhkamAhlDhimma.Shamela0021747-ara1 — Ahkam ahl al-dhimma of Ibn Qayyim al-Jawziyya, ed. Yusuf ibn Ahmad al-Bakri and Shakir ibn Tawfiq al-'Aruri, Ramadi li-l-Nashr, Dammam, 1st ed., 1418/1997, 3 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
   work: {
     id: "ahkam_dhimma",
-    category: "theology",
+    category: "fiqh",
     canon: "sunni",
     titles: { ar: "أحكام أهل الذمة", ru: "Ибн аль-Каййим, «Ахкам ахль аз-зимма»", "ru-short": "Ахкам" },
     authoritySunni: null,
@@ -1287,7 +1287,7 @@ const UMM_SHAFII: HadithSource = {
   notice: `${OPENITI_CITATION}. Text: 0204Shafici.Umm.Shamela0001655-ara1 — Kitab al-Umm of al-Shafi'i, Dar al-Ma'rifa, Beirut, 8 vols (no edition number), with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
   work: {
     id: "umm_shafii",
-    category: "theology",
+    category: "fiqh",
     canon: "sunni",
     titles: { ar: "الأم", ru: "аш-Шафии, «Китаб аль-Умм»", "ru-short": "Умм" },
     authoritySunni: null,
@@ -1298,7 +1298,53 @@ const UMM_SHAFII: HadithSource = {
   retrievedAt: "2026-11-13",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII];
+const HIDAYA_MARGHINANI: HadithSource = {
+  file: "0593BurhanDinFarghaniMarghinani.HidayaFiSharhBidaya.Shamela0011820-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0593BurhanDinFarghaniMarghinani.HidayaFiSharhBidaya.Shamela0011820-ara1:ea4bdc6",
+  sourceId: "openiti.hidaya-marghinani-shamela0011820",
+  sourceTitle: "OpenITI · 0593BurhanDinFarghaniMarghinani.HidayaFiSharhBidaya.Shamela0011820-ara1",
+  sourceVersion: "OpenITI/0600AH ea4bdc6 (2026-11-13)",
+  sourceUrl: "https://github.com/OpenITI/0600AH",
+  notice: `${OPENITI_CITATION}. Text: 0593BurhanDinFarghaniMarghinani.HidayaFiSharhBidaya.Shamela0011820-ara1 — al-Hidaya fi sharh Bidayat al-mubtadi of al-Marghinani, ed. Talal Yusuf, Dar Ihya' al-Turath al-'Arabi, Beirut, 4 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "hidaya",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "الهداية في شرح بداية المبتدي", ru: "аль-Маргинани, «аль-Хидая»", "ru-short": "Хидая" },
+    authoritySunni: null,
+  },
+  versionId: "hidaya.ar.openiti",
+  versionTitle: "Арабский текст: изд. Талаля Юсуфа («Дар ихья ат-турас аль-араби», Бейрут), 4 тома, страницы издания (OpenITI)",
+  minItems: 900,
+  retrievedAt: "2026-11-13",
+};
+
+const KHARAJ_ABU_YUSUF: HadithSource = {
+  file: "0182AbuYusufYacqub.Kharaj.Shamela0026333-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0182AbuYusufYacqub.Kharaj.Shamela0026333-ara1:599f22f",
+  sourceId: "openiti.kharaj-abu-yusuf-shamela0026333",
+  sourceTitle: "OpenITI · 0182AbuYusufYacqub.Kharaj.Shamela0026333-ara1",
+  sourceVersion: "OpenITI/0200AH 599f22f (2026-11-13)",
+  sourceUrl: "https://github.com/OpenITI/0200AH",
+  notice: `${OPENITI_CITATION}. Text: 0182AbuYusufYacqub.Kharaj.Shamela0026333-ara1 — Kitab al-Kharaj of Abu Yusuf, ed. Taha 'Abd al-Ra'uf Sa'd and Sa'd Hasan Muhammad, al-Maktaba al-Azhariyya li-l-Turath, Cairo, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "kharaj_abu_yusuf",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "الخراج", ru: "Абу Юсуф, «Китаб аль-Харадж»", "ru-short": "Харадж" },
+    authoritySunni: null,
+  },
+  versionId: "kharaj_abu_yusuf.ar.openiti",
+  versionTitle: "Арабский текст: изд. Таха Абд ар-Рауфа Саада и Саада Хасана Мухаммада («аль-Мактаба аль-Азхария ли-т-турас», Каир), страницы издания (OpenITI)",
+  minItems: 200,
+  retrievedAt: "2026-11-13",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 

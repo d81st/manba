@@ -154,4 +154,26 @@ describe("parseOpenitiPages, rough exports", () => {
       [5, ["نص خامس", "تتمة"]],
     ]);
   });
+
+  it("with the repair option drops a stray earlier page between a page and its repeat", () => {
+    const source = [
+      "#META#Header#End#",
+      "# نص أول PageV01P001",
+      "# نص ثان PageV01P002",
+      "# نص ثالث PageV01P001",
+      "# نص رابع PageV01P002",
+      "# نص خامس PageV01P003",
+    ].join("\n");
+    expect(() => parseOpenitiPages(source, { loose: true })).toThrow(/follows/);
+    const book = parseOpenitiPages(source, { loose: true, repair: true });
+    expect(book.report.repairs).toEqual([
+      { marker: "1:1", read: "" },
+      { marker: "1:2", read: "" },
+    ]);
+    expect(book.pieces.map((p) => [p.page, p.paragraphs])).toEqual([
+      [1, ["نص أول"]],
+      [2, ["نص ثان"]],
+      [3, ["نص ثالث", "نص رابع", "نص خامس"]],
+    ]);
+  });
 });
