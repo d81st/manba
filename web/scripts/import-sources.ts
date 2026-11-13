@@ -1344,7 +1344,53 @@ const KHARAJ_ABU_YUSUF: HadithSource = {
   retrievedAt: "2026-11-13",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF];
+const IKHTILAF_AIMMA: HadithSource = {
+  file: "0560WazirIbnHubayraShaybani.IkhtilafAimma.Shamela0006228-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0560WazirIbnHubayraShaybani.IkhtilafAimma.Shamela0006228-ara1:298735a",
+  sourceId: "openiti.ikhtilaf-aimma-shamela0006228",
+  sourceTitle: "OpenITI · 0560WazirIbnHubayraShaybani.IkhtilafAimma.Shamela0006228-ara1",
+  sourceVersion: "OpenITI/0575AH 298735a (2026-11-13)",
+  sourceUrl: "https://github.com/OpenITI/0575AH",
+  notice: `${OPENITI_CITATION}. Text: 0560WazirIbnHubayraShaybani.IkhtilafAimma.Shamela0006228-ara1 — Ikhtilaf al-a'imma al-'ulama' of Ibn Hubayra, ed. al-Sayyid Yusuf Ahmad, Dar al-Kutub al-'Ilmiyya, Beirut, 1st ed. 1423/2002, 2 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "ikhtilaf_aimma",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "اختلاف الأئمة العلماء", ru: "Ибн Хубайра, «Ихтиляф аль-аимма аль-уляма»", "ru-short": "Ихтиляф" },
+    authoritySunni: null,
+  },
+  versionId: "ikhtilaf_aimma.ar.openiti",
+  versionTitle: "Арабский текст: изд. ас-Саййида Юсуфа Ахмада («Дар аль-кутуб аль-ильмия», Бейрут, 1423/2002), 2 тома, страницы издания (OpenITI)",
+  minItems: 900,
+  retrievedAt: "2026-11-13",
+};
+
+const BIDAYAT_MUJTAHID: HadithSource = {
+  file: "0595IbnRushdHafid.BidayatMujtahid.Shamela0021739-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0595IbnRushdHafid.BidayatMujtahid.Shamela0021739-ara1:ea4bdc6",
+  sourceId: "openiti.bidayat-mujtahid-shamela0021739",
+  sourceTitle: "OpenITI · 0595IbnRushdHafid.BidayatMujtahid.Shamela0021739-ara1",
+  sourceVersion: "OpenITI/0600AH ea4bdc6 (2026-11-13)",
+  sourceUrl: "https://github.com/OpenITI/0600AH",
+  notice: `${OPENITI_CITATION}. Text: 0595IbnRushdHafid.BidayatMujtahid.Shamela0021739-ara1 — Bidayat al-mujtahid wa-nihayat al-muqtasid of Ibn Rushd, Dar al-Hadith, Cairo, 1425/2004, 4 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "bidayat_mujtahid",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "بداية المجتهد ونهاية المقتصد", ru: "Ибн Рушд, «Бидаят аль-муджтахид»", "ru-short": "Бидая" },
+    authoritySunni: null,
+  },
+  versionId: "bidayat_mujtahid.ar.openiti",
+  versionTitle: "Арабский текст: изд. «Дар аль-хадис» (Каир, 1425/2004), 4 тома, страницы издания (OpenITI)",
+  minItems: 1100,
+  retrievedAt: "2026-11-13",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 
