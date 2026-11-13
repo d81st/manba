@@ -12,7 +12,7 @@ test.describe("reading", () => {
       "/", "/quran", "/quran/1", "/quran/map", "/hadith", "/hadith/bukhari", "/hadith/bukhari/book/1", "/library",
       "/library/ibn_hisham", "/library/umm_shafii", "/library/hidaya", "/topics", "/glossary", "/sira", "/sira/timeline", "/sira/people", "/history", "/origins",
       "/science", "/tests", "/assistant", "/knowledge", "/galaxy", "/bookmarks", "/not-found-in-sources", "/admin",
-      "/admin/reports", "/admin/topics",
+      "/admin/reports", "/admin/errors", "/admin/topics",
     ];
     for (const path of pages) {
       const response = await page.goto(path, { waitUntil: "networkidle" });

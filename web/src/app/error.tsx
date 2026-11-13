@@ -3,6 +3,7 @@
 import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
+import { ErrorReporter } from "@/modules/monitoring";
 import { getMessages } from "@/shared/i18n";
 import { Page } from "@/shared/layout/page";
 import { Button } from "@/shared/ui/button";
@@ -10,8 +11,9 @@ import { Button } from "@/shared/ui/button";
 const t = getMessages().errorPage;
 
 // Shown when a page fails (for example, the database does not answer): a
-// plain message and a way to try again. The details stay in the server log;
-// the code helps to find them there.
+// plain message and a way to try again. The details go to the journal of
+// site errors (an error of the browser is sent from here); the code helps to
+// find a server error there and in the server log.
 export default function ErrorPage({ error, retry }: { error: unknown; retry: () => void }) {
   useEffect(() => {
     console.error(error);
@@ -19,6 +21,7 @@ export default function ErrorPage({ error, retry }: { error: unknown; retry: () 
   const digest = error instanceof Error ? (error as Error & { digest?: string }).digest : undefined;
   return (
     <Page className="flex flex-col items-start gap-3 py-12">
+      <ErrorReporter error={error} />
       <TriangleAlert className="size-8 text-muted-foreground" />
       <h1 className="text-xl font-semibold">{t.title}</h1>
       <p className="text-muted-foreground">{t.text}</p>

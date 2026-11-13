@@ -14,6 +14,7 @@ import { accountsAdminRu, accountsRu } from "@/modules/accounts/i18n";
 import { bookmarksRu } from "@/modules/bookmarks/i18n";
 import { galaxyRu } from "@/modules/galaxy/i18n";
 import { knowledgeRu } from "@/modules/knowledge/i18n";
+import { monitoringAdminRu } from "@/modules/monitoring/i18n";
 import { reportsAdminRu, reportsRu } from "@/modules/reports/i18n";
 
 // Interface strings only. Source texts are stored in the database, never here.
@@ -54,6 +55,7 @@ export const ru = {
   admin: {
     ...accountsAdminRu,
     ...reportsAdminRu,
+    ...monitoringAdminRu,
     ...hadithAdminRu,
     ...assistantAdminRu,
     ...siraAdminRu,
@@ -84,6 +86,8 @@ export const ru = {
       historyHint: "События от пророка до наших дней по слоям: правители, тексты, учение, учёные. Каждая дата — слова источника.",
       reports: "Сообщения об ошибках",
       reportsHint: "Что читатели написали об ошибках на страницах: опечатки, даты, ссылки.",
+      errors: "Ошибки сайта",
+      errorsHint: "Сбои сервера и браузеров читателей за 30 дней — без логов Render.",
       findings: "Новые находки",
       findingsHint: "Наводки извне (пост, видео) с текстом, который приписывают источнику: проверить по первоисточнику — подтверждено или не найдено.",
       assistant: "Ассистент: синонимы",
