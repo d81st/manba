@@ -41,6 +41,7 @@ const topics = {
   contextAfter: "Аяты после",
   circumstances: "Обстоятельства",
   sourceNote: "Источники",
+  contents: "Содержание",
   positions: "Позиции",
   noPositions: "Позиции ещё не внесены.",
   relatedRefs: "Связанные места",

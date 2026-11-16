@@ -11,7 +11,7 @@ const t = getMessages().topics;
 export function RelatedRefsSection({ topic }: { topic: PublicTopic }) {
   if (topic.relatedRefs.length === 0 && topic.relatedHadiths.length === 0) return null;
   return (
-    <section>
+    <section id="related" className="scroll-mt-4">
       <SectionHeading>{t.relatedRefs}</SectionHeading>
       {topic.relatedRefs.length > 0 && <AyahList ayahs={topic.relatedRefs} compact />}
       {topic.relatedHadiths.length > 0 && <HadithRefList hadiths={topic.relatedHadiths} className="mt-3" />}
@@ -23,7 +23,7 @@ export function RelatedRefsSection({ topic }: { topic: PublicTopic }) {
 export function LinksSection({ topic }: { topic: PublicTopic }) {
   if (topic.terms.length === 0 && topic.related.length === 0) return null;
   return (
-    <section className="grid gap-6 sm:grid-cols-2">
+    <section id="links" className="grid scroll-mt-4 gap-6 sm:grid-cols-2">
       {topic.terms.length > 0 && (
         <div>
           <SectionHeading>{t.terms}</SectionHeading>

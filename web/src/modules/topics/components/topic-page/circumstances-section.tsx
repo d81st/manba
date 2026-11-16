@@ -14,7 +14,7 @@ export function CircumstancesSection({ topic }: { topic: PublicTopic }) {
     return null;
   }
   return (
-    <section>
+    <section id="circumstances" className="scroll-mt-4">
       <SectionHeading>{t.circumstances}</SectionHeading>
       {circumstances && <LinkedParagraphs text={circumstances} />}
       {circumstancesRefs.length > 0 && <AyahList ayahs={circumstancesRefs} compact className="mt-3" />}
