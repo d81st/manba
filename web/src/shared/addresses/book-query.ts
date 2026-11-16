@@ -53,6 +53,7 @@ export const BOOKS: Record<string, { names: string[]; label: string; scheme: Boo
   kharaj_abu_yusuf: { names: ["харадж", "китаб аль-харадж", "kharaj"], label: "Харадж", scheme: "page" },
   ikhtilaf_aimma: { names: ["ихтиляф", "ихтиляф аль-аимма", "ikhtilaf"], label: "Ихтиляф", scheme: "page" },
   bidayat_mujtahid: { names: ["бидая", "бидаят аль-муджтахид", "bidaya"], label: "Бидая", scheme: "page" },
+  mughni: { names: ["мугни", "аль-мугни", "ибн кудама", "ибн кудамы", "mughni"], label: "Мугни", scheme: "page" },
 };
 export const BOOK_IDS = Object.keys(BOOKS);
 

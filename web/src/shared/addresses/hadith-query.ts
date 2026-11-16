@@ -31,6 +31,11 @@ export const COLLECTIONS: Record<string, { names: string[]; scheme: Scheme; labe
   },
   ahmad: { names: ["ахмад", "ахмада", "ahmad", "муснад ахмада", "musnad ahmad"], scheme: "number", label: "Ахмад" },
   kafi: { names: ["кафи", "kafi"], scheme: "chapter", label: "аль-Кафи" },
+  musannaf: {
+    names: ["мусаннаф", "аль-мусаннаф", "абд ар-раззак", "абд аль-раззак", "musannaf"],
+    scheme: "number",
+    label: "Мусаннаф",
+  },
   masahif_ibn_abi_dawud: {
     names: ["масахиф", "китаб аль-масахиф", "ибн абу дауд", "ибн аби дауд", "masahif"],
     scheme: "number",

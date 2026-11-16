@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { searchKey } from "../src/shared/text/arabic.ts";
 import { type Numbering, parseOpenitiHadith } from "../src/shared/import/openiti-hadith.ts";
+import { parseOpenitiNumbered } from "../src/shared/import/openiti-numbered.ts";
 import { parseOpenitiKafi } from "../src/shared/import/openiti-kafi.ts";
 import { parseOpenitiNarrations } from "../src/shared/import/openiti-narrations.ts";
 import { type PagesOptions, parseOpenitiPages } from "../src/shared/import/openiti-pages.ts";
@@ -218,7 +219,7 @@ async function importTanzilSimple(client: pg.Client) {
 // A hadith collection from the OpenITI corpus, in one of two layouts.
 type HadithSource = {
   file: string; // in data/sources/openiti, kept byte for byte
-  layout: "shamela" | "narrations" | "kafi" | "running" | "pages" | "tafsir";
+  layout: "shamela" | "narrations" | "kafi" | "running" | "pages" | "tafsir" | "numbered";
   // A rough JK export is first rewritten into the annotated layout (openiti-jk.ts).
   transform?: (text: string) => string;
   pages?: PagesOptions; // options of the "pages" layout
@@ -568,8 +569,8 @@ function prepare(src: HadithSource, text: string, ayahCounts: number[] = []): Pr
       missing: report.missing.length,
     };
   }
-  if (src.layout === "shamela") {
-    const data = parseOpenitiHadith(text);
+  if (src.layout === "shamela" || src.layout === "numbered") {
+    const data = src.layout === "numbered" ? parseOpenitiNumbered(text) : parseOpenitiHadith(text);
     const report = data.report;
     return {
       books: data.books,
@@ -1390,7 +1391,54 @@ const BIDAYAT_MUJTAHID: HadithSource = {
   retrievedAt: "2026-11-13",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID];
+// The Musannaf is cited by the numbers printed in al-A'zami's edition. The
+// export's page markers are mostly the placeholder PageV00P000, so a page
+// address would merge unmarked pages. Numbers that the file skips stay missing.
+const MUSANNAF: HadithSource = {
+  file: "0211CabdRazzaqSancani.Musannaf.Shamela0013174-ara1.inProgress",
+  layout: "numbered",
+  key: "openiti:0211CabdRazzaqSancani.Musannaf.Shamela0013174-ara1:5556c9e",
+  sourceId: "openiti.musannaf-shamela0013174",
+  sourceTitle: "OpenITI · 0211CabdRazzaqSancani.Musannaf.Shamela0013174-ara1.inProgress",
+  sourceVersion: "OpenITI/0225AH 5556c9e (2026-11-16)",
+  sourceUrl: "https://github.com/OpenITI/0225AH",
+  notice: `${OPENITI_CITATION}. Text: 0211CabdRazzaqSancani.Musannaf.Shamela0013174-ara1.inProgress — al-Musannaf of Abd al-Razzaq, ed. Habib al-Rahman al-A'zami, al-Majlis al-Ilmi, India, 2nd ed., 1403 AH, 11 vols. The OpenITI file is marked inProgress. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "musannaf",
+    canon: "sunni",
+    titles: { ar: "المصنف", ru: "Абд ар-Раззак, «аль-Мусаннаф»", "ru-short": "Мусаннаф" },
+    authoritySunni: null,
+  },
+  versionId: "musannaf.ar.azami",
+  versionTitle: "Арабский текст: изд. Хабиб ар-Рахмана аль-Азами (аль-Маджлис аль-ильми, Индия, 2-е изд., 1403 г. х.), номера сообщений издания (OpenITI, файл помечен inProgress)",
+  minItems: 19000,
+  retrievedAt: "2026-11-16",
+};
+
+const MUGHNI: HadithSource = {
+  file: "0620IbnQudamaMaqdisi.Mughni.Shamela0008463-ara1",
+  layout: "pages",
+  pages: { gaps: true, kitab: true },
+  key: "openiti:0620IbnQudamaMaqdisi.Mughni.Shamela0008463-ara1:d586b7c",
+  sourceId: "openiti.mughni-shamela0008463",
+  sourceTitle: "OpenITI · 0620IbnQudamaMaqdisi.Mughni.Shamela0008463-ara1",
+  sourceVersion: "OpenITI/0625AH d586b7c (2026-11-16)",
+  sourceUrl: "https://github.com/OpenITI/0625AH",
+  notice: `${OPENITI_CITATION}. Text: 0620IbnQudamaMaqdisi.Mughni.Shamela0008463-ara1 — al-Mughni of Ibn Qudama, Maktabat al-Qahira, 1388/1968, 10 vols, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "mughni",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "المغني", ru: "Ибн Кудама, «аль-Мугни»", "ru-short": "Мугни" },
+    authoritySunni: null,
+  },
+  versionId: "mughni.ar.qahira",
+  versionTitle: "Арабский текст: изд. «Мактабат аль-Кахира» (1388/1968), 10 томов, страницы издания (OpenITI)",
+  minItems: 4500,
+  retrievedAt: "2026-11-16",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 
@@ -1857,6 +1905,14 @@ async function importSablukov(client: pg.Client) {
   }
 }
 
+// The slavery draft cites these two books. The migration of the same name
+// runs before this import and finds the addresses missing, so it returns.
+// Running it again here is what fills the draft on that same start.
+async function applySlaveryBooks(client: pg.Client) {
+  const file = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "db", "migrations", "064_slavery_books.sql");
+  await client.query(readFileSync(file, "utf8"));
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     console.log("Import skipped: DATABASE_URL is not set.");
@@ -1881,6 +1937,8 @@ async function main() {
     for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
     for (const src of SCIENCE_BOOKS) await importOpenitiHadith(client, src);
     for (const src of DISPUTE_BOOKS) await importOpenitiHadith(client, src);
+    await importOpenitiHadith(client, MUSANNAF);
+    await applySlaveryBooks(client);
     for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
     for (const src of EXTERNAL_ADDITIONS) await importExternalAdditions(client, src);
     await importSablukov(client);

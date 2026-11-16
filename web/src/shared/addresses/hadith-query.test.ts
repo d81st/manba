@@ -35,6 +35,7 @@ describe("parseHadithQuery", () => {
     expect(parseHadithQuery("ан-Насаи 1")).toEqual(ref("nasai", 1));
     expect(parseHadithQuery("Ибн Маджа 224")).toEqual(ref("ibn_majah", 224));
     expect(parseHadithQuery("Дарими 12")).toEqual({ kind: "unsupported" });
+    expect(parseHadithQuery("Мусаннаф 12818")).toEqual(ref("musannaf", 12818));
   });
 
   it("reads the Musnad of Ahmad with the editors' added hadiths", () => {

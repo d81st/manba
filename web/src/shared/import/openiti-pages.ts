@@ -49,6 +49,9 @@ export type PagesOptions = {
   repair?: boolean;
   startAt?: string;
   tail?: boolean;
+  // A fiqh manual (al-Mughni) marks every mas'ala with one bar. Only a heading
+  // that names a كتاب opens a section; the rest are chapters of that book.
+  kitab?: boolean;
 };
 export type PagesBook = {
   sections: PagesSection[];
@@ -260,7 +263,8 @@ export function parseOpenitiPages(input: string, options: PagesOptions = {}): Pa
     const heading = raw.match(/^### (\|+) (.*)$/);
     if (heading) {
       closeParagraph();
-      openHeading(heading[1].length, heading[2]);
+      const level = options.kitab && heading[1].length === 1 && !heading[2].includes("كتاب") ? 2 : heading[1].length;
+      openHeading(level, heading[2]);
     } else if (raw.startsWith("# ")) {
       closeParagraph();
       paragraph = [];
