@@ -232,7 +232,7 @@ type HadithSource = {
   work: {
     id: string;
     category?: "hadith" | "sira" | "tafsir" | "qiraat" | "history" | "sciences" | "theology" | "fiqh"; // hadith by default
-    canon: "sunni" | "shia";
+    canon: "sunni" | "shia" | "common";
     titles: Record<string, string>;
     authoritySunni: number | null;
     authorityShia?: number;
@@ -1013,6 +1013,30 @@ const TARIKH_TABARI: HadithSource = {
   versionTitle: "Арабский текст: изд. «Дар ат-Турас» (Бейрут, 2-е изд., 1387 г. х.), т. 1–10; страницы, по примечанию OpenITI, совпадают с каирским изд. «Дар аль-Маариф» (OpenITI)",
   minItems: 7500,
   retrievedAt: "2026-10-25",
+};
+
+// Ibn al-Kalbi on the deities of pre-Islamic Arabia. Not a book of either
+// canon: the work is shared evidence for origins, so its canon is "common".
+const ASNAM: HadithSource = {
+  file: "0204IbnKalbi.Asnam.Shamela0006513-ara1",
+  layout: "pages",
+  key: "openiti:0204IbnKalbi.Asnam.Shamela0006513-ara1:2cfdc8c",
+  sourceId: "openiti.asnam-shamela0006513",
+  sourceTitle: "OpenITI · 0204IbnKalbi.Asnam.Shamela0006513-ara1",
+  sourceVersion: "OpenITI/0225AH 2cfdc8c (2026-11-16)",
+  sourceUrl: "https://github.com/OpenITI/0225AH",
+  notice: `${OPENITI_CITATION}. Text: 0204IbnKalbi.Asnam.Shamela0006513-ara1 — Kitab al-Asnam of Hisham ibn al-Kalbi, edited by Ahmad Zaki Pasha, Dar al-Kutub al-Misriyya, Cairo, 4th ed., 2000; the export begins at page 5 (the title pages are not in the file) and pages 5–64 follow without gaps. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "asnam",
+    category: "history",
+    canon: "common",
+    titles: { ar: "كتاب الأصنام", ru: "Ибн аль-Кальби, «Китаб аль-Аснам»", "ru-short": "Аснам" },
+    authoritySunni: null,
+  },
+  versionId: "asnam.ar.zaki",
+  versionTitle: "Арабский текст: изд. Ахмада Заки-паши («Дар аль-Кутуб аль-Мисрийя», Каир, 4-е изд., 2000 г.), страницы издания (OpenITI)",
+  minItems: 50,
+  retrievedAt: "2026-11-16",
 };
 
 
@@ -1934,7 +1958,7 @@ async function main() {
     await importOpenitiHadith(client, IBN_HISHAM);
     await importOpenitiHadith(client, IBN_KATHIR);
     for (const src of [MASAHIF, FADAIL_ABU_UBAYD, SABAA_IBN_MUJAHID, ANSAB_BALADHURI]) await importOpenitiHadith(client, src);
-    for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI]) await importOpenitiHadith(client, src);
+    for (const src of [MAGHAZI_WAQIDI, TARIKH_KHALIFA, TARIKH_TABARI, ASNAM]) await importOpenitiHadith(client, src);
     for (const src of SCIENCE_BOOKS) await importOpenitiHadith(client, src);
     for (const src of DISPUTE_BOOKS) await importOpenitiHadith(client, src);
     await importOpenitiHadith(client, MUSANNAF);

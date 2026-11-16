@@ -82,6 +82,9 @@ describe("Kitab al-Sab'a and Ansab al-ashraf by volume and page", () => {
     expect(parseBookRef("Ибн Муджахид 1:120")).toBe("sabaa_ibn_mujahid.1.120");
     expect(parseBookRef("Ансаб 5:175b")).toBe("ansab_baladhuri.5.175.2");
     expect(formatBookRef("ansab_baladhuri.13.12")).toBe("Ансаб 13:12");
+    expect(parseBookRef("Аснам 1:16")).toBe("asnam.1.16");
+    expect(parseBookRef("Ибн аль-Кальби 1:16")).toBe("asnam.1.16");
+    expect(formatBookRef("asnam.1.16")).toBe("Аснам 1:16");
     expect(linkAddresses("Ансаб 5:175 и Масахиф 79")).toEqual([
       { book: "ansab_baladhuri", path: [5, 175], text: "Ансаб 5:175" },
       { text: " и " },
