@@ -23,6 +23,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   cacheComponents: true,
   partialPrefetching: true,
+  // Ask coding agents about the next security release of Next.js.
+  experimental: { agentUpgrade: "security" },
   // Closed development mode: keep every response out of search engines.
   async headers() {
     return [
