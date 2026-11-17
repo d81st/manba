@@ -19,6 +19,7 @@ export function PositionsSection({ sides }: { sides: PublicTopic["sides"] }) {
         <p className="text-muted-foreground">{t.noPositions}</p>
       ) : (
         <div className="space-y-6">
+          <SideBoard sides={sides} />
           {sides.map((side, i) => (
             <div key={side.title} id={`side-${i}`} className="scroll-mt-4">
               <h3 className="mb-2 font-semibold">{side.title}</h3>
@@ -32,6 +33,44 @@ export function PositionsSection({ sides }: { sides: PublicTopic["sides"] }) {
         </div>
       )}
     </section>
+  );
+}
+
+// A scan of the sides before the full quotations. Every side uses the same
+// color: the lane says "this is a side", not "this side is right".
+function SideBoard({ sides }: { sides: PublicTopic["sides"] }) {
+  return (
+    <nav aria-label={t.board} className="rounded-xl border bg-card p-3">
+      <p className="text-sm text-muted-foreground">{t.boardHint}</p>
+      <ol className="mt-3 flex gap-3 overflow-x-auto pb-1">
+        {sides.map((side, i) => (
+          <li
+            key={side.title}
+            className="min-w-52 flex-1 rounded-lg border border-s-4 px-3 py-2"
+            style={{ borderInlineStartColor: "var(--graph-2)" }}
+          >
+            <a href={`#side-${i}`} className="font-medium no-underline">
+              {side.title}
+            </a>
+            <ol className="mt-2 space-y-1">
+              {side.positions.map((position, j) => (
+                <li key={j}>
+                  <a
+                    href={`#position-${i}-${j}`}
+                    className="flex flex-wrap items-center gap-2 rounded-md px-1 py-1 text-sm no-underline hover:bg-accent"
+                  >
+                    <span>{position.holder}</span>
+                    <Badge variant={position.recognition === "minority" ? "outline" : "secondary"}>
+                      {recognitions[position.recognition as keyof typeof recognitions]}
+                    </Badge>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }
 
