@@ -1,5 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { collectErrors, expectAtTop, signIn } from "./helpers";
+import { collectErrors, expectAtTop, signIn, topOf } from "./helpers";
+
+// A place chip opens the quotation on the same page. The site header stays
+// above it, so the row is on screen rather than flush with the top.
+async function expectInView(page: Parameters<typeof signIn>[0], id: string) {
+  const height = page.viewportSize()?.height ?? 720;
+  await expect.poll(async () => {
+    const top = await topOf(page, id);
+    return top >= 0 && top < height;
+  }).toBe(true);
+}
 
 test.describe("reading", () => {
   test.beforeEach(async ({ page }) => {
@@ -93,5 +103,41 @@ test.describe("reading", () => {
     await books.first().click();
     await expect(page).toHaveURL(/\/library\/.+\/search/);
     await expect(page.getByText(`Найдено: ${count}`)).toBeVisible();
+  });
+
+  test("the first-50 path opens a term, and a term with several places jumps to the quotation", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto("/glossary");
+    await page.getByRole("button", { name: "Первые 50 терминов" }).click();
+    const path = page.getByRole("navigation", { name: "Дорожка первых терминов" }).filter({ visible: true });
+    await expect(path).toBeVisible();
+    await expect(path.locator("li")).toHaveCount(50);
+    await path.getByRole("link", { name: /определения/ }).click();
+    await expect(page).toHaveURL(/\/glossary\/qadr$/);
+    await expect(page.getByRole("heading", { name: "определения" }).filter({ visible: true })).toBeVisible();
+
+    await page.goto("/glossary/hanif");
+    const places = page.getByRole("navigation", { name: "Места термина" }).filter({ visible: true });
+    await expect(places).toBeVisible();
+    await places.getByRole("link", { name: /3:67/ }).click();
+    await expect(page).toHaveURL(/#example-quran\.3\.67$/);
+    await expectInView(page, "example-quran.3.67");
+
+    await page.goto("/glossary/salat");
+    await page.getByRole("navigation", { name: "Места термина" }).filter({ visible: true }).getByRole("link", { name: "аль-Бухари 350" }).click();
+    await expect(page).toHaveURL(/#example-bukhari\.350$/);
+    await expectInView(page, "example-bukhari.350");
+
+    await page.goto("/glossary/hikmah");
+    await expect(page.getByRole("heading", { name: "мудрость" }).filter({ visible: true })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Места термина" }).filter({ visible: true })).toHaveCount(0);
+    await expect(page.locator("main")).toContainText("2:269");
+
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto("/glossary");
+    await page.getByRole("button", { name: "Первые 50 терминов" }).click();
+    const fits = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
+    expect(fits).toBe(true);
+    expect(errors).toEqual([]);
   });
 });

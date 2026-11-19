@@ -9,6 +9,49 @@ import { HadithRefList } from "@/modules/hadith";
 const messages = getMessages();
 const t = messages.glossary;
 
+function exampleId(address: string) {
+  return `example-${address}`;
+}
+
+// A scan of the places before their full text. Color marks an ayah or a
+// hadith, the same way the topic scheme does, and does not rank them.
+function ExampleBoard({ term }: { term: PublicTerm }) {
+  const places = [
+    ...term.refs.map((ref) => ({
+      id: exampleId(ref.address),
+      label: `${ref.sura}:${ref.ayah}`,
+      note: ref.suraName,
+      token: "--graph-1",
+    })),
+    ...term.hadiths.map((ref) => ({
+      id: exampleId(ref.address),
+      label: ref.title,
+      note: "",
+      token: "--graph-4",
+    })),
+  ];
+  if (places.length < 2) return null;
+  return (
+    <nav aria-label={t.examplesBoard} className="mb-3 rounded-xl border bg-card p-3">
+      <p className="text-sm text-muted-foreground">{t.examplesHint}</p>
+      <ol className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        {places.map((place) => (
+          <li
+            key={place.id}
+            className="min-w-28 rounded-lg border border-s-4 px-2 py-1"
+            style={{ borderInlineStartColor: `var(${place.token})` }}
+          >
+            <a href={`#${place.id}`} className="block text-sm tabular-nums no-underline">
+              {place.label}
+              {place.note && <span className="mt-0.5 block text-xs text-muted-foreground">{place.note}</span>}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
 // A published term: the short and detailed explanation, examples from the
 // sources, how schools understand it, and related terms. Data comes from the page.
 export function TermArticle({ term }: { term: PublicTerm }) {
@@ -41,8 +84,9 @@ export function TermArticle({ term }: { term: PublicTerm }) {
     {(term.refs.length > 0 || term.hadiths.length > 0) && (
       <section>
         <h2 className="mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.examples}</h2>
-        {term.refs.length > 0 && <AyahList ayahs={term.refs} />}
-        {term.hadiths.length > 0 && <HadithRefList hadiths={term.hadiths} className="mt-3" />}
+        <ExampleBoard term={term} />
+        {term.refs.length > 0 && <AyahList ayahs={term.refs} itemId={exampleId} />}
+        {term.hadiths.length > 0 && <HadithRefList hadiths={term.hadiths} itemId={exampleId} className="mt-3" />}
       </section>
     )}
 

@@ -67,38 +67,68 @@ export function GlossaryList({ terms, t }: { terms: TermSummary[]; t: Messages["
       {shown.length === 0 ? (
         <p className="mt-6 text-muted-foreground">{t.nothing}</p>
       ) : (
-        <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-          {shown.map((term) => (
-            <li key={term.id}>
-              <Link
-                href={`/glossary/${term.slug}`}
-                className="flex h-full flex-col gap-1 rounded-xl border bg-card p-4 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent"
-              >
-                <span className="flex items-baseline justify-between gap-3">
-                  <span className="font-medium">
-                    {basicOnly && term.basicOrder && (
-                      <span className="me-2 text-muted-foreground tabular-nums">{term.basicOrder}.</span>
+        <>
+          {basicOnly && shown.length > 1 && <TermPath terms={shown} t={t} />}
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            {shown.map((term) => (
+              <li key={term.id}>
+                <Link
+                  href={`/glossary/${term.slug}`}
+                  className="flex h-full flex-col gap-1 rounded-xl border bg-card p-4 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent"
+                >
+                  <span className="flex items-baseline justify-between gap-3">
+                    <span className="font-medium">
+                      {basicOnly && term.basicOrder && (
+                        <span className="me-2 text-muted-foreground tabular-nums">{term.basicOrder}.</span>
+                      )}
+                      {term.translation}
+                    </span>
+                    <span className="ar text-xl" lang="ar">
+                      {term.arabic}
+                    </span>
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {term.transliteration}
+                    {term.isBasic && !basicOnly && (
+                      <Badge variant="secondary" className="ms-2">
+                        {t.basicOnly}
+                      </Badge>
                     )}
-                    {term.translation}
                   </span>
-                  <span className="ar text-xl" lang="ar">
-                    {term.arabic}
-                  </span>
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {term.transliteration}
-                  {term.isBasic && !basicOnly && (
-                    <Badge variant="secondary" className="ms-2">
-                      {t.basicOnly}
-                    </Badge>
-                  )}
-                </span>
-                <span className="text-sm text-muted-foreground">{term.short}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+                  <span className="text-sm text-muted-foreground">{term.short}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </>
+  );
+}
+
+// The first-50 set as a path. The number is the place in the set. The short
+// text of each term stays in the list under the path.
+function TermPath({ terms, t }: { terms: TermSummary[]; t: Messages["glossary"] }) {
+  return (
+    <nav aria-label={t.path} className="mt-5 rounded-xl border bg-card p-3">
+      <p className="text-sm text-muted-foreground">{t.pathHint}</p>
+      <ol className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        {terms.map((term) => (
+          <li key={term.id}>
+            <Link
+              href={`/glossary/${term.slug}`}
+              className="flex h-full flex-col rounded-lg border border-s-4 px-2 py-2 no-underline hover:bg-accent"
+              style={{ borderInlineStartColor: "var(--graph-3)" }}
+            >
+              <span className="text-xs tabular-nums text-muted-foreground">{term.basicOrder}</span>
+              <span className="ar text-2xl leading-loose" lang="ar" dir="rtl">
+                {term.arabic}
+              </span>
+              <span className="text-sm">{term.translation}</span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }

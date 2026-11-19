@@ -25,11 +25,23 @@ function Paragraphs({ text }: { text: string }) {
   );
 }
 
-export function HadithRefList({ hadiths, className }: { hadiths: HadithRef[]; className?: string }) {
+export function HadithRefList({
+  hadiths,
+  className,
+  itemId,
+}: {
+  hadiths: HadithRef[];
+  className?: string;
+  itemId?: (address: string) => string;
+}) {
   return (
     <ol className={cn("border-t", className)}>
       {hadiths.map((ref) => (
-        <li key={ref.address} className="flex flex-col gap-1 border-b py-3 sm:flex-row sm:items-baseline sm:gap-4">
+        <li
+          key={ref.address}
+          id={itemId?.(ref.address)}
+          className="flex scroll-mt-4 flex-col gap-1 border-b py-3 target:border-primary target:ring-2 target:ring-ring/40 sm:flex-row sm:items-baseline sm:gap-4"
+        >
           <Link href={ref.href} className="min-w-24 shrink-0 text-xs tabular-nums text-muted-foreground no-underline">
             {ref.title}
           </Link>
