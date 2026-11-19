@@ -12,4 +12,5 @@ export { QuranNav } from "./components/nav";
 export { QuranMap } from "./components/quran-map/quran-map";
 export { SearchForm } from "./components/search-form";
 export { SuraMeta } from "./components/sura-meta";
+export { SuraStrip } from "./components/sura-strip";
 export { TranslationText } from "./components/translation-text";

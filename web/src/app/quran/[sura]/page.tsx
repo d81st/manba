@@ -11,8 +11,8 @@ import { isDatabaseConfigured } from "@/shared/db";
 import { ScrollToHash } from "@/shared/layout/scroll-to-hash";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
-import { getSura } from "@/modules/quran/server";
-import { QuranNav, SuraMeta, TranslationText } from "@/modules/quran";
+import { getSura, listSuras } from "@/modules/quran/server";
+import { QuranNav, SuraMeta, SuraStrip, TranslationText } from "@/modules/quran";
 
 // The commentary each ayah links to.
 const TAFSIR = "tafsir_ibn_kathir";
@@ -46,7 +46,7 @@ async function SuraText({
   if (!/^\d+$/.test(raw) || number < 1 || number > 114) notFound();
   if (!isDatabaseConfigured()) return <p className="mt-8 text-destructive">{t.noDatabase}</p>;
 
-  const sura = await getSura(number);
+  const [sura, suras] = await Promise.all([getSura(number), listSuras()]);
   if (!sura) notFound();
   const videos = await videosForAddresses(sura.segments.filter((s) => s.level !== "basmala").map((s) => s.address));
 
@@ -69,6 +69,8 @@ async function SuraText({
           </p>
         )}
       </header>
+
+      <SuraStrip suras={suras} current={sura.number} />
 
       <ol className="mt-2 mb-6">
         {sura.segments.map((segment) =>

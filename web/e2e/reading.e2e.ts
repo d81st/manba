@@ -33,6 +33,28 @@ test.describe("reading", () => {
     expect(errors).toEqual([]);
   });
 
+  test("the sura strip keeps the ayahs and opens another sura", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto("/quran/36");
+    const strip = page.getByRole("navigation", { name: "Суры мусхафа" }).filter({ visible: true });
+    await expect(strip).toBeVisible();
+    await expect(strip.getByRole("link")).toHaveCount(114);
+    await expect(strip.getByRole("link", { name: /^36 / })).toHaveAttribute("aria-current", "page");
+    const places = await strip.locator("a").evaluateAll((links) =>
+      links.slice(0, 2).map((link) => getComputedStyle(link).borderInlineStartColor),
+    );
+    expect(places[0]).not.toBe(places[1]);
+    await strip.getByRole("link", { name: /^112 / }).click();
+    await expect(page).toHaveURL(/\/quran\/112$/);
+    await expect(page.getByRole("heading", { name: /112/ }).filter({ visible: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "112:1" }).filter({ visible: true })).toBeVisible();
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto("/quran/2");
+    const fits = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
+    expect(fits).toBe(true);
+    expect(errors).toEqual([]);
+  });
+
   test("a sura shows its ayahs with the translation, and a link to an ayah lands on it", async ({ page }) => {
     await page.goto("/quran/2#2-255");
     await expect(page.locator("main ol > li[id]")).toHaveCount(286);
