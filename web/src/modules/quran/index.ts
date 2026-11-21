@@ -7,6 +7,7 @@ export * from "./quran.story-threads";
 export * from "./quran.translation-markup";
 export type * from "./quran.types";
 
+export { AyahJump } from "./components/ayah-jump";
 export { AyahList } from "./components/ayah-list";
 export { QuranNav } from "./components/nav";
 export { QuranMap } from "./components/quran-map/quran-map";

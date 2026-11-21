@@ -12,7 +12,7 @@ import { ScrollToHash } from "@/shared/layout/scroll-to-hash";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
 import { getSura, listSuras } from "@/modules/quran/server";
-import { QuranNav, SuraMeta, SuraStrip, TranslationText } from "@/modules/quran";
+import { AyahJump, QuranNav, SuraMeta, SuraStrip, TranslationText } from "@/modules/quran";
 
 // The commentary each ayah links to.
 const TAFSIR = "tafsir_ibn_kathir";
@@ -70,6 +70,7 @@ async function SuraText({
         )}
       </header>
 
+      <AyahJump sura={sura.number} ayahs={sura.ayahs} />
       <SuraStrip suras={suras} current={sura.number} />
 
       <ol className="mt-2 mb-6">
@@ -89,7 +90,7 @@ async function SuraText({
             <li
               key={segment.address}
               id={`${sura.number}-${segment.number}`}
-              className="long-row flex scroll-mt-4 flex-col gap-1 border-b py-4 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
+              className="long-row flex scroll-mt-14 flex-col gap-1 border-b py-4 target:bg-highlight sm:flex-row sm:items-baseline sm:gap-4"
             >
               <span className="flex min-w-16 shrink-0 gap-3 text-xs sm:flex-col sm:gap-1">
                 <a

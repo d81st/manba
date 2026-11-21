@@ -55,6 +55,19 @@ test.describe("reading", () => {
     expect(errors).toEqual([]);
   });
 
+  test("a sura opens the ayah typed in its jump field", async ({ page }) => {
+    await page.goto("/quran/2");
+    const jump = page.getByLabel("Аят").filter({ visible: true });
+    await jump.fill("255");
+    await page.getByRole("button", { name: "Показать" }).filter({ visible: true }).click();
+    await expect(page).toHaveURL(/\/quran\/2#2-255$/);
+    await expectAtTop(page, "2-255");
+    await jump.fill("999");
+    await page.getByRole("button", { name: "Показать" }).filter({ visible: true }).click();
+    await expect(page.getByText("В этой суре нет такого аята.").filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/quran\/2#2-255$/);
+  });
+
   test("a sura shows its ayahs with the translation, and a link to an ayah lands on it", async ({ page }) => {
     await page.goto("/quran/2#2-255");
     await expect(page.locator("main ol > li[id]")).toHaveCount(286);
