@@ -13,4 +13,4 @@ export type UserRow = {
 
 export type CreateResult = { problem?: "login" | "taken" | "reserved"; password?: string; login?: string };
 
-export type ChangeResult = { problem?: PasswordProblem | "current"; ver?: number };
+export type ChangeResult = { problem?: PasswordProblem | "current" | "locked"; ver?: number };

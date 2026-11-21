@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { getMessages, plural } from "@/shared/i18n";
 import { bookPath, parseBookQuery } from "@/shared/addresses/book-query";
 import { isDatabaseConfigured } from "@/shared/db";
+import { acquireHeavyForSession } from "@/shared/load-session";
 import { searchKey } from "@/shared/text/arabic";
 import { highlight, likePatterns } from "@/shared/addresses/quran-query";
 import { BOOK_SEARCH_LIMIT, BookSearchForm, type BookWork } from "@/modules/library";
@@ -76,16 +77,23 @@ async function Results({
 }) {
   const work = book.id;
   const title = book.shortTitle;
+  const release = await acquireHeavyForSession();
+  if (!release) return <Notice>{messages.load.busy}</Notice>;
   let words = asked;
   let diacritics = vocalized;
-  let result = await searchBook(work, likePatterns(words), diacritics);
-  // A text printed without vowel marks matches no query with them: search without.
   let dropped = false;
-  if (diacritics && result.total === 0) {
-    words = words.map((word) => searchKey(word));
-    diacritics = false;
-    dropped = true;
-    result = await searchBook(work, likePatterns(words), false);
+  let result;
+  try {
+    result = await searchBook(work, likePatterns(words), diacritics);
+    // A text printed without vowel marks matches no query with them: search without.
+    if (diacritics && result.total === 0) {
+      words = words.map((word) => searchKey(word));
+      diacritics = false;
+      dropped = true;
+      result = await searchBook(work, likePatterns(words), false);
+    }
+  } finally {
+    release();
   }
   if (result.total === 0) return <Notice>{t.search.nothing}</Notice>;
   return (

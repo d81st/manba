@@ -3,6 +3,7 @@ import { getSession } from "@/shared/auth/auth";
 import { isDatabaseConfigured } from "@/shared/db";
 import { COLLECTIONS } from "@/shared/addresses/hadith-query";
 import { similarNetwork } from "@/modules/hadith/server";
+import { acquireHeavyForSession } from "@/shared/load-session";
 
 // The graph of similar texts around a hadith: GET /api/hadith/similar?a=bukhari.1.
 export async function GET(request: NextRequest) {
@@ -12,6 +13,8 @@ export async function GET(request: NextRequest) {
   if (!match || !COLLECTIONS[match[1]] || !isDatabaseConfigured()) {
     return Response.json({ error: "bad_request" }, { status: 400 });
   }
-  const graph = await similarNetwork(address);
+  const release = await acquireHeavyForSession();
+  if (!release) return Response.json({ error: "busy" }, { status: 429 });
+  const graph = await similarNetwork(address).finally(release);
   return graph ? Response.json(graph) : Response.json({ error: "not_found" }, { status: 404 });
 }

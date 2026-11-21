@@ -31,6 +31,7 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
   const [texts, setTexts] = useState<Record<string, string>>({});
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState<Set<string> | null>(null);
+  const [searchNote, setSearchNote] = useState<string | null>(null);
   const [palette, setPalette] = useState<Palette | null>(null);
   const [story, setStory] = useState<string | null>(null);
   const [thread, setThread] = useState<Thread | null>(null);
@@ -183,11 +184,23 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
     const q = query.trim();
     if (!q) {
       setMatches(null);
+      setSearchNote(null);
       return;
     }
     try {
       const response = await fetch(`/api/quran/search?q=${encodeURIComponent(q)}`);
-      const data = (await response.json()) as { kind: string; sura?: number; addresses: string[] };
+      const data = (await response.json()) as { kind: string; sura?: number; addresses?: string[] };
+      if (response.status === 429 || data.kind === "busy") {
+        setMatches(null);
+        setSearchNote(m.busy);
+        return;
+      }
+      if (!response.ok || !data.addresses) {
+        setMatches(new Set());
+        setSearchNote(null);
+        return;
+      }
+      setSearchNote(null);
       const found = new Set(data.addresses);
       if (data.kind === "sura" && data.sura) {
         const sura = bySura.get(data.sura);
@@ -196,6 +209,7 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
       setMatches(found);
     } catch {
       setMatches(new Set());
+      setSearchNote(null);
     }
   };
 
@@ -232,6 +246,7 @@ export function QuranMap({ suras, t }: { suras: MapSura[]; t: Messages["quran"] 
             <Button type="submit">{t.search.submit}</Button>
           </form>
         )}
+        {lens === "search" && searchNote && <p className="text-sm text-muted-foreground">{searchNote}</p>}
 
         {lens === "thread" && <ThreadPanel story={story} chooseStory={(slug) => void chooseStory(slug)} thread={thread} m={m} />}
 

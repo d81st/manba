@@ -80,6 +80,7 @@ export const quranRu = {
       searchPlaceholder: "Слова или адрес, например الرحمن",
       searchFound: "Найдено",
       searchNone: "Ничего не найдено",
+      busy: "Этим поиском сейчас пользуются. Подождите немного и повторите.",
       card: {
         juz: "джуз",
         words: "слов",

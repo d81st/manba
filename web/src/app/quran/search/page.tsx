@@ -7,11 +7,13 @@ import { Page } from "@/shared/layout/page";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { getMessages, plural } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
+import { acquireHeavyForSession } from "@/shared/load-session";
 import { highlight, highlightPlain, likePatterns, parseQuery } from "@/shared/addresses/quran-query";
 import { QuranNav, SEARCH_LIMIT, SearchForm, type SearchResult, translationPlain, TranslationText } from "@/modules/quran";
 import { getAyahs, searchText, searchTranslation } from "@/modules/quran/server";
 
-const t = getMessages().quran;
+const messages = getMessages();
+const t = messages.quran;
 
 export const metadata: Metadata = { title: t.search.title };
 
@@ -71,11 +73,15 @@ async function Results({ parsed }: { parsed: ReturnType<typeof parseQuery> }) {
     if (result.total === 0) return <Notice kind="info">{t.search.noAyah}</Notice>;
   } else if (parsed.kind === "translation") {
     ruWords = parsed.words;
-    result = await searchTranslation(likePatterns(ruWords));
+    const found = await searchWhileFree(() => searchTranslation(likePatterns(ruWords)));
+    if (!found) return <Notice kind="info">{messages.load.busy}</Notice>;
+    result = found;
     if (result.total === 0) return <Notice kind="info">{t.search.nothing}</Notice>;
   } else {
     ({ words, diacritics } = parsed);
-    result = await searchText(likePatterns(words), diacritics);
+    const found = await searchWhileFree(() => searchText(likePatterns(words), diacritics));
+    if (!found) return <Notice kind="info">{messages.load.busy}</Notice>;
+    result = found;
     if (result.total === 0) return <Notice kind="info">{t.search.nothing}</Notice>;
   }
 
@@ -141,6 +147,16 @@ async function Results({ parsed }: { parsed: ReturnType<typeof parseQuery> }) {
       </footer>
     </section>
   );
+}
+
+async function searchWhileFree<T>(search: () => Promise<T>): Promise<T | null> {
+  const release = await acquireHeavyForSession();
+  if (!release) return null;
+  try {
+    return await search();
+  } finally {
+    release();
+  }
 }
 
 function Notice({ kind, children }: { kind: "info" | "warning"; children: React.ReactNode }) {

@@ -3,6 +3,7 @@ import { getSession } from "@/shared/auth/auth";
 import { isDatabaseConfigured } from "@/shared/db";
 import { likePatterns, parseQuery } from "@/shared/addresses/quran-query";
 import { searchAddresses } from "@/modules/quran/server";
+import { acquireHeavyForSession } from "@/shared/load-session";
 
 // Ayahs to light up on the map: GET /api/quran/search?q=... -> { kind, addresses }.
 export async function GET(request: NextRequest) {
@@ -10,7 +11,9 @@ export async function GET(request: NextRequest) {
   const parsed = parseQuery(request.nextUrl.searchParams.get("q") ?? "");
   if (parsed.kind === "text") {
     if (!isDatabaseConfigured()) return Response.json({ error: "no_database" }, { status: 503 });
-    const addresses = await searchAddresses(likePatterns(parsed.words), parsed.diacritics);
+    const release = await acquireHeavyForSession();
+    if (!release) return Response.json({ kind: "busy", addresses: [] }, { status: 429 });
+    const addresses = await searchAddresses(likePatterns(parsed.words), parsed.diacritics).finally(release);
     return Response.json({ kind: "text", addresses });
   }
   if (parsed.kind === "ayahs") {

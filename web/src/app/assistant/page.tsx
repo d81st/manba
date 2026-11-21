@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Page } from "@/shared/layout/page";
 import { getMessages } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
+import { acquireHeavyForSession } from "@/shared/load-session";
 import { ask, recordMiss } from "@/modules/assistant/server";
 import { MAX_QUESTION } from "@/modules/assistant";
 import { Answer, AskForm, Examples } from "@/modules/assistant";
@@ -46,7 +47,16 @@ async function Assistant({ searchParams }: Pick<PageProps<"/assistant">, "search
   }
   if (!isDatabaseConfigured()) return <p className="mt-6 text-destructive">{messages.quran.noDatabase}</p>;
 
-  const result = await ask(q);
+  const release = await acquireHeavyForSession();
+  if (!release) {
+    return (
+      <>
+        <AskForm q={q} view={view} />
+        <p className="mt-6 text-muted-foreground">{messages.load.busy}</p>
+      </>
+    );
+  }
+  const result = await ask(q).finally(release);
   if (result.quran.length + result.hadith.length + result.pages.length === 0) await recordMiss(result.analysis);
 
   return (

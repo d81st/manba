@@ -8,6 +8,7 @@ import { Page } from "@/shared/layout/page";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { getMessages, plural } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
+import { acquireHeavyForSession } from "@/shared/load-session";
 import { COLLECTIONS, hadithAnchor, hadithPath, parseHadithQuery, refLabel, schemeOf } from "@/shared/addresses/hadith-query";
 import { highlight, likePatterns } from "@/shared/addresses/quran-query";
 import { HADITH_SEARCH_LIMIT, HadithSearchForm } from "@/modules/hadith";
@@ -52,7 +53,9 @@ async function Search({ searchParams }: { searchParams: PageProps<"/hadith/searc
 
 async function Results({ words, diacritics }: { words: string[]; diacritics: boolean }) {
   if (!isDatabaseConfigured()) return <Notice kind="warning">{messages.quran.noDatabase}</Notice>;
-  const result = await searchHadith(likePatterns(words), diacritics);
+  const release = await acquireHeavyForSession();
+  if (!release) return <Notice kind="info">{messages.load.busy}</Notice>;
+  const result = await searchHadith(likePatterns(words), diacritics).finally(release);
   if (result.total === 0) return <Notice kind="info">{t.search.nothing}</Notice>;
 
   return (
