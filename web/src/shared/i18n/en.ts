@@ -26,6 +26,11 @@ export const en: Messages = {
   ...bookmarksEn,
   ...reportsEn,
   ...debatesEn,
+  rail: {
+    label: "Places on this page",
+    hint: "A number is the place of a passage in the text below, not its importance. A press opens that passage.",
+    marked: "a published debate discussed this passage",
+  },
   graph: {
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
