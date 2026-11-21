@@ -16,6 +16,7 @@ import { galaxyRu } from "@/modules/galaxy/i18n";
 import { knowledgeRu } from "@/modules/knowledge/i18n";
 import { monitoringAdminRu } from "@/modules/monitoring/i18n";
 import { reportsAdminRu, reportsRu } from "@/modules/reports/i18n";
+import { debatesAdminRu, debatesRu } from "@/modules/debates/i18n";
 
 // Interface strings only. Source texts are stored in the database, never here.
 export const ru = {
@@ -23,6 +24,7 @@ export const ru = {
   ...galaxyRu,
   ...bookmarksRu,
   ...reportsRu,
+  ...debatesRu,
   // Controls of every graph (shared/graph).
   graph: {
     zoomIn: "Приблизить",
@@ -59,6 +61,7 @@ export const ru = {
   admin: {
     ...accountsAdminRu,
     ...reportsAdminRu,
+    ...debatesAdminRu,
     ...monitoringAdminRu,
     ...hadithAdminRu,
     ...assistantAdminRu,
@@ -100,6 +103,8 @@ export const ru = {
       videosHint: "Ссылки на посты YouTube и Telegram рядом с аятами, хадисами и темами — как дополнительный материал, не аргумент. Проверка, не удалены ли посты.",
       users: "Пользователи",
       usersHint: "Учётные записи читателей и администраторов: завести с временным паролем, сбросить пароль, отключить, сменить роль.",
+      debates: "Дебаты",
+      debatesHint: "Проверка, что цитата подтверждает ход, и публикация итога. Голосования нет.",
       tests: "Тесты",
       testsHint: "Вопросы с вариантами ответа. Каждый вопрос построен на фрагментах источников, которые показываются после ответа.",
     },
@@ -191,6 +196,7 @@ export const ru = {
       assistant: "Находит фрагменты по словам вопроса.",
       notFound: "Наводки, которые сверили с источником и там не нашли.",
       bookmarks: "Сохранённые места. Видны только вам.",
+      debates: "Вопрос заранее. Ответ — со ссылкой на фрагмент. Итог публикует редактор.",
     },
     sections: {
       knowledgeMap: "Карта знаний",
@@ -210,6 +216,7 @@ export const ru = {
       assistant: "Ассистент по источникам",
       notFound: "Не найдено в источниках",
       bookmarks: "Закладки",
+      debates: "Дебаты",
     },
   },
 };

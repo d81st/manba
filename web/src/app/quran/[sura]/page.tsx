@@ -11,6 +11,8 @@ import { isDatabaseConfigured } from "@/shared/db";
 import { ScrollToHash } from "@/shared/layout/scroll-to-hash";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
+import { DebateMentions } from "@/modules/debates";
+import { debatesForAddresses } from "@/modules/debates/server";
 import { getSura, listSuras } from "@/modules/quran/server";
 import { AyahJump, QuranNav, SuraMeta, SuraStrip, TranslationText } from "@/modules/quran";
 
@@ -50,7 +52,8 @@ async function SuraText({
 
   const [sura, suras] = await Promise.all([getSura(number), listSuras()]);
   if (!sura) notFound();
-  const videos = await videosForAddresses(sura.segments.filter((s) => s.level !== "basmala").map((s) => s.address));
+  const addresses = sura.segments.filter((s) => s.level !== "basmala").map((s) => s.address);
+  const [videos, debates] = await Promise.all([videosForAddresses(addresses), debatesForAddresses(addresses)]);
 
   return (
     <>
@@ -115,6 +118,7 @@ async function SuraText({
                   </p>
                 )}
                 <VideoList videos={videos[segment.address] ?? []} compact />
+                <DebateMentions debates={debates[segment.address] ?? []} />
               </div>
             </li>
           ),

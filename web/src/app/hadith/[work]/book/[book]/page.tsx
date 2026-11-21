@@ -13,6 +13,8 @@ import { hadithAnchor, refLabel } from "@/shared/addresses/hadith-query";
 import { VerseLine } from "@/shared/content/verse-line";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
+import { DebateMentions } from "@/modules/debates";
+import { debatesForAddresses } from "@/modules/debates/server";
 import { bookPageHref, HadithAttribution, SimilarGraph } from "@/modules/hadith";
 import { getBook, getCollection } from "@/modules/hadith/server";
 
@@ -59,7 +61,8 @@ async function BookText({
   const [collection, book] = await Promise.all([getCollection(work), getBook(work, Number(raw), page)]);
   if (!collection || !book) notFound();
   const addressOf = (path: number[]) => [work, ...path].join(".");
-  const videos = await videosForAddresses(book.chapters.flatMap((c) => c.hadiths.map((h) => addressOf(h.path))));
+  const addresses = book.chapters.flatMap((c) => c.hadiths.map((h) => addressOf(h.path)));
+  const [videos, debates] = await Promise.all([videosForAddresses(addresses), debatesForAddresses(addresses)]);
 
   // Pages of a long book, then the books before and after it.
   const back =
@@ -148,6 +151,7 @@ async function BookText({
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <ArabicText text={hadith.text} />
                   <VideoList videos={videos[addressOf(hadith.path)] ?? []} compact />
+                  <DebateMentions debates={debates[addressOf(hadith.path)] ?? []} />
                   {hadith.similar.length > 0 && (
                     <details className="text-sm">
                       <summary className="cursor-pointer text-muted-foreground">

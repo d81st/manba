@@ -14,6 +14,7 @@ import {
   Orbit,
   Scale,
   ScrollText,
+  MessagesSquare,
   SearchX,
   SquareLibrary,
   Waypoints,
@@ -48,6 +49,7 @@ const ICONS: Record<SectionKey, LucideIcon> = {
   assistant: MessageCircleQuestion,
   notFound: SearchX,
   bookmarks: Bookmark,
+  debates: MessagesSquare,
 };
 
 // Sections that already have pages.
@@ -69,6 +71,7 @@ const LINKS: Partial<Record<SectionKey, string>> = {
   assistant: "/assistant",
   notFound: "/not-found-in-sources",
   bookmarks: "/bookmarks",
+  debates: "/debates",
 };
 
 export default function Home() {
