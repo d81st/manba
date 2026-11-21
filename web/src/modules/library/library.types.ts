@@ -16,7 +16,7 @@ export type BookWork = {
 };
 
 // ayahs: in a tafsir, the ayahs the comment covers (empty elsewhere).
-export type BookPiece = { path: number[]; label: string; anchor: string; text: string; ayahs: number[] };
+export type BookPiece = { path: number[]; address: string; label: string; anchor: string; text: string; ayahs: number[] };
 
 export type BookSection = {
   number: number;

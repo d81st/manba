@@ -55,8 +55,8 @@ export async function getBookSection(workId: string, section: number, page = 1):
     [version.id, section],
   );
   // Pieces in reading order, with how many pieces their page has (for the letter).
-  const pieces = await db().query<{ chapter: number; path: number[]; text: string; pieces: number; ayahs: number[] }>(
-    `SELECT i.chapter, ${PATH("i.address")} AS path, t.content AS text,
+  const pieces = await db().query<{ chapter: number; path: number[]; text: string; pieces: number; ayahs: number[]; address: string }>(
+    `SELECT i.chapter, ${PATH("i.address")} AS path, i.address::text AS address, t.content AS text,
             (SELECT count(*)::int FROM addresses n
              WHERE n.address <@ subpath(i.address, 0, 3) AND n.level = 'passage') AS pieces,
             coalesce((SELECT array_agg(split_part(c.ayah::text, '.', 3)::int ORDER BY split_part(c.ayah::text, '.', 3)::int)
@@ -82,6 +82,7 @@ export async function getBookSection(workId: string, section: number, page = 1):
         .filter((p) => p.chapter === c.index)
         .map((p) => ({
           path: p.path,
+          address: p.address,
           label: bookLabel(workId, p.path, p.pieces),
           anchor: bookAnchor(p.path),
           text: p.text,

@@ -16,6 +16,7 @@ import { galaxyEn } from "@/modules/galaxy/i18n";
 import { knowledgeEn } from "@/modules/knowledge/i18n";
 import { monitoringAdminEn } from "@/modules/monitoring/i18n";
 import { reportsAdminEn, reportsEn } from "@/modules/reports/i18n";
+import { debatesAdminEn, debatesEn } from "@/modules/debates/i18n";
 import type { Messages } from "./ru";
 
 // Interface strings only. Source texts stay in the language they were recorded in.
@@ -24,6 +25,7 @@ export const en: Messages = {
   ...galaxyEn,
   ...bookmarksEn,
   ...reportsEn,
+  ...debatesEn,
   graph: {
     zoomIn: "Zoom in",
     zoomOut: "Zoom out",
@@ -59,6 +61,7 @@ export const en: Messages = {
   admin: {
     ...accountsAdminEn,
     ...reportsAdminEn,
+    ...debatesAdminEn,
     ...monitoringAdminEn,
     ...hadithAdminEn,
     ...assistantAdminEn,
@@ -100,6 +103,8 @@ export const en: Messages = {
       videosHint: "Links to YouTube and Telegram posts beside ayahs, hadiths and topics — as additional material, not an argument. A check of whether the posts were removed.",
       users: "Users",
       usersHint: "Accounts of readers and administrators: create one with a temporary password, reset a password, disable, change a role.",
+      debates: "Debates",
+      debatesHint: "A check that the quotation supports the move, and publication of the outcome. There is no vote.",
       tests: "Tests",
       testsHint: "Questions with answer choices. Each question is built on source passages, which are shown after the answer.",
     },
@@ -191,6 +196,7 @@ export const en: Messages = {
       assistant: "Finds passages from the words of a question.",
       notFound: "Leads that were checked against a source and were not found there.",
       bookmarks: "Saved places. Only you see them.",
+      debates: "A question chosen in advance. An answer links to a passage. The editor publishes the outcome.",
     },
     sections: {
       knowledgeMap: "Knowledge map",
@@ -210,6 +216,7 @@ export const en: Messages = {
       assistant: "Source assistant",
       notFound: "Not found in the sources",
       bookmarks: "Bookmarks",
+      debates: "Debates",
     },
   },
 };

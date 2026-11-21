@@ -12,6 +12,8 @@ import { VerseLine } from "@/shared/content/verse-line";
 import { HadithAttribution } from "@/modules/hadith";
 import { getBookSection, getBookWork } from "@/modules/library/server";
 import { BookSearchForm, sectionHref } from "@/modules/library";
+import { DebateMentions } from "@/modules/debates";
+import { debatesForAddresses } from "@/modules/debates/server";
 
 const messages = getMessages();
 const t = messages.library;
@@ -56,6 +58,7 @@ async function SectionText({
   if (!/^[a-z][a-z0-9_]*$/.test(work) || !/^\d{1,4}$/.test(raw) || !isDatabaseConfigured()) notFound();
   const [book, section] = await Promise.all([getBookWork(work), getBookSection(work, Number(raw), page)]);
   if (!book || !section) notFound();
+  const debates = await debatesForAddresses(section.chapters.flatMap((chapter) => chapter.pieces.map((piece) => piece.address)));
   const tafsir = book.category === "tafsir";
   // In a tafsir: "2:63–64" for a comment on two ayahs, words for the surah's opening and the introduction.
   const label = (piece: (typeof section.chapters)[number]["pieces"][number]) => {
@@ -158,7 +161,10 @@ async function SectionText({
                     </Link>
                   )}
                 </span>
-                <ArabicText text={piece.text} />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <ArabicText text={piece.text} />
+                  <DebateMentions debates={debates[piece.address] ?? []} />
+                </div>
               </li>
             ))}
           </ol>
