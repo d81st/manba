@@ -26,6 +26,11 @@ export const ru = {
   ...reportsRu,
   ...debatesRu,
   // Controls of every graph (shared/graph).
+  rail: {
+    label: "Места на этой странице",
+    hint: "Номер — место фрагмента в тексте ниже, не степень важности. Нажатие открывает этот фрагмент.",
+    marked: "этот фрагмент разбирали в опубликованном споре",
+  },
   graph: {
     zoomIn: "Приблизить",
     zoomOut: "Отдалить",
