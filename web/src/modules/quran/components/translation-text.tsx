@@ -1,5 +1,6 @@
 import { getMessages } from "@/shared/i18n";
 import { parseTranslation } from "../quran.translation-markup";
+import { TranslatorNote } from "./translator-note";
 
 const t = getMessages().quran.translation;
 
@@ -13,10 +14,7 @@ export function TranslationText({ content }: { content: string }) {
             {piece.text}
           </em>
         ) : piece.kind === "note" ? (
-          <span key={i} className="text-xs text-muted-foreground">
-            {" "}
-            [{t.note}: {piece.text}]
-          </span>
+          <TranslatorNote key={i} text={piece.text} />
         ) : (
           <span key={i}>{piece.text}</span>
         ),
