@@ -29,9 +29,10 @@ export const quranRu = {
       hide: "Скрыть перевод",
       label: "Перевод",
       note: "прим. переводчика",
+      noteMark: "прим.",
       addedHint: "Слова, добавленные переводчиком (в издании — курсивом)",
       about:
-        "Русский перевод — для удобства чтения, опора — арабский текст. Слова, добавленные переводчиком, выделены курсивом и цветом. Нумерация стихов у Саблукова (по изданию Флюгеля) приведена к счёту Хафса.",
+        "Русский перевод — для удобства чтения, опора — арабский текст. Слова, добавленные переводчиком, выделены курсивом и цветом. Примечание переводчика открывается по нажатию на «прим.» и остаётся на том же месте. Нумерация стихов у Саблукова (по изданию Флюгеля) приведена к счёту Хафса.",
       unverified: "не сверен специалистом",
     },
     loading: "Загрузка…",
@@ -127,9 +128,10 @@ export const quranEn: typeof quranRu = {
       hide: "Hide the translation",
       label: "Translation",
       note: "translator’s note",
+      noteMark: "note",
       addedHint: "Words added by the translator (in italics in the edition)",
       about:
-        "The Russian translation is a reading aid; the Arabic text is the basis. Words the translator added are marked in italics and colour. Sablukov’s verse numbers (from Flügel’s edition) are aligned to the count of Hafs.",
+        "The Russian translation is a reading aid; the Arabic text is the basis. Words the translator added are marked in italics and colour. A press on “note” opens the translator’s note in the same place. Sablukov’s verse numbers (from Flügel’s edition) are aligned to the count of Hafs.",
       unverified: "not checked by a specialist",
     },
     loading: "Loading…",

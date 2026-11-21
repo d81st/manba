@@ -83,6 +83,20 @@ test.describe("reading", () => {
     await expectAtTop(page, "2-286");
   });
 
+  test("a translator note stays beside the line and opens there", async ({ page }) => {
+    await page.goto("/quran/2#2-1");
+    const ayah = page.locator("#\\32 -1");
+    const gloss = ayah.getByRole("note");
+    await expect(gloss).toHaveClass(/sr-only/);
+    const mark = ayah.getByRole("button", { name: "прим. переводчика" });
+    await mark.click();
+    await expect(gloss).not.toHaveClass(/sr-only/);
+    await expect(gloss).not.toBeEmpty();
+    await expect(mark).toHaveAttribute("aria-expanded", "true");
+    await mark.click();
+    await expect(gloss).toHaveClass(/sr-only/);
+  });
+
   test("the Quran search finds a word and opens an address", async ({ page }) => {
     await page.goto(`/quran/search?q=${encodeURIComponent("موسى")}`);
     await expect(page.locator("main li.long-row").first()).toBeVisible();
