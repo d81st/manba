@@ -1,3 +1,4 @@
+import { getMessages } from "@/shared/i18n";
 import type { GraphData } from "@/shared/graph/graph.types";
 import type { PublicTopic, TopicPlace } from "../../topic.types";
 import { TopicBadge } from "../topic-badges";
@@ -9,6 +10,8 @@ import { PositionsSection } from "./positions-section";
 import { LinksSection, RelatedRefsSection } from "./related-sections";
 import { TopicSchema } from "./topic-schema";
 import { type PublicVideo, VideoList } from "@/modules/videos";
+
+const t = getMessages().topics;
 
 // A published topic: the texts in full, their circumstances, the positions of
 // all sides, related places, videos and links. Data comes from the page.
@@ -36,6 +39,7 @@ export function TopicArticle({
             <TopicBadge category={topic.category} linked />
           </div>
           <p className="text-lg text-muted-foreground">{topic.question}</p>
+          <p className="text-sm text-muted-foreground">{t.reading}</p>
         </header>
         {schema && <TopicSchema data={schema} />}
         {place && <PlaceSection place={place} />}

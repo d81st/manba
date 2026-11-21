@@ -79,7 +79,8 @@ export default function Home() {
       <SiteHeader />
       <Page>
         <ContinueReading />
-        <h1 className="mt-8 mb-4 text-xl font-semibold">{t.home.sectionsTitle}</h1>
+        <p className="mt-8 max-w-3xl text-muted-foreground">{t.home.start}</p>
+        <h1 className="mt-6 mb-4 text-xl font-semibold">{t.home.sectionsTitle}</h1>
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map(([key, name]) => {
             const Icon = ICONS[key];
@@ -87,7 +88,10 @@ export default function Home() {
             const body = (
               <>
                 <Icon className={cn("size-5 shrink-0", href ? "text-primary" : "text-muted-foreground")} />
-                <span className="flex-1">{name}</span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span>{name}</span>
+                  <span className="text-sm text-muted-foreground">{t.home.hints[key]}</span>
+                </span>
                 {href ? (
                   <Badge>{t.home.open}</Badge>
                 ) : (

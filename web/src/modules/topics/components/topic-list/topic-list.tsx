@@ -39,7 +39,14 @@ export function TopicList({ topics, active }: { topics: TopicSummary[]; active: 
         })}
       </nav>
       {topics.length === 0 ? (
-        <p className="mt-6 text-muted-foreground">{t.empty}</p>
+        <p className="mt-6 text-muted-foreground">
+          {active ? t.emptyCategory : t.empty}{" "}
+          {active && (
+            <Link href="/topics" className="text-foreground">
+              {t.allCategories}
+            </Link>
+          )}
+        </p>
       ) : (
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {topics.map((topic) => (
