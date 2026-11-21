@@ -14,7 +14,9 @@ import { sectionHref } from "@/modules/library";
 const messages = getMessages();
 const t = messages.library;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // A permanent link: /library/ibn_hisham/1.235 opens the Sira's section at that
 // page (1.235.2 at its second piece); /library/tafsir_ibn_kathir/2.64 the

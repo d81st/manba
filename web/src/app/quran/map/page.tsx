@@ -9,7 +9,9 @@ import { QuranMap, QuranNav } from "@/modules/quran";
 
 const t = getMessages().quran;
 
-export const metadata: Metadata = { title: t.map.title };
+export function generateMetadata(): Metadata {
+  return { title: t.map.title };
+}
 
 export default function MapPage() {
   return (

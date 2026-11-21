@@ -10,7 +10,9 @@ import { ParallelForm } from "@/modules/origins";
 const messages = getMessages();
 const t = messages.admin.origins;
 
-export const metadata: Metadata = { title: t.add };
+export function generateMetadata(): Metadata {
+  return { title: t.add };
+}
 
 export default function NewParallelPage() {
   return (

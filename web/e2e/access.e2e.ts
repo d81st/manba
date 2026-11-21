@@ -16,7 +16,7 @@ test.describe("access", () => {
     await page.goto("/login");
     await page.fill("input[name=login]", E2E_LOGIN);
     await page.fill("input[name=password]", "not-the-password");
-    await page.click("button[type=submit]");
+    await page.getByRole("button", { name: "Войти" }).click();
     await expect(page.getByRole("alert").or(page.locator("form .text-destructive")).first()).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
 

@@ -15,7 +15,9 @@ import { BookSearchForm } from "@/modules/library";
 const messages = getMessages();
 const t = messages.library;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // Contents of a book cited by volume and page: its sections with their pages.
 export default function BookContentsPage({ params }: PageProps<"/library/[work]">) {

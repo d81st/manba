@@ -7,12 +7,11 @@ import { listSuras } from "@/modules/quran/server";
 import { TOPICS_TAG } from "@/modules/topics";
 import { listPublishedTopics } from "@/modules/topics/server";
 import { db } from "@/shared/db";
-import { getMessages, plural } from "@/shared/i18n";
+import { activeLocale, messagesFor, plural, type Locale } from "@/shared/i18n";
 import { buildGalaxy, type Line, type Star } from "../galaxy.build";
 import { kindOfCategory, MIN_SHARED_TEXTS } from "../galaxy.constants";
 import type { Galaxy } from "../galaxy.types";
 
-const t = getMessages().galaxy;
 const BOOKS: readonly string[] = BOOK_CATEGORIES;
 
 // Each text of the hadith collections with the book it is in.
@@ -29,16 +28,21 @@ const STAR_OF = (column: string) => `CASE
   WHEN m.book IS NOT NULL THEN 'book:' || m.work || '.' || m.book
   ELSE 'work:' || subpath(${column}, 0, 1)::text END`;
 
-const texts = (n: number) => plural(n, t.fragments);
-
 // The galaxy of the library: every published work, the suras of the Quran,
 // the books of the hadith collections and the published topics; lines are
 // only what the data holds (similar hadiths in two books, a topic citing a
 // text, a commentary on a sura, a parallel of «Истоки»). Laid out once here.
+// The language is an argument, so each interface language has its own picture.
 export async function getGalaxy(): Promise<Galaxy> {
+  return cachedGalaxy(activeLocale());
+}
+
+async function cachedGalaxy(locale: Locale): Promise<Galaxy> {
   "use cache";
   cacheTag(HADITH_TAG, TOPICS_TAG, PARALLELS_TAG, "quran");
   cacheLife("hours");
+  const t = messagesFor(locale).galaxy;
+  const texts = (n: number) => plural(n, t.fragments, locale);
   const [works, suras, topics, books, similar, cites, commentary, parallels] = await Promise.all([
     db().query<{ id: string; canon: string; category: string; title: string; texts: number }>(
       `WITH counts AS (
@@ -106,7 +110,7 @@ export async function getGalaxy(): Promise<Galaxy> {
       kind: "quran" as const,
       label: `${s.number}. ${s.names.translit}`,
       href: `/quran/${s.number}`,
-      hint: `${t.sura} · ${s.names.ar} · ${plural(s.ayahs, t.ayahs)}`,
+      hint: `${t.sura} · ${s.names.ar} · ${plural(s.ayahs, t.ayahs, locale)}`,
       work: false,
       texts: s.ayahs,
     })),

@@ -16,7 +16,9 @@ import { PreviewBar } from "@/shared/layout/preview";
 const messages = getMessages();
 const t = messages.origins;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // «Истоки и связи с другими учениями» (docs/PLAN.md): links between passages
 // of Islam's sources and texts of other religions, grouped by teaching.

@@ -1,7 +1,7 @@
 // The events of the ribbon of time (history.ribbon.ts) from «Историческая
 // линия» and from the Prophet's life, with every dated reading of the sources.
 // Pure functions, used on the server.
-import { approxCommonEra, formatReading, HIJRI_MONTHS, type SiraEvent } from "@/modules/sira";
+import { approxCommonEra, formatReading, hijriMonthNames, type SiraEvent } from "@/modules/sira";
 import { bookPath, formatBookRef } from "@/shared/addresses/book-query";
 import { getMessages } from "@/shared/i18n";
 import { ceLabel } from "./history.calendar";
@@ -14,8 +14,8 @@ const t = getMessages().history;
 export function historyDateLabel(d: HistoryDate) {
   const parts: string[] = [];
   if (d.day) parts.push(String(d.day));
-  if (d.month) parts.push(HIJRI_MONTHS[d.month - 1]);
-  if (d.yearAh !== null) parts.push(`${d.yearAh < 0 ? `${-d.yearAh} до хиджры` : `${d.yearAh} ${t.ah}`} (≈ ${ceLabel(d.yearAh)})`);
+  if (d.month) parts.push(hijriMonthNames()[d.month - 1]);
+  if (d.yearAh !== null) parts.push(`${d.yearAh < 0 ? t.beforeHijra.replace("{n}", String(-d.yearAh)) : `${d.yearAh} ${t.ah}`} (≈ ${ceLabel(d.yearAh)})`);
   else if (d.yearCe !== null) parts.push(String(d.yearCe));
   return parts.join(" ");
 }

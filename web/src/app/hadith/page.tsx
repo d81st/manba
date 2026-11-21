@@ -13,7 +13,9 @@ import { HadithSearchForm } from "@/modules/hadith";
 const messages = getMessages();
 const t = messages.hadith;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function HadithPage() {
   return (

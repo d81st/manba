@@ -17,7 +17,9 @@ import type { Synonym } from "@/modules/assistant";
 const messages = getMessages();
 const t = messages.admin.assistant;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function AdminAssistantPage({ searchParams }: PageProps<"/admin/assistant">) {
   return (

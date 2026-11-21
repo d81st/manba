@@ -14,7 +14,9 @@ import { getExternalChapter } from "@/modules/library/server";
 const messages = getMessages();
 const t = messages.external;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // A chapter: the original and the translation verse by verse; /…/21#24 opens at verse 24.
 export default function ExternalChapterPage({ params }: PageProps<"/external/[work]/[book]/[chapter]">) {

@@ -6,6 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { getMessages } from "@/shared/i18n";
 import { requireSession } from "@/shared/auth/auth";
+import { LanguageSwitch } from "@/shared/layout/language-switch";
 
 const t = getMessages();
 
@@ -32,9 +33,12 @@ export function SiteHeader() {
             />
           </div>
         </form>
-        <Suspense fallback={<span className="text-sm text-muted-foreground">{t.home.loading}</span>}>
-          <Account />
-        </Suspense>
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
+          <LanguageSwitch />
+          <Suspense fallback={<span className="text-sm text-muted-foreground">{t.home.loading}</span>}>
+            <Account />
+          </Suspense>
+        </div>
       </div>
     </header>
   );

@@ -17,7 +17,9 @@ import { listChoices } from "@/modules/sira/server";
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.topics.editTitle };
+export function generateMetadata(): Metadata {
+  return { title: t.topics.editTitle };
+}
 
 export default function EditTopicPage({ params, searchParams }: PageProps<"/admin/topics/[id]">) {
   return (

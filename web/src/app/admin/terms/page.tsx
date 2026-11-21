@@ -16,7 +16,9 @@ import { listTermsForAdmin } from "@/modules/glossary/server";
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.terms.title };
+export function generateMetadata(): Metadata {
+  return { title: t.terms.title };
+}
 
 export default function TermsPage({ searchParams }: PageProps<"/admin/terms">) {
   return (

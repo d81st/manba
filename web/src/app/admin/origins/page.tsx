@@ -16,7 +16,9 @@ const messages = getMessages();
 const t = messages.admin.origins;
 const o = messages.origins;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function OriginsAdminPage() {
   return (

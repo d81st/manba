@@ -16,7 +16,9 @@ import { BookSearchForm, sectionHref } from "@/modules/library";
 const messages = getMessages();
 const t = messages.library;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function BookSectionPage({ params, searchParams }: PageProps<"/library/[work]/s/[section]">) {
   return (

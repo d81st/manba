@@ -14,7 +14,9 @@ import { PreviewNote } from "@/shared/layout/preview";
 const messages = getMessages();
 const t = messages.origins;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // One link: both texts side by side, its kind, degree and basis, and both
 // readings of the likeness with their sources. The site draws no conclusion.

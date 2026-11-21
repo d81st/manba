@@ -10,7 +10,9 @@ import { FindingForm } from "@/modules/findings";
 const messages = getMessages();
 const t = messages.admin.findings;
 
-export const metadata: Metadata = { title: t.add };
+export function generateMetadata(): Metadata {
+  return { title: t.add };
+}
 
 export default function NewFindingPage() {
   return (

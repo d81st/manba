@@ -13,7 +13,9 @@ import { TermForm } from "@/modules/glossary";
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.terms.editTitle };
+export function generateMetadata(): Metadata {
+  return { title: t.terms.editTitle };
+}
 
 export default function EditTermPage({ params, searchParams }: PageProps<"/admin/terms/[id]">) {
   return (

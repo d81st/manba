@@ -14,7 +14,9 @@ import { cn } from "@/shared/ui/utils";
 const messages = getMessages();
 const t = messages.admin.reports;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // What readers wrote about mistakes on the pages ("report a mistake", migration 051).
 export default function AdminReportsPage({ searchParams }: PageProps<"/admin/reports">) {

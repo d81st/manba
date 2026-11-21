@@ -30,3 +30,33 @@ export const bookmarksRu = {
     },
   },
 };
+
+export const bookmarksEn: typeof bookmarksRu = {
+  bookmarks: {
+    title: "Bookmarks",
+    intro: "Places on the site you saved. Only you see them, on any device where you are signed in.",
+    button: "Add bookmark",
+    dialogTitle: "Add bookmark",
+    where: "Place",
+    name: "Title",
+    note: "A note for yourself (optional)",
+    save: "Save",
+    close: "Close",
+    saved: "Bookmark saved.",
+    all: "My bookmarks",
+    empty: "No bookmarks yet. Open a place and press the bookmark button in the lower right corner.",
+    remove: "Remove",
+    problems: {
+      noTitle: "Give the bookmark a title.",
+      badPage: "The page could not be determined. Reload it and try again.",
+      tooMany: "You already have 500 bookmarks — remove some.",
+      unavailable: "Could not save. Try again in a minute.",
+    },
+    continue: {
+      title: "Continue reading",
+      hint: "Where you stopped is remembered only in this browser. It is not sent to the server.",
+      sections: { quran: "Quran", hadith: "Hadith", library: "Books", external: "Texts of other religions" },
+      forget: "Forget",
+    },
+  },
+};

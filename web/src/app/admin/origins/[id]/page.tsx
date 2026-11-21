@@ -15,7 +15,9 @@ import { ParallelForm } from "@/modules/origins";
 const messages = getMessages();
 const t = messages.admin.origins;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function EditParallelPage({ params, searchParams }: PageProps<"/admin/origins/[id]">) {
   return (

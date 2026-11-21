@@ -7,9 +7,6 @@ import { MAX_QUESTION } from "../assistant.analysis";
 
 const t = getMessages().assistant;
 
-// Questions to start from on an empty page or when nothing was found.
-const EXAMPLES = ["что говорится о джизье?", "джихад", "когда убили Усмана", "Ибн Сина", "2:255"];
-
 // The question box; the view (list or graph) is kept when asking again.
 export function AskForm({ q, view }: { q: string; view: "list" | "graph" }) {
   return (
@@ -28,7 +25,7 @@ export function Examples() {
   return (
     <p className="mt-2 flex flex-wrap items-center gap-2 text-sm">
       <span className="text-muted-foreground">{t.examples}:</span>
-      {EXAMPLES.map((e) => (
+      {t.exampleQueries.map((e) => (
         <Link key={e} href={`/assistant?q=${encodeURIComponent(e)}`} className="rounded-full border px-3 py-0.5 no-underline hover:bg-accent">
           {e}
         </Link>

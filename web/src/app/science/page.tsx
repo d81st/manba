@@ -14,7 +14,9 @@ import { PreviewBar } from "@/shared/layout/preview";
 const messages = getMessages();
 const t = messages.science;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // The books of the section in the library (migration 021).
 const BOOKS = [
@@ -71,18 +73,10 @@ async function Science({ searchParams }: Pick<PageProps<"/science">, "searchPara
   );
 }
 
-const TITLES: Record<string, string> = {
-  uyun_anba: "Ибн Аби Усайбиа, «Уюн аль-анба»",
-  ikhbar_ulama: "аль-Кифти, «Ихбар аль-уляма»",
-  sharh_isharat_tusi: "ат-Туси, комментарий к «аль-Ишарат»",
-  tahafut_ghazali: "аль-Газали, «Тахафут аль-фалясифа»",
-  munqidh_ghazali: "аль-Газали, «аль-Мункыз»",
-  jawahir_quran_ghazali: "аль-Газали, «Джавахир аль-Куран»",
-  ighathat_lahfan: "Ибн аль-Каййим, «Игасат аль-ляхфан»",
-  muwafaqat_shatibi: "аш-Шатиби, «аль-Мувафакат»",
-  itqan_suyuti: "ас-Суюти, «аль-Иткан»",
+const bookTitle = (id: string) => {
+  const titles = getMessages().science.bookTitles;
+  return id in titles ? titles[id as keyof typeof titles] : id;
 };
-const bookTitle = (id: string) => TITLES[id] ?? id;
 
 function Part({
   title,

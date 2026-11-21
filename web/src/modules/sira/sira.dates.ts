@@ -1,3 +1,5 @@
+import { activeLocale } from "@/shared/i18n/active-locale";
+
 // Dates of the Prophet's life as the sources give them (docs/PLAN.md,
 // «Жизнеописание пророка»): the reading of a source's words, and an
 // approximate year of the common era. No database here.
@@ -30,6 +32,26 @@ export const HIJRI_MONTHS = [
   "зу-ль-хиджа",
 ] as const;
 
+const HIJRI_MONTHS_EN = [
+  "Muharram",
+  "Safar",
+  "Rabi al-Awwal",
+  "Rabi al-Thani",
+  "Jumada al-Ula",
+  "Jumada al-Thani",
+  "Rajab",
+  "Sha'ban",
+  "Ramadan",
+  "Shawwal",
+  "Dhu al-Qa'dah",
+  "Dhu al-Hijjah",
+] as const;
+
+// The month names of the interface: Russian stays the default.
+export function hijriMonthNames(): readonly string[] {
+  return activeLocale() === "en" ? HIJRI_MONTHS_EN : HIJRI_MONTHS;
+}
+
 // "17 рамадана"
 const MONTHS_GENITIVE = [
   "мухаррама",
@@ -56,12 +78,22 @@ function years(n: number) {
 
 // "17 рамадана 2 г. х.", "сафар 2 г. х.", "за 3 года до хиджры", "в возрасте 40 лет"
 export function formatReading(d: DateReading) {
+  if (activeLocale() === "en") return formatReadingEn(d);
   const parts: string[] = [];
   if (d.month) parts.push(d.day ? `${d.day} ${MONTHS_GENITIVE[d.month - 1]}` : HIJRI_MONTHS[d.month - 1]);
   if (d.year !== null) parts.push(d.year > 0 ? `${d.year} г. х.` : `за ${-d.year} ${years(-d.year)} до хиджры`);
   const date = parts.join(" ");
   // "в возрасте 21 года", "в возрасте 53 лет"
   const age = d.age !== null ? `в возрасте ${d.age} ${d.age % 10 === 1 && d.age % 100 !== 11 ? "года" : "лет"}` : "";
+  return [date, age].filter(Boolean).join(", ");
+}
+
+function formatReadingEn(d: DateReading) {
+  const parts: string[] = [];
+  if (d.month) parts.push(d.day ? `${d.day} ${HIJRI_MONTHS_EN[d.month - 1]}` : HIJRI_MONTHS_EN[d.month - 1]);
+  if (d.year !== null) parts.push(d.year > 0 ? `${d.year} AH` : `${-d.year} ${-d.year === 1 ? "year" : "years"} before the Hijra`);
+  const date = parts.join(" ");
+  const age = d.age !== null ? `at the age of ${d.age}` : "";
   return [date, age].filter(Boolean).join(", ");
 }
 

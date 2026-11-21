@@ -34,3 +34,37 @@ export const knowledgeRu = {
     },
   },
 };
+
+export const knowledgeEn: typeof knowledgeRu = {
+  knowledge: {
+    title: "Knowledge map",
+    intro:
+      "Sections, topics, terms and links with other teachings on one diagram. Lines are links the editors set: a topic and its terms, related topics, related terms. Pale lines lead to the section the material belongs to. Press a node to see what it is and open its page.",
+    graphLabel: "Knowledge map: sections, topics, terms and links with other teachings",
+    searchPlaceholder: "Find on the map",
+    pick: "Press a node or find it by name.",
+    open: "Open the page",
+    neighbours: "Linked with",
+    asList: "Everything on the map as a list",
+    empty: "Nothing is on the map yet: there are no published topics or terms.",
+    kinds: { section: "section", topic: "topic", term: "term", parallel: "link with other teachings" },
+    sections: {
+      topics: "Topics",
+      topicsHint: "Questions the sources speak about, with the positions of every side.",
+      hard: "Difficult topics",
+      hardHint: "The texts in full, with the surrounding ayahs, the circumstances and the positions of the sides.",
+      sira: "The Prophet’s life",
+      siraHint: "Events, places and people from the sources.",
+      quranText: "History of the Quran’s text",
+      quranTextHint: "How the text was written down, collected and recited, from the sources.",
+      cities: "Sacred cities",
+      citiesHint: "Mecca, Medina and other places from the sources.",
+      origins: "Origins and links",
+      originsHint: "Texts of Islam beside texts of other religions, with both readings.",
+      science: "Islam and science",
+      scienceHint: "Scholars and claims about science, with the sources.",
+      glossary: "Glossary",
+      glossaryHint: "Terms that are hard to read the sources without.",
+    },
+  },
+};

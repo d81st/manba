@@ -19,7 +19,9 @@ const TAFSIR = "tafsir_ibn_kathir";
 
 const t = getMessages().quran;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function SuraPage({ params, searchParams }: PageProps<"/quran/[sura]">) {
   return (

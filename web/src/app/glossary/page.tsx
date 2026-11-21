@@ -9,7 +9,9 @@ import { GlossaryList } from "@/modules/glossary";
 
 const t = getMessages().glossary;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function GlossaryPage() {
   return (

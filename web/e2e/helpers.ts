@@ -5,7 +5,7 @@ export async function signIn(page: Page) {
   await page.goto("/login");
   await page.fill("input[name=login]", E2E_LOGIN);
   await page.fill("input[name=password]", E2E_PASSWORD);
-  await page.click("button[type=submit]");
+  await page.getByRole("button", { name: "Войти" }).click();
   await page.waitForURL((url) => !url.pathname.startsWith("/login"));
 }
 

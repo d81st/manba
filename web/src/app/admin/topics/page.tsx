@@ -16,7 +16,9 @@ import { StatusBadge } from "../status-badge";
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.topics.title };
+export function generateMetadata(): Metadata {
+  return { title: t.topics.title };
+}
 
 export default function TopicsPage({ searchParams }: PageProps<"/admin/topics">) {
   return (

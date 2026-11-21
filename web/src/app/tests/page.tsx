@@ -13,7 +13,9 @@ import { PreviewBar } from "@/shared/layout/preview";
 const messages = getMessages();
 const t = messages.tests;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // «Тесты» (docs/PLAN.md, migration 023): after any answer, the fragments the
 // question is built on, with links into the library; the level is the

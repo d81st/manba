@@ -14,7 +14,9 @@ import { levelKey } from "@/modules/quiz";
 const messages = getMessages();
 const t = messages.admin.tests;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function AdminTestsPage() {
   return (

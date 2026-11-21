@@ -11,7 +11,9 @@ import { HistoryEventForm } from "@/modules/history";
 const messages = getMessages();
 const t = messages.admin.history;
 
-export const metadata: Metadata = { title: t.add };
+export function generateMetadata(): Metadata {
+  return { title: t.add };
+}
 
 export default function NewHistoryEventPage() {
   return (

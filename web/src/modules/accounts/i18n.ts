@@ -65,3 +65,67 @@ export const accountsAdminRu = {
     },
   },
 };
+
+export const accountsEn: typeof accountsRu = {
+  login: {
+    title: "Sign in",
+    login: "Login",
+    password: "Password",
+    submit: "Sign in",
+    pending: "Signing in…",
+    invalid: "Wrong login or password.",
+    locked: "Too many attempts. Try again in 15 minutes.",
+    notConfigured: "Sign-in is not configured on the server.",
+    closed: "The site is in development and open only to people on the project.",
+  },
+  account: {
+    password: "Password",
+    title: "Change password",
+    mustChange: "You signed in with a temporary password. Choose your own to continue.",
+    current: "Current password",
+    next: "New password",
+    repeat: "New password again",
+    hint: "At least 10 characters. After the change, your other sessions on other devices close.",
+    submit: "Change password",
+    pending: "Saving…",
+    saved: "Password changed.",
+    mainAdmin: "The main administrator’s password is set in the server settings (Render). It is not changed here.",
+    problems: {
+      tooShort: "The password is shorter than 10 characters.",
+      tooLong: "The password is too long.",
+      mismatch: "The new passwords do not match.",
+      same: "The new password is the same as the current one.",
+      current: "The current password is wrong.",
+      locked: "Too many attempts. Try again in 15 minutes.",
+    },
+  },
+};
+
+export const accountsAdminEn: typeof accountsAdminRu = {
+  users: {
+    title: "Users",
+    intro: "A reader sees what is published. An administrator also sees the admin panel and drafts, and can change everything. The main administrator is set in the server settings and is not listed here.",
+    login: "Login",
+    loginHint: "Latin letters, digits, a dot, a hyphen or an underscore; 3 to 40 characters.",
+    role: "Role",
+    roles: { admin: "administrator", reader: "reader" },
+    create: "Create",
+    created: "The account is created. Give the person the login and the temporary password — they will choose their own at the first sign-in:",
+    reset: "Reset password",
+    resetDone: "A new temporary password for",
+    disable: "Disable",
+    enable: "Enable",
+    makeAdmin: "Make administrator",
+    makeReader: "Make reader",
+    disabled: "disabled",
+    mustChange: "temporary password",
+    createdBy: "created by",
+    empty: "There are no other accounts yet.",
+    showOnce: "The password is shown once and is not stored in the clear.",
+    problems: {
+      login: "The login does not fit: Latin letters, digits, a dot, a hyphen or an underscore, 3 to 40 characters.",
+      taken: "That login is already taken.",
+      reserved: "That login belongs to the main administrator.",
+    },
+  },
+};

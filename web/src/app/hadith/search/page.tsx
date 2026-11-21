@@ -17,7 +17,9 @@ import { searchHadith } from "@/modules/hadith/server";
 const messages = getMessages();
 const t = messages.hadith;
 
-export const metadata: Metadata = { title: t.search.title };
+export function generateMetadata(): Metadata {
+  return { title: t.search.title };
+}
 
 export default function HadithSearchPage({ searchParams }: PageProps<"/hadith/search">) {
   return (

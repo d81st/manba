@@ -15,7 +15,9 @@ import { markShared, type PairSide, REVIEW_STATUSES, type ReviewFilter, type Rev
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.links.title };
+export function generateMetadata(): Metadata {
+  return { title: t.links.title };
+}
 
 export default function LinksPage({ searchParams }: PageProps<"/admin/links">) {
   return (

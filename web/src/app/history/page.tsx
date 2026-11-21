@@ -13,7 +13,9 @@ import { PreviewBar } from "@/shared/layout/preview";
 const messages = getMessages();
 const t = messages.history;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // «Историческая линия» (docs/PLAN.md, migration 022): events on layers, each
 // with every dated reading of the sources, on a ribbon of time and as a list

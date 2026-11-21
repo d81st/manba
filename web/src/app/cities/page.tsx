@@ -15,7 +15,9 @@ import { getSiraData } from "@/modules/sira/server";
 const messages = getMessages();
 const t = messages.cities;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // «Священные города» (docs/PLAN.md): the cities are topics of the category
 // cities, each tied to its place on the map (migration 016).

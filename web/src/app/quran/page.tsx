@@ -10,7 +10,9 @@ import { QuranNav, SearchForm, SuraMeta } from "@/modules/quran";
 
 const t = getMessages().quran;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function QuranPage() {
   return (

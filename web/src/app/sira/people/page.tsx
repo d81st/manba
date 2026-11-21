@@ -12,7 +12,9 @@ import { getCoMentions, getSiraData } from "@/modules/sira/server";
 const messages = getMessages();
 const t = messages.sira;
 
-export const metadata: Metadata = { title: t.peoplePage.title };
+export function generateMetadata(): Metadata {
+  return { title: t.peoplePage.title };
+}
 
 export default function PeoplePage({ searchParams }: PageProps<"/sira/people">) {
   return (

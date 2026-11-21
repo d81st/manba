@@ -15,7 +15,9 @@ import { getSiraForAdmin } from "@/modules/sira/server";
 const messages = getMessages();
 const t = messages.admin.sira;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function SiraAdminPage() {
   return (

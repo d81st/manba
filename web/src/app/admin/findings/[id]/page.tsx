@@ -12,7 +12,9 @@ import { getFinding } from "@/modules/findings/server";
 const messages = getMessages();
 const t = messages.admin.findings;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function EditFindingPage({ params, searchParams }: PageProps<"/admin/findings/[id]">) {
   return (

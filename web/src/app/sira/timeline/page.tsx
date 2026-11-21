@@ -13,7 +13,9 @@ import { getSiraData } from "@/modules/sira/server";
 const messages = getMessages();
 const t = messages.sira;
 
-export const metadata: Metadata = { title: t.timelinePage.title };
+export function generateMetadata(): Metadata {
+  return { title: t.timelinePage.title };
+}
 
 export default function TimelinePage({ searchParams }: PageProps<"/sira/timeline">) {
   return (

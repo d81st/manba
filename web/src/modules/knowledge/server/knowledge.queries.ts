@@ -4,7 +4,7 @@ import { listParallels } from "@/modules/origins/server";
 import { listPublishedTopics, listTopicLinks } from "@/modules/topics/server";
 import { layoutGraph } from "@/shared/graph/graph-layout";
 import type { GraphEdge } from "@/shared/graph/graph.types";
-import { SECTIONS, sectionOfCategory } from "../knowledge.sections";
+import { knowledgeSections, sectionOfCategory } from "../knowledge.sections";
 import type { KnowledgeItem, KnowledgeMap } from "../knowledge.types";
 
 // The knowledge map: the sections of the site, the published topics, terms and
@@ -21,7 +21,7 @@ export async function getKnowledgeMap(): Promise<KnowledgeMap> {
   ]);
 
   const items: KnowledgeItem[] = [
-    ...SECTIONS.map((s) => ({ id: s.id, kind: "section" as const, label: s.label, href: s.href, hint: s.hint })),
+    ...knowledgeSections().map((s) => ({ id: s.id, kind: "section" as const, label: s.label, href: s.href, hint: s.hint })),
     ...topics.map((t) => ({ id: `topic:${t.slug}`, kind: "topic" as const, label: t.title, href: `/topics/${t.slug}`, hint: t.question })),
     ...terms.map((t) => ({
       id: `term:${t.slug}`,

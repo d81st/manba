@@ -15,7 +15,7 @@ import { ChoiceSelect } from "@/shared/ui/choice-select";
 import { saveHistoryAction, type HistoryFormState } from "../server/history.actions";
 import { slugify } from "@/shared/forms/input";
 import { FormNotes, messageOf, NumberInput } from "@/shared/forms/form-kit";
-import { HIJRI_MONTHS } from "@/modules/sira";
+import { hijriMonthNames } from "@/modules/sira";
 
 type DateRow = HistoryDateInput & { key: number };
 let nextKey = 1;
@@ -175,7 +175,7 @@ export function HistoryEventForm({
                   id={`month-${d.key}`}
                   value={d.month}
                   none={s.noMonth}
-                  choices={HIJRI_MONTHS.map((m, k) => ({ value: k + 1, label: `${k + 1}. ${m}` }))}
+                  choices={hijriMonthNames().map((m, k) => ({ value: k + 1, label: `${k + 1}. ${m}` }))}
                   onChange={(v) => setDate(d.key, { month: v })}
                 />
               </div>

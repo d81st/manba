@@ -7,7 +7,9 @@ import { EXTERNAL_IDS } from "@/shared/addresses/external";
 const messages = getMessages();
 const t = messages.external;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function ExternalPage() {
   return (

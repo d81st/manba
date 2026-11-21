@@ -15,7 +15,9 @@ import { getAyahs, searchText, searchTranslation } from "@/modules/quran/server"
 const messages = getMessages();
 const t = messages.quran;
 
-export const metadata: Metadata = { title: t.search.title };
+export function generateMetadata(): Metadata {
+  return { title: t.search.title };
+}
 
 export default function SearchPage({ searchParams }: PageProps<"/quran/search">) {
   return (

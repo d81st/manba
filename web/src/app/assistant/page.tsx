@@ -12,7 +12,9 @@ import { Answer, AskForm, Examples } from "@/modules/assistant";
 const messages = getMessages();
 const t = messages.assistant;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 
 // «Ассистент по источникам», first phase (docs/PLAN.md, migration 024).

@@ -12,7 +12,9 @@ import { Button } from "@/shared/ui/button";
 const messages = getMessages();
 const t = messages.admin.siteErrors;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // The journal of site errors (migration 059): what failed on the server and
 // in the readers' browsers, grouped by place and message.

@@ -10,7 +10,9 @@ import { listPublicNotFound } from "@/modules/findings/server";
 const messages = getMessages();
 const t = messages.notFoundInSources;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // «Не найдено в источниках» (migration 025): checked leads whose text is not
 // where they say it is. The lead is named by its site only, not linked.

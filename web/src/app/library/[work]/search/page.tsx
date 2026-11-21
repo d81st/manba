@@ -18,7 +18,9 @@ import { getBookWork, searchBook } from "@/modules/library/server";
 const messages = getMessages();
 const t = messages.library.book;
 
-export const metadata: Metadata = { title: t.search.title };
+export function generateMetadata(): Metadata {
+  return { title: t.search.title };
+}
 
 export default function BookSearchPage({ params, searchParams }: PageProps<"/library/[work]/search">) {
   return (

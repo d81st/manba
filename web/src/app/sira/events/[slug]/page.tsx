@@ -15,7 +15,9 @@ import { getSiraData } from "@/modules/sira/server";
 const messages = getMessages();
 const t = messages.sira;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // One event: what each source says of its date, in its own words.
 export default function EventPage({ params, searchParams }: PageProps<"/sira/events/[slug]">) {

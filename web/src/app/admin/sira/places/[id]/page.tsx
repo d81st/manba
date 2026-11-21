@@ -12,7 +12,9 @@ import { PlaceForm } from "@/modules/sira";
 const messages = getMessages();
 const t = messages.admin.sira;
 
-export const metadata: Metadata = { title: t.places };
+export function generateMetadata(): Metadata {
+  return { title: t.places };
+}
 
 export default function EditPlacePage({ params, searchParams }: PageProps<"/admin/sira/places/[id]">) {
   return (

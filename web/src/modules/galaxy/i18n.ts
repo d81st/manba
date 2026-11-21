@@ -42,3 +42,45 @@ export const galaxyRu = {
     ayahs: { one: "аят", few: "аята", many: "аятов" },
   },
 };
+
+export const galaxyEn: typeof galaxyRu = {
+  galaxy: {
+    title: "Library galaxy",
+    intro:
+      "The whole library as one picture: works, suras of the Quran, books of the hadith collections and topics of the site. Lines are only what the data holds: similar hadiths in books of two collections, a topic citing a text, a commentary on a sura, a parallel from Origins. Press a star to see what it is and open its page.",
+    graphLabel: "Library galaxy: works, suras, books of hadith collections, topics and the links between them",
+    view: "View",
+    view2d: "2D",
+    view3d: "3D",
+    hint2d: "Zoom with the buttons or with the wheel and Ctrl/⌘.",
+    hint3d: "Turn with the mouse or a finger, zoom with the wheel or two fingers, pan with the right mouse button.",
+    loading: "The galaxy is loading…",
+    no3d: "This browser cannot show 3D. Open the 2D view.",
+    searchPlaceholder: "Find a star",
+    pick: "Press a star or find it by name.",
+    open: "Open the page",
+    neighbours: "Linked with",
+    more: "and {count} more",
+    asList: "All works and topics as a list",
+    empty: "The library has no published works yet.",
+    kinds: {
+      quran: "The Quran and its suras",
+      hadith: "Hadith collections and their books",
+      books: "Tafsir, the Prophet’s life, history, theology",
+      external: "Texts of other religions",
+      topic: "Topics of the site",
+    },
+    lines: {
+      part: "part of a work",
+      similar: "similar hadiths in books of two collections (from {min})",
+      cites: "a topic cites a text",
+      commentary: "commentary on a sura",
+      parallel: "a parallel from Origins",
+    },
+    work: "Work",
+    sura: "Sura",
+    book: "book",
+    fragments: { one: "fragment", few: "fragments", many: "fragments" },
+    ayahs: { one: "ayah", few: "ayahs", many: "ayahs" },
+  },
+};

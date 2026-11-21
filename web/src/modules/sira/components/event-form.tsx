@@ -9,7 +9,7 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Textarea } from "@/shared/ui/textarea";
 import type { Messages } from "@/shared/i18n";
-import { HIJRI_MONTHS } from "../sira.dates";
+import { hijriMonthNames } from "../sira.dates";
 import { EVENT_KINDS, SIRA_STATUSES, type EventDateInput, type EventInput } from "../sira.validation";
 import { Field } from "@/shared/ui/field";
 import { saveEventAction, type SiraFormState } from "../server/sira.actions";
@@ -189,7 +189,7 @@ export function EventForm({
                   id={`month-${d.key}`}
                   value={d.month}
                   none={t.noMonth}
-                  choices={HIJRI_MONTHS.map((m, k) => ({ value: k + 1, label: `${k + 1}. ${m}` }))}
+                  choices={hijriMonthNames().map((m, k) => ({ value: k + 1, label: `${k + 1}. ${m}` }))}
                   onChange={(v) => setDate(d.key, { month: v })}
                 />
               </div>

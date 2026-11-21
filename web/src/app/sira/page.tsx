@@ -14,7 +14,9 @@ import { BookSearchForm } from "@/modules/library";
 const messages = getMessages();
 const t = messages.sira;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // The section «Жизнеописание пророка» (docs/PLAN.md): the cards of people and
 // events, then the life of the prophet in the order of the Sira of Ibn Hisham,

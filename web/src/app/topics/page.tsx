@@ -10,7 +10,9 @@ import { listPublishedTopics } from "@/modules/topics/server";
 const messages = getMessages();
 const t = messages.topics;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function TopicsPage({ searchParams }: PageProps<"/topics">) {
   return (

@@ -13,7 +13,9 @@ import { getSiraData } from "@/modules/sira/server";
 const messages = getMessages();
 const t = messages.sira;
 
-export const metadata: Metadata = { title: t.mapPage.title };
+export function generateMetadata(): Metadata {
+  return { title: t.mapPage.title };
+}
 
 export default function MapPage({ searchParams }: PageProps<"/sira/map">) {
   return (

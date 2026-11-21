@@ -11,7 +11,9 @@ import { PersonForm } from "@/modules/sira";
 const messages = getMessages();
 const t = messages.admin.sira;
 
-export const metadata: Metadata = { title: t.addPerson };
+export function generateMetadata(): Metadata {
+  return { title: t.addPerson };
+}
 
 export default function NewPersonPage() {
   return (

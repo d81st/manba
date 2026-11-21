@@ -15,7 +15,9 @@ import { PersonForm, type PersonRelationInput } from "@/modules/sira";
 const messages = getMessages();
 const t = messages.admin.sira;
 
-export const metadata: Metadata = { title: t.people };
+export function generateMetadata(): Metadata {
+  return { title: t.people };
+}
 
 export default function EditPersonPage({ params, searchParams }: PageProps<"/admin/sira/people/[id]">) {
   return (

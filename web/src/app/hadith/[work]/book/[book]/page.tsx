@@ -18,7 +18,9 @@ import { getBook, getCollection } from "@/modules/hadith/server";
 
 const t = getMessages().hadith;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function BookPage({ params, searchParams }: PageProps<"/hadith/[work]/book/[book]">) {
   return (

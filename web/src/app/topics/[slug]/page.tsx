@@ -15,7 +15,9 @@ import { PreviewNote } from "@/shared/layout/preview";
 
 const t = getMessages().topics;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function TopicPage({ params, searchParams }: PageProps<"/topics/[slug]">) {
   return (

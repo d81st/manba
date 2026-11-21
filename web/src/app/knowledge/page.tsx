@@ -10,7 +10,9 @@ import { Page } from "@/shared/layout/page";
 const messages = getMessages();
 const t = messages.knowledge;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function KnowledgePage() {
   return (

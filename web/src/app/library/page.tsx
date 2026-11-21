@@ -14,7 +14,9 @@ import { listBookWorks } from "@/modules/library/server";
 const messages = getMessages();
 const t = messages.library;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 const card =
   "flex h-full items-center gap-3 rounded-xl border bg-card p-4 text-card-foreground no-underline shadow-sm transition-colors hover:border-primary hover:bg-accent";

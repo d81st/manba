@@ -14,7 +14,9 @@ import { Button } from "@/shared/ui/button";
 const messages = getMessages();
 const t = messages.bookmarks;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // A reader's own bookmarks (migration 052): only theirs, never anyone else's.
 export default function BookmarksPage() {

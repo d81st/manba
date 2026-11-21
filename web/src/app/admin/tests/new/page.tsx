@@ -11,7 +11,9 @@ import { QuestionForm } from "@/modules/quiz";
 const messages = getMessages();
 const t = messages.admin.tests;
 
-export const metadata: Metadata = { title: t.add };
+export function generateMetadata(): Metadata {
+  return { title: t.add };
+}
 
 export default function NewQuestionPage() {
   return (

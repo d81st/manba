@@ -13,7 +13,9 @@ import { VideoForm } from "@/modules/videos";
 const messages = getMessages();
 const t = messages.admin.videos;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 export default function EditVideoPage({ params, searchParams }: PageProps<"/admin/videos/[id]">) {
   return (

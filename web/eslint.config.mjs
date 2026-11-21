@@ -29,7 +29,7 @@ const eslintConfig = defineConfig([
   // work for any section. The one exception collects the modules' strings.
   {
     files: ["src/shared/**/*.{ts,tsx}"],
-    ignores: ["src/shared/i18n/ru.ts"],
+    ignores: ["src/shared/i18n/ru.ts", "src/shared/i18n/en.ts"],
     rules: {
       "no-restricted-imports": [
         "error",

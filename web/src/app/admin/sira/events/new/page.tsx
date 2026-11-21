@@ -11,7 +11,9 @@ import { EventForm } from "@/modules/sira";
 const messages = getMessages();
 const t = messages.admin.sira;
 
-export const metadata: Metadata = { title: t.addEvent };
+export function generateMetadata(): Metadata {
+  return { title: t.addEvent };
+}
 
 export default function NewEventPage() {
   return (

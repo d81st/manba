@@ -10,7 +10,9 @@ import { listSides } from "@/modules/topics/server";
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.sides.title };
+export function generateMetadata(): Metadata {
+  return { title: t.sides.title };
+}
 
 export default function SidesPage() {
   return (

@@ -11,7 +11,9 @@ import { listPublishedTopics } from "@/modules/topics/server";
 const messages = getMessages();
 const t = messages.quranText;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // The section «История текста Корана» (docs/PLAN.md): its topics in the order
 // they were set up, and the books of the library it draws on.

@@ -10,7 +10,9 @@ import { VideoForm } from "@/modules/videos";
 const messages = getMessages();
 const t = messages.admin.videos;
 
-export const metadata: Metadata = { title: t.add };
+export function generateMetadata(): Metadata {
+  return { title: t.add };
+}
 
 export default function NewVideoPage() {
   return (

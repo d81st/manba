@@ -27,7 +27,7 @@ function roman(n: number) {
 
 function periodOf(year: number, scale: Scale) {
   if (scale === "century") return { key: Math.floor((year - 1) / 100), label: t.century.replace("{n}", roman(Math.floor((year - 1) / 100) + 1)) };
-  if (scale === "decade") return { key: Math.floor(year / 10), label: `${Math.floor(year / 10) * 10}-е` };
+  if (scale === "decade") return { key: Math.floor(year / 10), label: t.decade.replace("{n}", String(Math.floor(year / 10) * 10)) };
   return { key: year, label: String(year) };
 }
 

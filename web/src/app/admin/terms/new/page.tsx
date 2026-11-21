@@ -10,7 +10,9 @@ import { TermForm } from "@/modules/glossary";
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.terms.newTitle };
+export function generateMetadata(): Metadata {
+  return { title: t.terms.newTitle };
+}
 
 export default function NewTermPage() {
   return (

@@ -12,7 +12,9 @@ import { listChoices } from "@/modules/sira/server";
 
 const t = getMessages().admin;
 
-export const metadata: Metadata = { title: t.topics.newTitle };
+export function generateMetadata(): Metadata {
+  return { title: t.topics.newTitle };
+}
 
 export default function NewTopicPage() {
   return (

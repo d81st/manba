@@ -13,7 +13,9 @@ import { getCollection, locateHadith } from "@/modules/hadith/server";
 
 const t = getMessages().hadith;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // A permanent link to one hadith: /hadith/bukhari/3951 opens it in its book;
 // /hadith/muslim/8b opens the second narration of Muslim 8, /hadith/kafi/4.60.3

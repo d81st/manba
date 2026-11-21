@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { installLocaleReader } from "@/shared/i18n/active-locale";
 import { approxCommonEra, formatReading, monthsFromHijra } from "./sira.dates";
 
 const date = (year: number | null, month: number | null = null, day: number | null = null, age: number | null = null) => ({
@@ -18,6 +19,18 @@ describe("formatReading", () => {
     expect(formatReading(date(1, null, null, 53))).toBe("1 г. х., в возрасте 53 лет");
     expect(formatReading(date(null, 3, 12))).toBe("12 раби аль-авваля");
     expect(formatReading(date(null))).toBe("");
+  });
+
+  it("writes the same reading in English when that is the interface language", () => {
+    installLocaleReader(() => "en");
+    expect(formatReading(date(2, 9, 17))).toBe("17 Ramadan 2 AH");
+    expect(formatReading(date(2, 2))).toBe("Safar 2 AH");
+    expect(formatReading(date(-3))).toBe("3 years before the Hijra");
+    expect(formatReading(date(-1))).toBe("1 year before the Hijra");
+    expect(formatReading(date(null, null, null, 40))).toBe("at the age of 40");
+    expect(formatReading(date(1, null, null, 53))).toBe("1 AH, at the age of 53");
+    expect(formatReading(date(null, 3, 12))).toBe("12 Rabi al-Awwal");
+    installLocaleReader(() => "ru");
   });
 });
 

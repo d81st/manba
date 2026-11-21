@@ -12,7 +12,9 @@ import { getExternalContents } from "@/modules/library/server";
 const messages = getMessages();
 const t = messages.external;
 
-export const metadata: Metadata = { title: t.title };
+export function generateMetadata(): Metadata {
+  return { title: t.title };
+}
 
 // Books of a text of another religion, each with its chapters.
 export default function ExternalWorkPage({ params }: PageProps<"/external/[work]">) {
