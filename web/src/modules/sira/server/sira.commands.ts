@@ -5,18 +5,16 @@ import type { InputProblem } from "@/shared/forms/input";
 import { quoteFound, type CheckedEvent, type CheckedPerson, type PlaceInput } from "../sira.validation";
 import { LOCALE } from "./sira.sql";
 import { getEventForEdit, getPersonForEdit, getPlaceForEdit } from "./sira.queries";
+import { passageForQuote } from "./quote-scope";
 
 // Checks that each address exists and that each quote stands in the text there.
 async function checkQuotes(client: pg.PoolClient, items: { address: string; quote: string; field: string }[]) {
   const problems: InputProblem[] = [];
   for (const item of items) {
-    const { rows } = await client.query<{ known: boolean; text: string | null }>(
-      `SELECT EXISTS (SELECT 1 FROM addresses WHERE address = $1::extensions.ltree) AS known,
-              (SELECT string_agg(t.content, ' ') FROM texts t WHERE t.address <@ $1::extensions.ltree) AS text`,
-      [item.address],
-    );
-    if (!rows[0].known) problems.push({ field: `${item.field}.ref`, code: "refMissing" });
-    else if (!quoteFound(rows[0].text ?? "", item.quote)) problems.push({ field: `${item.field}.quote`, code: "quoteNotFound" });
+    const passage = await passageForQuote(client, item.address);
+    if (passage === "missing") problems.push({ field: `${item.field}.ref`, code: "refMissing" });
+    else if (passage === "wide") problems.push({ field: `${item.field}.ref`, code: "refWide" });
+    else if (!quoteFound(passage.text, item.quote)) problems.push({ field: `${item.field}.quote`, code: "quoteNotFound" });
   }
   return problems;
 }

@@ -1,5 +1,6 @@
 import "server-only";
 import { db, isDatabaseConfigured } from "@/shared/db";
+import { normalizeLogin } from "@/shared/auth/passwords";
 import { isLocked, WINDOW_MS, type FailureCounts } from "../login.limiter";
 
 const WINDOW_SECONDS = WINDOW_MS / 1000;
@@ -35,9 +36,24 @@ async function failureCounts(address: string, login: string): Promise<FailureCou
   }
 }
 
+// The owner and an existing account. A database error counts as known, so a
+// hiccup in this lookup cannot turn the global counter into a lockout.
+async function loginIsKnown(login: string) {
+  if (login && login === process.env.SITE_LOGIN) return true;
+  if (!isDatabaseConfigured()) return false;
+  try {
+    const { rows } = await db().query("SELECT 1 FROM users WHERE login = $1", [normalizeLogin(login).slice(0, 80)]);
+    return rows.length > 0;
+  } catch (error) {
+    note(error);
+    return true;
+  }
+}
+
 export async function isLoginLocked(address: string, login: string) {
   const counts = await failureCounts(address, login);
-  return counts ? isLocked(counts) : false;
+  if (!counts) return false;
+  return isLocked(counts, await loginIsKnown(login));
 }
 
 export async function recordLoginFailure(address: string, login: string) {

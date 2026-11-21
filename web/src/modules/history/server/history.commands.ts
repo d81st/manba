@@ -6,6 +6,7 @@ import type { CheckedHistoryEvent } from "../history.validation";
 import { LOCALE } from "./history.sql";
 import { getHistoryEventForEdit } from "./history.queries";
 import { quoteFound } from "@/modules/sira";
+import { passageForQuote } from "@/modules/sira/server";
 
 type Saved = { id?: number; problems: InputProblem[] };
 
@@ -28,13 +29,10 @@ async function save(client: pg.PoolClient, id: number | null, input: CheckedHist
   const problems: InputProblem[] = [];
   // Each address exists and each quote stands in the text there.
   for (const [i, d] of input.dates.entries()) {
-    const { rows } = await client.query<{ known: boolean; text: string | null }>(
-      `SELECT EXISTS (SELECT 1 FROM addresses WHERE address = $1::extensions.ltree) AS known,
-              (SELECT string_agg(t.content, ' ') FROM texts t WHERE t.address <@ $1::extensions.ltree) AS text`,
-      [d.address],
-    );
-    if (!rows[0].known) problems.push({ field: `dates.${i}.ref`, code: "refMissing" });
-    else if (!quoteFound(rows[0].text ?? "", d.quote)) problems.push({ field: `dates.${i}.quote`, code: "quoteNotFound" });
+    const passage = await passageForQuote(client, d.address);
+    if (passage === "missing") problems.push({ field: `dates.${i}.ref`, code: "refMissing" });
+    else if (passage === "wide") problems.push({ field: `dates.${i}.ref`, code: "refWide" });
+    else if (!quoteFound(passage.text, d.quote)) problems.push({ field: `dates.${i}.quote`, code: "quoteNotFound" });
   }
   const taken = await client.query("SELECT 1 FROM history_events WHERE slug = $1 AND id IS DISTINCT FROM $2", [input.slug, id]);
   if (taken.rowCount) problems.push({ field: "slug", code: "slugTaken" });

@@ -15,6 +15,7 @@ import {
     SESSION_MAX_AGE,
 } from "@/shared/auth/session";
 import { findAccount, ownerSessionVersion } from "@/shared/auth/accounts";
+import { MAX_PASSWORD_BYTES } from "@/shared/auth/passwords";
 
 export type LoginState = { error?: string; login?: string };
 
@@ -23,7 +24,7 @@ export async function login(
   formData: FormData,
 ): Promise<LoginState> {
   const t = getMessages().login;
-  const login = String(formData.get("login") ?? "").trim();
+  const login = String(formData.get("login") ?? "").trim().slice(0, 200);
   const password = String(formData.get("password") ?? "");
 
   if (!isConfigured()) return { error: t.notConfigured, login };
@@ -37,6 +38,8 @@ export async function login(
   let mustChange = false;
   if (credentialsMatch(login, password)) {
     token = createSessionToken(login, undefined, (await ownerSessionVersion()) ?? 0);
+  } else if (Buffer.byteLength(password) > MAX_PASSWORD_BYTES) {
+    // An account password longer than this never matches, and hashing it is slow.
   } else if (isDatabaseConfigured()) {
     const account = await findAccount(login, password);
     if (account) {

@@ -9,7 +9,7 @@ describe("checkReport", () => {
   });
 
   it("refuses another site's address and control characters", () => {
-    for (const page of ["https://example.com/x", "//example.com", "/\\example.com", "", "/a\nb", 5]) {
+    for (const page of ["https://example.com/x", "//example.com", "/\\example.com", "/%2F%2Fevil.example", "", "/a\nb", 5]) {
       expect(checkReport({ page, quote: "", message: "достаточно длинное" }).problem).toBe("badPage");
     }
   });

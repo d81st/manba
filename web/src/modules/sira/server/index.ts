@@ -3,3 +3,4 @@ import "server-only";
 
 export { getCoMentions, getEventForEdit, getPersonForEdit, getPlaceForEdit, getSiraData, getSiraForAdmin, listChoices } from "./sira.queries";
 export { saveEvent, savePerson, savePlace } from "./sira.commands";
+export { passageForQuote } from "./quote-scope";

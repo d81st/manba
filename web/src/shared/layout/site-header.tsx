@@ -11,8 +11,8 @@ const t = getMessages();
 
 export function SiteHeader() {
   return (
-    <header className="border-b bg-card">
-      <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+    <header className="overflow-x-clip border-b bg-card">
+      <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <Link href="/" className="flex flex-col text-foreground no-underline">
           <span className="text-lg font-semibold leading-tight">{t.appName}</span>
           <span className="text-sm text-muted-foreground">{t.appTagline}</span>
@@ -44,8 +44,8 @@ async function Account() {
   const session = await requireSession();
 
   return (
-    <form action={signOut} className="flex items-center gap-3 text-sm">
-      <span className="text-muted-foreground">
+    <form action={signOut} className="flex min-w-0 flex-wrap items-center gap-3 text-sm">
+      <span className="min-w-0 max-w-[14rem] truncate text-muted-foreground sm:max-w-xs">
         {t.home.signedInAs} {session.login}
       </span>
       {session.uid && (

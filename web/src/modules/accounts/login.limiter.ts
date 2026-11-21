@@ -9,7 +9,8 @@ export const MAX_LOGIN = 10;
 // One address, any login: high enough that a shared office address is not
 // locked by a few mistakes on another account.
 export const MAX_ADDRESS = 30;
-// Every failure together, so rotating both the address and the login still stops.
+// Failures on made-up logins, together. A real login is not locked by this:
+// it is locked only by its own counters above.
 export const MAX_TOTAL = 50;
 
 export type FailureCounts = {
@@ -19,13 +20,13 @@ export type FailureCounts = {
   total: number;
 };
 
-export function isLocked(counts: FailureCounts) {
-  return (
-    counts.pair >= MAX_PAIR ||
-    counts.login >= MAX_LOGIN ||
-    counts.address >= MAX_ADDRESS ||
-    counts.total >= MAX_TOTAL
-  );
+// knownLogin: this login is the site owner or an account that exists. A burst of
+// failures on made-up logins still stops (total), but it does not lock a real
+// login that has not itself been guessed at.
+export function isLocked(counts: FailureCounts, knownLogin = false) {
+  if (counts.pair >= MAX_PAIR || counts.login >= MAX_LOGIN || counts.address >= MAX_ADDRESS) return true;
+  if (knownLogin) return false;
+  return counts.total >= MAX_TOTAL;
 }
 
 // The platform appends the real client address at the end of X-Forwarded-For.

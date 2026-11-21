@@ -1,4 +1,5 @@
 // Bookmarks: what a reader may save. No database here, so it is unit-tested.
+import { safeNext } from "@/shared/auth/safe-next";
 
 export const MAX_TITLE = 200;
 export const MAX_NOTE = 500;
@@ -13,9 +14,8 @@ export type CheckedBookmark = { page: string; title: string; note: string };
 export function checkBookmark(raw: { page: unknown; title: unknown; note: unknown }): { bookmark?: CheckedBookmark; problem?: BookmarkProblem } {
   const text = (value: unknown, max: number) => (typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, max) : "");
   const page = typeof raw.page === "string" ? raw.page.trim() : "";
-  if (!page.startsWith("/") || page.startsWith("//") || page.startsWith("/\\") || page.length > MAX_PAGE || /[\u0000-\u001f]/.test(page)) {
-    return { problem: "badPage" };
-  }
+  // The same rule as the link that will open it, including a repeatedly encoded "//".
+  if (!page || page.length > MAX_PAGE || safeNext(page) !== page) return { problem: "badPage" };
   const title = text(raw.title, MAX_TITLE);
   if (!title) return { problem: "noTitle" };
   return { bookmark: { page, title, note: text(raw.note, MAX_NOTE) } };

@@ -9,7 +9,7 @@ describe("checkBookmark", () => {
   });
 
   it("refuses another site's address and an empty name, cuts a long name", () => {
-    for (const page of ["https://example.com", "//example.com", "/\\x", "", 7]) {
+    for (const page of ["https://example.com", "//example.com", "/\\x", "/%2F%2Fevil.example", "", 7]) {
       expect(checkBookmark({ page, title: "x", note: "" }).problem).toBe("badPage");
     }
     expect(checkBookmark({ page: "/", title: "   ", note: "" }).problem).toBe("noTitle");

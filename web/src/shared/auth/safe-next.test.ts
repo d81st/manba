@@ -15,7 +15,10 @@ describe("safeNext", () => {
     expect(safeNext("/%2F%2Fevil.example")).toBe("/");
     expect(safeNext("/%5Cevil.example")).toBe("/");
     expect(safeNext("/%252F%252Fevil.example")).toBe("/");
+    expect(safeNext("/%2525252F%2525252Fevil.example")).toBe("/");
     expect(safeNext("%2F%2Fevil.example")).toBe("/");
+    expect(safeNext("/quran/2%20255")).toBe("/quran/2%20255");
     expect(safeNext(null)).toBe("/");
+    expect(safeNext(`/${"a".repeat(2000)}`)).toBe("/");
   });
 });

@@ -1,4 +1,5 @@
 // "Report a mistake": what a reader may send. No database here, so it is unit-tested.
+import { safeNext } from "@/shared/auth/safe-next";
 
 export const REPORT_STATUSES = ["new", "done"] as const;
 export type ReportStatus = (typeof REPORT_STATUSES)[number];
@@ -18,9 +19,8 @@ export function checkReport(raw: { page: unknown; quote: unknown; message: unkno
   const page = typeof raw.page === "string" ? raw.page.trim() : "";
   const message = typeof raw.message === "string" ? raw.message.trim() : "";
   const quote = typeof raw.quote === "string" ? raw.quote.replace(/\s+/g, " ").trim().slice(0, MAX_QUOTE) : "";
-  if (!page.startsWith("/") || page.startsWith("//") || page.startsWith("/\\") || page.length > MAX_PAGE || /[\u0000-\u001f]/.test(page)) {
-    return { problem: "badPage" };
-  }
+  // The same rule as the link an administrator opens, including a repeatedly encoded "//".
+  if (!page || page.length > MAX_PAGE || safeNext(page) !== page) return { problem: "badPage" };
   if (message.length < MIN_MESSAGE) return { problem: "tooShort" };
   if (message.length > MAX_MESSAGE) return { problem: "tooLong" };
   return { report: { page, quote, message } };

@@ -18,8 +18,10 @@ describe("isLocked", () => {
     expect(isLocked({ ...open, address: MAX_ADDRESS })).toBe(true);
   });
 
-  it("locks everyone after 50 failures", () => {
+  it("locks an unknown login after 50 failures, and leaves a real login to its own counters", () => {
     expect(isLocked({ ...open, total: MAX_TOTAL })).toBe(true);
+    expect(isLocked({ ...open, total: MAX_TOTAL }, true)).toBe(false);
+    expect(isLocked({ ...open, total: MAX_TOTAL, login: MAX_LOGIN }, true)).toBe(true);
   });
 });
 

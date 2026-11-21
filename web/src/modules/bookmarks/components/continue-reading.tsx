@@ -3,6 +3,7 @@
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
+import { safeNext } from "@/shared/auth/safe-next";
 import { getMessages } from "@/shared/i18n";
 import { READING_SECTIONS } from "../bookmark.place";
 import { readingStore, readPlaces } from "./reading-tracker";
@@ -17,7 +18,8 @@ export function ContinueReading() {
   const list = READING_SECTIONS.flatMap((section) => {
     const place = places[section];
     // Only a path of this site becomes a link.
-    return place && typeof place.page === "string" && place.page.startsWith("/") && !place.page.startsWith("//") ? [{ section, ...place }] : [];
+    const page = typeof place?.page === "string" ? place.page : "";
+    return place && safeNext(page) === page ? [{ section, ...place, page }] : [];
   }).sort((a, b) => b.at - a.at);
   if (list.length === 0) return null;
   return (
@@ -33,7 +35,7 @@ export function ContinueReading() {
         {list.map((place) => (
           <li key={place.section}>
             <span className="text-muted-foreground">{t.sections[place.section]}: </span>
-            <Link href={place.page}>{String(place.title).slice(0, 200)}</Link>
+            <Link href={safeNext(place.page)}>{String(place.title).slice(0, 200)}</Link>
           </li>
         ))}
       </ul>
