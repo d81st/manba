@@ -75,8 +75,11 @@ test.describe("reading", () => {
     const ayah = page.locator("#\\32 -255");
     await expect(ayah.locator("p[lang=ar]")).not.toBeEmpty();
     await expect(ayah.locator("p[lang=ru]")).not.toBeEmpty();
-    // The last ayah too: rows off the screen keep an estimated height until then.
-    await page.goto("/quran/2#2-286");
+    // The places of this sura sit above the text. A press opens the ayah below.
+    const rail = page.getByRole("navigation", { name: "Места на этой странице" }).filter({ visible: true });
+    await expect(rail.getByRole("link")).toHaveCount(286);
+    await rail.getByRole("link", { name: "286", exact: true }).click();
+    await expect(page).toHaveURL(/\/quran\/2#2-286$/);
     await expectAtTop(page, "2-286");
   });
 

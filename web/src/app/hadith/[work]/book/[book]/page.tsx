@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/shared/layout/page";
+import { PlaceRail } from "@/shared/layout/place-rail";
 import { ScrollToHash } from "@/shared/layout/scroll-to-hash";
 import { Badge } from "@/shared/ui/badge";
 import { getMessages } from "@/shared/i18n";
@@ -117,6 +118,15 @@ async function BookText({
           {book.title}
         </h1>
       </header>
+      <PlaceRail
+        items={book.chapters.flatMap((chapter) =>
+          chapter.hadiths.map((hadith) => ({
+            id: hadithAnchor(hadith.path),
+            label: refLabel(collection.scheme, hadith.path, hadith.variants),
+            mark: (debates[addressOf(hadith.path)] ?? []).length > 0,
+          })),
+        )}
+      />
       {book.pages > 1 && nav}
 
       {book.chapters.map((chapter) => (

@@ -8,6 +8,7 @@ import { Page } from "@/shared/layout/page";
 import { getMessages } from "@/shared/i18n";
 import { bookPath } from "@/shared/addresses/book-query";
 import { isDatabaseConfigured } from "@/shared/db";
+import { PlaceRail } from "@/shared/layout/place-rail";
 import { ScrollToHash } from "@/shared/layout/scroll-to-hash";
 import { VideoList } from "@/modules/videos";
 import { videosForAddresses } from "@/modules/videos/server";
@@ -77,6 +78,19 @@ async function SuraText({
 
       <AyahJump sura={sura.number} ayahs={sura.ayahs} />
       <SuraStrip suras={suras} current={sura.number} />
+      <PlaceRail
+        items={sura.segments.flatMap((segment) =>
+          segment.level === "basmala"
+            ? []
+            : [
+                {
+                  id: `${sura.number}-${segment.number}`,
+                  label: String(segment.number),
+                  mark: (debates[segment.address] ?? []).length > 0,
+                },
+              ],
+        )}
+      />
 
       <ol className="mt-2 mb-6">
         {sura.segments.map((segment) =>

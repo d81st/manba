@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/shared/layout/page";
+import { PlaceRail } from "@/shared/layout/place-rail";
 import { ScrollToHash } from "@/shared/layout/scroll-to-hash";
 import { getMessages } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
@@ -130,6 +131,15 @@ async function SectionText({
           {section.title || (tafsir && section.number > 0 ? book.sections.find((s) => s.number === section.number)?.title : "")}
         </h1>
       </header>
+      <PlaceRail
+        items={section.chapters.flatMap((chapter) =>
+          chapter.pieces.map((piece) => ({
+            id: piece.anchor,
+            label: piece.label,
+            mark: (debates[piece.address] ?? []).length > 0,
+          })),
+        )}
+      />
       {section.pages > 1 && nav}
 
       {section.chapters.map((chapter) => (
