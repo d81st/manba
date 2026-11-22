@@ -1462,7 +1462,30 @@ const MUGHNI: HadithSource = {
   retrievedAt: "2026-11-16",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI];
+const SARIM_MASLUL: HadithSource = {
+  file: "0728IbnTaymiyya.SarimMaslul.Shamela0007344-ara1",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0728IbnTaymiyya.SarimMaslul.Shamela0007344-ara1:3a235a2",
+  sourceId: "openiti.sarim-maslul-shamela0007344",
+  sourceTitle: "OpenITI · 0728IbnTaymiyya.SarimMaslul.Shamela0007344-ara1",
+  sourceVersion: "OpenITI/0750AH 3a235a2 (2026-11-22)",
+  sourceUrl: "https://github.com/OpenITI/0750AH",
+  notice: `${OPENITI_CITATION}. Text: 0728IbnTaymiyya.SarimMaslul.Shamela0007344-ara1 — al-Sarim al-maslul 'ala shatim al-rasul of Ibn Taymiyya, ed. Muhammad Muhyi al-Din 'Abd al-Hamid, al-Haras al-Watani al-Su'udi, Saudi Arabia, 1 vol, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "sarim_maslul",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "الصارم المسلول على شاتم الرسول", ru: "Ибн Таймия, «ас-Сарим аль-маслюль»", "ru-short": "Сарим" },
+    authoritySunni: null,
+  },
+  versionId: "sarim_maslul.ar.openiti",
+  versionTitle: "Арабский текст: изд. Мухаммада Мухйи ад-Дина Абд аль-Хамида («аль-Харас аль-Ватани ас-Сауди»), 1 том, страницы издания (OpenITI)",
+  minItems: 550,
+  retrievedAt: "2026-11-22",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI, SARIM_MASLUL];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 
@@ -1929,12 +1952,17 @@ async function importSablukov(client: pg.Client) {
   }
 }
 
-// The slavery draft cites these two books. The migration of the same name
-// runs before this import and finds the addresses missing, so it returns.
-// Running it again here is what fills the draft on that same start.
-async function applySlaveryBooks(client: pg.Client) {
-  const file = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "db", "migrations", "064_slavery_books.sql");
-  await client.query(readFileSync(file, "utf8"));
+// Drafts that cite books loaded on the same start. Their migrations run before
+// this import and find the addresses missing, so they return; running them
+// again here is what fills the drafts on that same start. Each one checks
+// that its rows are not there yet, so running it twice changes nothing.
+const DRAFTS_AFTER_IMPORT = ["064_slavery_books.sql", "085_blasphemy_draft.sql"];
+
+async function applyDraftsAfterImport(client: pg.Client) {
+  for (const name of DRAFTS_AFTER_IMPORT) {
+    const file = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "db", "migrations", name);
+    await client.query(readFileSync(file, "utf8"));
+  }
 }
 
 async function main() {
@@ -1962,7 +1990,7 @@ async function main() {
     for (const src of SCIENCE_BOOKS) await importOpenitiHadith(client, src);
     for (const src of DISPUTE_BOOKS) await importOpenitiHadith(client, src);
     await importOpenitiHadith(client, MUSANNAF);
-    await applySlaveryBooks(client);
+    await applyDraftsAfterImport(client);
     for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
     for (const src of EXTERNAL_ADDITIONS) await importExternalAdditions(client, src);
     await importSablukov(client);
