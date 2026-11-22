@@ -1485,7 +1485,30 @@ const SARIM_MASLUL: HadithSource = {
   retrievedAt: "2026-11-22",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI, SARIM_MASLUL];
+const FUTUH_BULDAN: HadithSource = {
+  file: "0279Baladhuri.FutuhBuldan.Shamela0012221-ara1.mARkdown",
+  layout: "pages",
+  pages: { gaps: true, repair: true },
+  key: "openiti:0279Baladhuri.FutuhBuldan.Shamela0012221-ara1:01a1544",
+  sourceId: "openiti.futuh-buldan-shamela0012221",
+  sourceTitle: "OpenITI · 0279Baladhuri.FutuhBuldan.Shamela0012221-ara1",
+  sourceVersion: "OpenITI/0300AH 01a1544 (2026-11-22)",
+  sourceUrl: "https://github.com/OpenITI/0300AH",
+  notice: `${OPENITI_CITATION}. Text: 0279Baladhuri.FutuhBuldan.Shamela0012221-ara1 — Futuh al-buldan of al-Baladhuri, Dar wa-Maktabat al-Hilal, Beirut, 1988, 1 vol, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "futuh_buldan",
+    category: "history",
+    canon: "sunni",
+    titles: { ar: "فتوح البلدان", ru: "аль-Балазури, «Футух аль-Булдан»", "ru-short": "Футух" },
+    authoritySunni: null,
+  },
+  versionId: "futuh_buldan.ar.openiti",
+  versionTitle: "Арабский текст: изд. «Дар ва Мактабат аль-Хиляль» (Бейрут, 1988), 1 том, страницы издания (OpenITI)",
+  minItems: 480,
+  retrievedAt: "2026-11-22",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI, SARIM_MASLUL, FUTUH_BULDAN];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 
@@ -1956,7 +1979,7 @@ async function importSablukov(client: pg.Client) {
 // this import and find the addresses missing, so they return; running them
 // again here is what fills the drafts on that same start. Each one checks
 // that its rows are not there yet, so running it twice changes nothing.
-const DRAFTS_AFTER_IMPORT = ["064_slavery_books.sql", "085_blasphemy_draft.sql"];
+const DRAFTS_AFTER_IMPORT = ["064_slavery_books.sql", "085_blasphemy_draft.sql", "090_caucasus_conquest_draft.sql"];
 
 async function applyDraftsAfterImport(client: pg.Client) {
   for (const name of DRAFTS_AFTER_IMPORT) {
