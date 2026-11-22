@@ -55,6 +55,12 @@ export const siraRu = {
       dates: "Даты по источникам",
       datesHint: "Слова каждого источника о дате — полностью и со ссылкой на страницу; рядом — их прочтение. Расхождения показаны все.",
       noPlace: "место не указано",
+      topics: "Темы о событии",
+    },
+    topicTimeline: {
+      title: "На ленте жизнеописания",
+      hint: "События, о которых эта тема, на годах хиджры: точка — дата по одному источнику (цветом), где источники расходятся, точек несколько. Нажатие открывает событие со словами каждого источника.",
+      open: "Вся лента",
     },
     timelinePage: {
       title: "Лента времени",
@@ -64,6 +70,7 @@ export const siraRu = {
       year: "г. х.",
       legend: "Источники",
       hollow: "Пустая точка — известен только год; пунктир — «другое сообщение».",
+      topicMark: "◆ — к событию есть темы",
     },
     mapPage: {
       title: "Карта Аравии",
@@ -252,6 +259,12 @@ export const siraEn: typeof siraRu = {
       dates: "Dates from the sources",
       datesHint: "Each source’s words about the date — in full, with a reference to the page; beside them, their reading. Every difference is shown.",
       noPlace: "no place is given",
+      topics: "Topics on the event",
+    },
+    topicTimeline: {
+      title: "On the timeline of the Prophet’s life",
+      hint: "The events this topic is about, on the years of the Hijra: a dot is a date from one source (by colour); where the sources differ, there are several dots. A press opens the event with each source’s words.",
+      open: "The whole timeline",
     },
     timelinePage: {
       title: "Timeline",
@@ -261,6 +274,7 @@ export const siraEn: typeof siraRu = {
       year: "AH",
       legend: "Sources",
       hollow: "An empty dot means only the year is known; a dashed line means “another report”.",
+      topicMark: "◆ — the event has topics",
     },
     mapPage: {
       title: "Map of Arabia",

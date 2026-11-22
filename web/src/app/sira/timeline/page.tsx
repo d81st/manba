@@ -54,6 +54,7 @@ async function Timeline({ searchParams }: Pick<PageProps<"/sira/timeline">, "sea
             {mecca.map((event) => (
               <li key={event.id}>
                 <Link href={`/sira/events/${event.slug}${suffix}`} className="font-medium">
+                  {event.topicCount ? "◆ " : ""}
                   {event.title}
                 </Link>
                 <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm">
@@ -74,7 +75,9 @@ async function Timeline({ searchParams }: Pick<PageProps<"/sira/timeline">, "sea
       {medina.length > 0 && (
         <section>
           <h2 className="mt-8 mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.timelinePage.medina}</h2>
-          <p className="mb-2 text-xs text-muted-foreground">{t.timelinePage.hollow}</p>
+          <p className="mb-2 text-xs text-muted-foreground">
+            {t.timelinePage.hollow} {t.timelinePage.topicMark}.
+          </p>
           <div className="overflow-x-auto rounded-xl border bg-card">
             <SiraTimelineChart events={medina} suffix={suffix} />
           </div>

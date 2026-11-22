@@ -62,6 +62,8 @@ export type PublicTopic = TopicSummary & {
   circumstancesHadiths: HadithRef[];
   circumstancesQuotes: QuoteLinks;
   versions: TopicVersions | null;
+  // Events of the Prophet's life the topic is about (topic_sira_events), with their dates.
+  events: SiraEvent[];
   relatedRefs: TopicAyah[];
   relatedHadiths: HadithRef[];
   // Grouped by side in the order of the sides list.

@@ -12,6 +12,9 @@ test("the admin adds, checks and deletes a question of the versions table", asyn
   await page.goto("/admin/topics");
   await page.getByRole("link", { name: "Райхана", exact: true }).first().click();
 
+  // The events of the Prophet's life the topic is about are chosen on the same page.
+  await expect(page.getByRole("heading", { name: "События жизнеописания" })).toBeVisible();
+
   const section = page.locator("#versions");
   const form = section.locator("form").last();
   await form.locator("input[name=label]").fill(label);

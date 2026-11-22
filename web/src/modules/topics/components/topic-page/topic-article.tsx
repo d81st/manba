@@ -11,6 +11,7 @@ import { LinksSection, RelatedRefsSection } from "./related-sections";
 import { TopicSchema } from "./topic-schema";
 import { VersionsSection } from "./versions-section";
 import { type PublicVideo, VideoList } from "@/modules/videos";
+import { TopicTimeline } from "@/modules/sira";
 
 const t = getMessages().topics;
 
@@ -22,7 +23,9 @@ export function TopicArticle({
   videos,
   schema,
   notice,
+  preview = false,
 }: {
+  preview?: boolean;
   topic: PublicTopic;
   place: TopicPlace | null;
   videos: PublicVideo[];
@@ -44,6 +47,7 @@ export function TopicArticle({
         </header>
         {schema && <TopicSchema data={schema} />}
         {place && <PlaceSection place={place} />}
+        {topic.events.length > 0 && <TopicTimeline events={topic.events} suffix={preview ? "?drafts=1" : ""} />}
         <MainTexts topic={topic} />
         <CircumstancesSection topic={topic} />
         {topic.versions && <VersionsSection versions={topic.versions} />}

@@ -63,6 +63,15 @@ export const topicsRu = { topics };
 
 // Groups of messages.admin.
 export const topicsAdminRu = {
+  topicEvents: {
+    title: "События жизнеописания",
+    hint: "О каких событиях ленты жизнеописания эта тема. На странице темы они встанут на годы хиджры с датами каждого источника; на странице события — в списке тем; на ленте — отметка ◆. События заводятся в админке «Жизнеописание пророка».",
+    save: "Сохранить события",
+    saved: "Сохранено.",
+    failed: "Тема не найдена.",
+    empty: "Событий пока нет.",
+    draft: "черновик",
+  },
   versions: {
     title: "Версии рядом",
     hint: "Где ранние рассказы расходятся: строка — нейтральный вопрос, клетка — дословная арабская цитата из текста позиции и её место в библиотеке. Пустая клетка значит «источник об этом не говорит». Цитата должна стоять и в тексте позиции, и в книге по указанному месту, иначе вопрос не сохранится. Таблица на сайте видна, когда клетки есть хотя бы у двух позиций.",
@@ -252,6 +261,15 @@ const topicsEnBody: typeof topics = {
 export const topicsEn: typeof topicsRu = { topics: topicsEnBody };
 
 export const topicsAdminEn: typeof topicsAdminRu = {
+  topicEvents: {
+    title: "Events of the Prophet’s life",
+    hint: "Which events of the timeline this topic is about. On the topic page they stand on the years of the Hijra with each source’s date; on the event page, in the list of topics; on the timeline, a mark ◆. Events are entered in the admin «The Prophet’s life».",
+    save: "Save the events",
+    saved: "Saved.",
+    failed: "The topic was not found.",
+    empty: "No events yet.",
+    draft: "draft",
+  },
   versions: {
     title: "Versions side by side",
     hint: "Where the early reports disagree: a row is a neutral question, a cell a word-for-word Arabic quotation from the position's text and its place in the library. An empty cell means \"the source says nothing on it\". The quotation must stand both in the position's text and in the book at that place, or the question is not saved. The table shows on the site once at least two positions have cells.",

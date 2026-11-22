@@ -50,7 +50,8 @@ export function Chart({ events, suffix }: { events: SiraEvent[]; suffix: string 
             {row % 2 === 1 && <rect x={0} y={y - ROW / 2} width={WIDTH} height={ROW} className="fill-muted opacity-50" />}
             <a href={`/sira/events/${event.slug}${suffix}`}>
               <text x={LABEL - 10} y={y + 4} textAnchor="end" className="fill-primary text-[12px]">
-                {event.title.length > 46 ? `${event.title.slice(0, 45)}…` : event.title}
+                {event.topicCount ? "◆ " : ""}
+                {event.title.length > 44 ? `${event.title.slice(0, 43)}…` : event.title}
               </text>
             </a>
             {sortDates(event.dates).map((d, i) => {

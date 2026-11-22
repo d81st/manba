@@ -50,6 +50,7 @@ async function Topic({ params, searchParams }: Pick<PageProps<"/topics/[slug]">,
       videos={videos}
       schema={topicGraph(topic)}
       notice={<PreviewNote preview={preview && topic.status !== "published"} />}
+      preview={preview}
     />
   );
 }

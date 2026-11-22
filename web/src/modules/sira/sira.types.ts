@@ -32,6 +32,8 @@ export type SiraEvent = {
   place: string | null;
   topic: { id: number; slug: string; published: boolean } | null;
   dates: SiraDate[];
+  // Topics linked to the event (topic_sira_events), counted on the timeline.
+  topicCount?: number;
 };
 
 export type SiraPerson = {

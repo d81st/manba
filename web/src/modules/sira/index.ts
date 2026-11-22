@@ -13,4 +13,5 @@ export { PersonForm } from "./components/person-form";
 export { PlaceCard } from "./components/place-card";
 export { PlaceForm } from "./components/place-form";
 export { Chart as SiraTimelineChart, Legend as SiraTimelineLegend } from "./components/sira-timeline-chart";
+export { TopicTimeline } from "./components/topic-timeline";
 export * from "./components/sira-sources";

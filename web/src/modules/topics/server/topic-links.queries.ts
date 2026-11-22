@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { GLOSSARY_TAG } from "@/modules/glossary";
 import { db } from "@/shared/db";
 import { TOPICS_TAG } from "../topic.constants";
+import { LOCALE } from "./topic.sql";
 
 // Links of published topics with each other and with published glossary terms,
 // by permanent ids (slugs), for the knowledge map.
@@ -26,4 +27,32 @@ export async function listTopicLinks(): Promise<{
      JOIN terms m ON m.id = r.term_id AND m.status = 'published'`,
   );
   return { related: related.rows, terms: terms.rows };
+}
+
+// Topics about an event of the Prophet's life (topic_sira_events), by title.
+export async function listTopicsForEvent(eventId: number, drafts: boolean): Promise<{ slug: string; title: string; published: boolean }[]> {
+  const statuses = drafts ? ["draft", "review", "published"] : ["published"];
+  const { rows } = await db().query<{ slug: string; title: string; published: boolean }>(
+    `SELECT t.slug, coalesce(x.title, t.slug) AS title, t.status = 'published' AS published
+     FROM topic_sira_events ts
+     JOIN topics t ON t.id = ts.topic_id AND t.status = ANY ($2)
+     LEFT JOIN topic_texts x ON x.topic_id = t.id AND x.locale = $3
+     WHERE ts.event_id = $1 ORDER BY title`,
+    [eventId, statuses, LOCALE],
+  );
+  return rows;
+}
+
+// The events a topic is linked to, and every event the admin may choose.
+export async function listEventLinksForEdit(topicId: number): Promise<{ linked: number[]; events: { id: number; title: string; status: string }[] }> {
+  const [linked, events] = await Promise.all([
+    db().query<{ id: number }>("SELECT event_id::int AS id FROM topic_sira_events WHERE topic_id = $1", [topicId]),
+    db().query<{ id: number; title: string; status: string }>(
+      `SELECT e.id::int, coalesce(x.title, e.slug) AS title, e.status FROM sira_events e
+       LEFT JOIN sira_event_texts x ON x.event_id = e.id AND x.locale = $1
+       WHERE e.status <> 'retired' ORDER BY e.position, e.id`,
+      [LOCALE],
+    ),
+  ]);
+  return { linked: linked.rows.map((r) => r.id), events: events.rows };
 }

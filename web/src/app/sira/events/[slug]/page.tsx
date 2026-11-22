@@ -11,6 +11,7 @@ import { isPreview } from "@/shared/auth/preview";
 import { PreviewNote } from "@/shared/layout/preview";
 import { approxCommonEra, formatReading, SiraNav, sortDates, SourceDot, sourceLabel, SourceLink } from "@/modules/sira";
 import { getSiraData } from "@/modules/sira/server";
+import { listTopicsForEvent } from "@/modules/topics/server";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -39,6 +40,7 @@ async function Event({ params, searchParams }: Pick<PageProps<"/sira/events/[slu
   const event = data.events.find((e) => e.slug === slug);
   if (!event) notFound();
   const place = data.places.find((p) => p.slug === event.place);
+  const topics = await listTopicsForEvent(event.id, preview);
   const suffix = preview ? "?drafts=1" : "";
 
   return (
@@ -68,6 +70,21 @@ async function Event({ params, searchParams }: Pick<PageProps<"/sira/events/[slu
               <Link href={preview ? `/topics/${event.topic.slug}?drafts=1` : `/topics/${event.topic.slug}`}>
                 {event.topic.slug}
               </Link>
+            </dd>
+          </>
+        )}
+        {topics.length > 0 && (
+          <>
+            <dt className="text-muted-foreground">{t.event.topics}</dt>
+            <dd>
+              <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                {topics.map((topic) => (
+                  <li key={topic.slug}>
+                    <Link href={`/topics/${topic.slug}${suffix}`}>{topic.title}</Link>
+                    {!topic.published && <span className="text-muted-foreground"> ({t.draft})</span>}
+                  </li>
+                ))}
+              </ul>
             </dd>
           </>
         )}

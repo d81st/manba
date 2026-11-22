@@ -21,6 +21,8 @@ async function loadSiraData(drafts: boolean): Promise<SiraData> {
     db().query<SiraEvent>(
       `SELECT e.id::int, e.slug, e.kind, coalesce(x.title, e.slug) AS title, e.status, e.position,
               p.slug AS place, ${TOPIC} AS topic,
+              (SELECT count(*)::int FROM topic_sira_events ts JOIN topics tt ON tt.id = ts.topic_id
+               WHERE ts.event_id = e.id AND tt.status = ANY ($2)) AS "topicCount",
               coalesce((SELECT json_agg(json_build_object(
                   'address', d.address::text, 'quote', d.quote, 'holder', d.holder, 'year', d.year_ah,
                   'month', d.month, 'day', d.day, 'age', d.age, 'variant', d.variant, 'note', d.note)
@@ -52,6 +54,14 @@ async function loadSiraData(drafts: boolean): Promise<SiraData> {
     ),
   ]);
   return { places: places.rows, events: events.rows, people: people.rows, relations: relations.rows };
+}
+
+// The events a topic is about, with their dates, in the order of the timeline.
+export async function getEventsForTopic(topicId: number, drafts: boolean): Promise<SiraEvent[]> {
+  const ids = await db().query<{ id: number }>("SELECT event_id::int AS id FROM topic_sira_events WHERE topic_id = $1", [topicId]);
+  if (!ids.rowCount) return [];
+  const linked = new Set(ids.rows.map((r) => r.id));
+  return (await getSiraData(drafts)).events.filter((e) => linked.has(e.id));
 }
 
 export async function getSiraData(drafts: boolean): Promise<SiraData> {

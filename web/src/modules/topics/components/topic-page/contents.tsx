@@ -3,11 +3,13 @@ import type { PublicTopic } from "../../topic.types";
 
 const t = getMessages().topics;
 const videosTitle = getMessages().videos.title;
+const siraTimeline = getMessages().sira.topicTimeline.title;
 
 // The sections of a topic, so a long page of positions can be opened by side
 // instead of scrolled through. On a wide screen it stays in view.
 export function TopicContents({ topic, hasVideos }: { topic: PublicTopic; hasVideos: boolean }) {
   const items: { href: string; label: string }[] = [];
+  if (topic.events.length > 0) items.push({ href: "#timeline", label: siraTimeline });
   if (topic.main.length > 0 || topic.mainHadiths.length > 0) items.push({ href: "#texts", label: t.texts });
   if (topic.circumstances || topic.circumstancesRefs.length > 0 || topic.circumstancesHadiths.length > 0 || topic.circumstancesNote) {
     items.push({ href: "#circumstances", label: t.circumstances });

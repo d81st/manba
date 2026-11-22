@@ -5,7 +5,7 @@ import { CONTEXT_AYAHS, TOPICS_TAG } from "../topic.constants";
 import { passagesOf } from "../topic.passages";
 import type { MainPassage, PublicPosition, PublicTopic, QuoteLinks, TopicAyah, TopicPlace, TopicSummary, TopicVersions } from "../topic.types";
 import { LOCALE, SUMMARY, type RefRole } from "./topic.sql";
-import { getSiraData } from "@/modules/sira/server";
+import { getEventsForTopic, getSiraData } from "@/modules/sira/server";
 import { getHadithRefs } from "@/modules/hadith/server";
 import { bookPath, formatBookRef, isBook } from "@/shared/addresses/book-query";
 import { formatHadithRef, hadithPath } from "@/shared/addresses/hadith-query";
@@ -226,7 +226,7 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
   );
 
   const publicSides = sides.map(({ title, positions }) => ({ title, positions }));
-  const versions = await topicVersions(topic.id, publicSides);
+  const [versions, events] = await Promise.all([topicVersions(topic.id, publicSides), getEventsForTopic(topic.id, drafts)]);
 
   return {
     ...topic,
@@ -236,6 +236,7 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
     circumstancesHadiths: hadithsOf("circumstances"),
     circumstancesQuotes,
     versions,
+    events,
     relatedRefs: refsOf("related"),
     relatedHadiths: hadithsOf("related"),
     sides: publicSides,

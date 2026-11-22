@@ -225,3 +225,38 @@ export async function deleteDraftTopic(id: number, actor: string) {
     client.release();
   }
 }
+
+// Replaces the events a topic is linked to; the change goes to the log.
+export async function saveTopicEvents(topicId: number, eventIds: number[], actor: string): Promise<boolean> {
+  const client = await db().connect();
+  try {
+    await client.query("BEGIN");
+    const topic = await client.query("SELECT 1 FROM topics WHERE id = $1 FOR UPDATE", [topicId]);
+    if (!topic.rowCount) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+    const before = await client.query<{ id: number }>(
+      "SELECT event_id::int AS id FROM topic_sira_events WHERE topic_id = $1 ORDER BY event_id",
+      [topicId],
+    );
+    await client.query("DELETE FROM topic_sira_events WHERE topic_id = $1", [topicId]);
+    await client.query(
+      `INSERT INTO topic_sira_events (topic_id, event_id)
+       SELECT $1, e.id FROM sira_events e WHERE e.id = ANY ($2::bigint[]) AND e.status <> 'retired'`,
+      [topicId, eventIds],
+    );
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, old_value, new_value, actor)
+       VALUES ('topic_sira_events', $1, 'updated', $2, $3, $4)`,
+      [String(topicId), JSON.stringify(before.rows.map((r) => r.id)), JSON.stringify([...eventIds].sort((a, b) => a - b)), actor],
+    );
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
