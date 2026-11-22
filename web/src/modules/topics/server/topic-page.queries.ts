@@ -3,12 +3,12 @@ import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/shared/db";
 import { CONTEXT_AYAHS, TOPICS_TAG } from "../topic.constants";
 import { passagesOf } from "../topic.passages";
-import type { MainPassage, PublicPosition, PublicTopic, QuoteLinks, TopicAyah, TopicPlace, TopicSummary } from "../topic.types";
+import type { MainPassage, PublicPosition, PublicTopic, QuoteLinks, TopicAyah, TopicPlace, TopicSummary, TopicVersions } from "../topic.types";
 import { LOCALE, SUMMARY, type RefRole } from "./topic.sql";
 import { getSiraData } from "@/modules/sira/server";
 import { getHadithRefs } from "@/modules/hadith/server";
-import { bookPath, isBook } from "@/shared/addresses/book-query";
-import { hadithPath } from "@/shared/addresses/hadith-query";
+import { bookPath, formatBookRef, isBook } from "@/shared/addresses/book-query";
+import { formatHadithRef, hadithPath } from "@/shared/addresses/hadith-query";
 import { arabicQuotes, withHighlight } from "@/shared/content/quote-match";
 
 type AyahRow = { address: string; text: string; sura_name: string };
@@ -47,6 +47,7 @@ function fragmentHref(address: string): string {
 }
 
 // For every Arabic quotation of each text, the first of its addresses whose
+// (descendants are found through addresses, whose GiST index serves <@)
 // primary Arabic text contains it word for word; a quotation found nowhere
 // stays plain text.
 async function quoteLinks(items: { text: string; addresses: string[] }[]): Promise<QuoteLinks[]> {
@@ -57,11 +58,13 @@ async function quoteLinks(items: { text: string; addresses: string[] }[]): Promi
   if (!rows.length) return links;
   const found = await db().query<{ i: number; quote: string; address: string | null }>(
     `SELECT q.i, q.quote,
-            (SELECT x.address::text FROM texts x
+            (SELECT x.address::text
+             FROM unnest(q.addrs) WITH ORDINALITY AS u(ad, k)
+             JOIN addresses a ON a.address <@ u.ad::extensions.ltree
+             JOIN texts x ON x.address = a.address
              JOIN text_versions v ON v.id = x.version_id AND v.is_primary AND v.status = 'published' AND v.language = 'ar'
-             JOIN addresses a ON a.address = x.address
-             WHERE x.address <@ ANY (q.addrs::extensions.ltree[]) AND position(q.quote IN x.content) > 0
-             ORDER BY (SELECT min(u.k) FROM unnest(q.addrs) WITH ORDINALITY AS u(ad, k) WHERE x.address <@ u.ad::extensions.ltree), a.ordinal
+             WHERE position(q.quote IN x.content) > 0
+             ORDER BY u.k, a.ordinal
              LIMIT 1) AS address
      FROM jsonb_to_recordset($1::jsonb) AS q(i int, quote text, addrs text[])`,
     [JSON.stringify(rows)],
@@ -70,6 +73,56 @@ async function quoteLinks(items: { text: string; addresses: string[] }[]): Promi
     if (row.address) links[row.i][row.quote] = withHighlight(fragmentHref(row.address), row.quote);
   }
   return links;
+}
+
+function fragmentLabel(address: string): string {
+  const [work, ...rest] = address.split(".");
+  if (work === "quran") return rest.slice(0, 2).join(":");
+  return isBook(work) ? formatBookRef(address) : formatHadithRef(address);
+}
+
+// The table of points where the reports disagree. A cell shows only while its
+// quotation stands in the text of its position and in its fragment; a column
+// is a position with at least one such cell, in the order of the page.
+async function topicVersions(topicId: number, sides: PublicTopic["sides"]): Promise<TopicVersions | null> {
+  const { rows } = await db().query<{ point: string; label: string; holder: string | null; quote: string | null; address: string | null }>(
+    `SELECT p.id::text AS point, p.label, c.holder, c.quote, c.address::text
+     FROM topic_version_points p
+     LEFT JOIN topic_version_cells c ON c.point_id = p.id
+       AND EXISTS (SELECT 1 FROM topic_positions tp
+                   WHERE tp.topic_id = p.topic_id AND tp.locale = p.locale AND tp.holder = c.holder
+                     AND position(c.quote IN tp.text) > 0)
+       AND EXISTS (SELECT 1 FROM addresses a
+                   JOIN texts x ON x.address = a.address
+                   JOIN text_versions v ON v.id = x.version_id AND v.is_primary AND v.status = 'published' AND v.language = 'ar'
+                   WHERE a.address <@ c.address AND position(c.quote IN x.content) > 0)
+     WHERE p.topic_id = $1 AND p.locale = $2
+     ORDER BY p.position, p.id`,
+    [topicId, LOCALE],
+  );
+  const holders = new Set(rows.flatMap((r) => (r.holder ? [r.holder] : [])));
+  const columns = sides.flatMap((side, i) =>
+    side.positions.flatMap((position, j) => (holders.has(position.holder) ? [{ holder: position.holder, anchor: `position-${i}-${j}` }] : [])),
+  );
+  if (columns.length < 2) return null;
+  const points = new Map<string, { label: string; cells: Map<string, { quote: string; address: string }> }>();
+  for (const row of rows) {
+    const point = points.get(row.point) ?? { label: row.label, cells: new Map() };
+    if (row.holder && row.quote && row.address) point.cells.set(row.holder, { quote: row.quote, address: row.address });
+    points.set(row.point, point);
+  }
+  return {
+    columns,
+    rows: [...points.values()]
+      .filter((point) => point.cells.size > 0)
+      .map((point) => ({
+        label: point.label,
+        cells: columns.map(({ holder }) => {
+          const cell = point.cells.get(holder);
+          return cell ? { quote: cell.quote, href: withHighlight(fragmentHref(cell.address), cell.quote), ref: fragmentLabel(cell.address) } : null;
+        }),
+      })),
+  };
 }
 
 export async function getPublishedTopic(slug: string, drafts = false): Promise<PublicTopic | null> {
@@ -172,6 +225,9 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
     [topic.id, LOCALE],
   );
 
+  const publicSides = sides.map(({ title, positions }) => ({ title, positions }));
+  const versions = await topicVersions(topic.id, publicSides);
+
   return {
     ...topic,
     main,
@@ -179,9 +235,10 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
     circumstancesRefs: refsOf("circumstances"),
     circumstancesHadiths: hadithsOf("circumstances"),
     circumstancesQuotes,
+    versions,
     relatedRefs: refsOf("related"),
     relatedHadiths: hadithsOf("related"),
-    sides: sides.map(({ title, positions }) => ({ title, positions })),
+    sides: publicSides,
     terms: terms.rows,
     related: related.rows,
   };

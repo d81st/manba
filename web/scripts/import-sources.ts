@@ -2084,7 +2084,17 @@ async function importSablukov(client: pg.Client) {
 // this import and find the addresses missing, so they return; running them
 // again here is what fills the drafts on that same start. Each one checks
 // that its rows are not there yet, so running it twice changes nothing.
-const DRAFTS_AFTER_IMPORT = ["064_slavery_books.sql", "085_blasphemy_draft.sql", "090_caucasus_conquest_draft.sql"];
+// The sira drafts and the table «Версии рядом» (095) on them come after so
+// that a fresh database (CI) has them too.
+const DRAFTS_AFTER_IMPORT = [
+  "064_slavery_books.sql",
+  "085_blasphemy_draft.sql",
+  "090_caucasus_conquest_draft.sql",
+  "091_zaynab_draft.sql",
+  "092_rayhana_draft.sql",
+  "093_khaybar_draft.sql",
+  "095_topic_versions.sql",
+];
 
 async function applyDraftsAfterImport(client: pg.Client) {
   for (const name of DRAFTS_AFTER_IMPORT) {

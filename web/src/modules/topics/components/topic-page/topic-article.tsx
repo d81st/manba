@@ -9,6 +9,7 @@ import { PlaceSection } from "./place-section";
 import { PositionsSection } from "./positions-section";
 import { LinksSection, RelatedRefsSection } from "./related-sections";
 import { TopicSchema } from "./topic-schema";
+import { VersionsSection } from "./versions-section";
 import { type PublicVideo, VideoList } from "@/modules/videos";
 
 const t = getMessages().topics;
@@ -45,6 +46,7 @@ export function TopicArticle({
         {place && <PlaceSection place={place} />}
         <MainTexts topic={topic} />
         <CircumstancesSection topic={topic} />
+        {topic.versions && <VersionsSection versions={topic.versions} />}
         <PositionsSection sides={topic.sides} />
         <RelatedRefsSection topic={topic} />
         {videos.length > 0 && (

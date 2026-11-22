@@ -44,6 +44,15 @@ export type PublicPosition = {
 
 export type QuoteLinks = Record<string, string>;
 
+// «Версии рядом»: where the reports disagree, a row per point and a column per
+// position; a cell is a quotation of that position with its place, or null
+// where the source says nothing on the point.
+export type VersionCell = { quote: string; href: string; ref: string };
+export type TopicVersions = {
+  columns: { holder: string; anchor: string }[];
+  rows: { label: string; cells: (VersionCell | null)[] }[];
+};
+
 export type PublicTopic = TopicSummary & {
   circumstances: string;
   circumstancesNote: string;
@@ -52,6 +61,7 @@ export type PublicTopic = TopicSummary & {
   circumstancesRefs: TopicAyah[];
   circumstancesHadiths: HadithRef[];
   circumstancesQuotes: QuoteLinks;
+  versions: TopicVersions | null;
   relatedRefs: TopicAyah[];
   relatedHadiths: HadithRef[];
   // Grouped by side in the order of the sides list.

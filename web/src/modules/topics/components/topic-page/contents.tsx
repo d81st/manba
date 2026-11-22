@@ -12,6 +12,7 @@ export function TopicContents({ topic, hasVideos }: { topic: PublicTopic; hasVid
   if (topic.circumstances || topic.circumstancesRefs.length > 0 || topic.circumstancesHadiths.length > 0 || topic.circumstancesNote) {
     items.push({ href: "#circumstances", label: t.circumstances });
   }
+  if (topic.versions) items.push({ href: "#versions", label: t.versions });
   if (topic.sides.length === 0) items.push({ href: "#positions", label: t.positions });
   topic.sides.forEach((side, i) => items.push({ href: `#side-${i}`, label: side.title }));
   if (topic.relatedRefs.length > 0 || topic.relatedHadiths.length > 0) items.push({ href: "#related", label: t.relatedRefs });

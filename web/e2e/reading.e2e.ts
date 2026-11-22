@@ -51,6 +51,22 @@ test.describe("reading", () => {
     expect(errors).toEqual([]);
   });
 
+  test("a draft topic shows its versions side by side, each quotation opening its source", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto("/admin/topics");
+    await page.getByRole("link", { name: "Райхана", exact: true }).first().click();
+    await page.getByRole("button", { name: "Открыть на сайте" }).click();
+    await page.waitForURL(/\/topics\/rayhana\?drafts=1/);
+    const table = page.locator("#versions table");
+    await expect(table).toBeVisible();
+    await expect(table.getByRole("rowheader", { name: "Предложение брака" })).toBeVisible();
+    await expect(table.getByText("не говорит").first()).toBeVisible();
+    await table.locator("a.quote-link").first().click();
+    await expect(page).toHaveURL(/[?&]hl=/);
+    await expect.poll(() => page.evaluate(() => "highlights" in CSS && CSS.highlights.has("quote"))).toBe(true);
+    expect(errors).toEqual([]);
+  });
+
   test("the sura strip keeps the ayahs and opens another sura", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/quran/36");
