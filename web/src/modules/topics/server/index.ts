@@ -4,9 +4,10 @@ import "server-only";
 
 export { listPublishedTopics, listTopicChoices, listTopicsForAdmin, getTopicForEdit } from "./topic.queries";
 export { getPublishedTopic, getTopicPlace } from "./topic-page.queries";
-export { deleteDraftTopic, saveTopic, saveTopicEvents } from "./topic.commands";
+export { deleteDraftTopic, saveTopic, saveTopicEvents, saveTopicPlaces } from "./topic.commands";
 export { listSides } from "./side.queries";
 export { saveSide } from "./side.commands";
-export { listEventLinksForEdit, listTopicLinks, listTopicsForEvent } from "./topic-links.queries";
+export { listEventLinksForEdit, listPlaceLinksForEdit, listTopicLinks, listTopicsForEvent } from "./topic-links.queries";
 export { listVersionPointsForEdit } from "./version.queries";
 export { deleteVersionPoint, saveVersionPoint } from "./version.commands";
+export { saveTopicEventsAction, saveTopicPlacesAction } from "./topic.actions";

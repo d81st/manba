@@ -9,6 +9,7 @@ const siraTimeline = getMessages().sira.topicTimeline.title;
 // instead of scrolled through. On a wide screen it stays in view.
 export function TopicContents({ topic, hasVideos }: { topic: PublicTopic; hasVideos: boolean }) {
   const items: { href: string; label: string }[] = [];
+  if (topic.places.length > 0) items.push({ href: "#map", label: t.map });
   if (topic.events.length > 0) items.push({ href: "#timeline", label: siraTimeline });
   if (topic.main.length > 0 || topic.mainHadiths.length > 0) items.push({ href: "#texts", label: t.texts });
   if (topic.circumstances || topic.circumstancesRefs.length > 0 || topic.circumstancesHadiths.length > 0 || topic.circumstancesNote) {

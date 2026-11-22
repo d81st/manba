@@ -10,6 +10,7 @@ import { PositionsSection } from "./positions-section";
 import { LinksSection, RelatedRefsSection } from "./related-sections";
 import { TopicSchema } from "./topic-schema";
 import { VersionsSection } from "./versions-section";
+import { MapSection } from "./map-section";
 import { type PublicVideo, VideoList } from "@/modules/videos";
 import { TopicTimeline } from "@/modules/sira";
 
@@ -47,6 +48,7 @@ export function TopicArticle({
         </header>
         {schema && <TopicSchema data={schema} />}
         {place && <PlaceSection place={place} />}
+        {topic.places.length > 0 && <MapSection places={topic.places} />}
         {topic.events.length > 0 && <TopicTimeline events={topic.events} suffix={preview ? "?drafts=1" : ""} />}
         <MainTexts topic={topic} />
         <CircumstancesSection topic={topic} />

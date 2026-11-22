@@ -71,6 +71,20 @@ test.describe("reading", () => {
     expect(errors).toEqual([]);
   });
 
+  test("a draft topic shows the places it names on the map", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto("/admin/topics");
+    await page.getByRole("link", { name: "Завоевание Армении, Аррана и Дербента", exact: true }).first().click();
+    await expect(page.getByRole("heading", { name: "Места на карте" })).toBeVisible();
+    await page.getByRole("button", { name: "Открыть на сайте" }).click();
+    await page.waitForURL(/\/topics\/caucasus-conquest\?drafts=1/);
+    const map = page.locator("#map svg");
+    await expect(map).toBeVisible();
+    await expect(map.locator("text", { hasText: "Тифлис" })).toBeVisible();
+    await expect(map.locator("text", { hasText: "Баб аль-Абваб (Дербент)" })).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test("the sura strip keeps the ayahs and opens another sura", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/quran/36");

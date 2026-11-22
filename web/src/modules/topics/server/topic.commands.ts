@@ -260,3 +260,37 @@ export async function saveTopicEvents(topicId: number, eventIds: number[], actor
     client.release();
   }
 }
+
+// Replaces the places a topic names; the change goes to the log.
+export async function saveTopicPlaces(topicId: number, placeIds: number[], actor: string): Promise<boolean> {
+  const client = await db().connect();
+  try {
+    await client.query("BEGIN");
+    const topic = await client.query("SELECT 1 FROM topics WHERE id = $1 FOR UPDATE", [topicId]);
+    if (!topic.rowCount) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+    const before = await client.query<{ id: number }>(
+      "SELECT place_id::int AS id FROM topic_places WHERE topic_id = $1 ORDER BY place_id",
+      [topicId],
+    );
+    await client.query("DELETE FROM topic_places WHERE topic_id = $1", [topicId]);
+    await client.query(
+      "INSERT INTO topic_places (topic_id, place_id) SELECT $1, p.id FROM places p WHERE p.id = ANY ($2::bigint[])",
+      [topicId, placeIds],
+    );
+    await client.query(
+      `INSERT INTO change_log (entity, entity_id, action, old_value, new_value, actor)
+       VALUES ('topic_places', $1, 'updated', $2, $3, $4)`,
+      [String(topicId), JSON.stringify(before.rows.map((r) => r.id)), JSON.stringify([...placeIds].sort((a, b) => a - b)), actor],
+    );
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}

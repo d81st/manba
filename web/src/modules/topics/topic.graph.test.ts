@@ -23,6 +23,7 @@ const topic: PublicTopic = {
   circumstancesQuotes: {},
   versions: null,
   events: [],
+  places: [],
   relatedRefs: [],
   relatedHadiths: [],
   sides: [

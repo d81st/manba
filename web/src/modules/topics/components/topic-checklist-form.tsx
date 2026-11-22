@@ -2,41 +2,44 @@
 
 import { useActionState } from "react";
 import { Button } from "@/shared/ui/button";
-import type { Messages } from "@/shared/i18n";
-import { saveTopicEventsAction, type TopicEventsState } from "../server/topic.actions";
+import type { TopicChecklistState } from "../server/topic.actions";
 
-// The events of the Prophet's life a topic is about, as ticked boxes, saved
-// apart from the topic form.
-export function TopicEventsForm({
-  topicId,
+type Labels = { title: string; hint: string; save: string; saved: string; failed: string; empty: string; note: Record<string, string> };
+
+// A list of ticked boxes saved apart from the topic form: the events of the
+// Prophet's life a topic is about, the places it names. Each box sends "item".
+export function TopicChecklistForm({
+  id,
   linked,
-  events,
+  items,
+  action: save,
   t,
 }: {
-  topicId: number;
+  id: string;
   linked: number[];
-  events: { id: number; title: string; status: string }[];
-  t: Messages["admin"]["topicEvents"];
+  items: { id: number; title: string; status: string }[];
+  action: (prev: TopicChecklistState, formData: FormData) => Promise<TopicChecklistState>;
+  t: Labels;
 }) {
-  const [state, action, pending] = useActionState<TopicEventsState, FormData>(saveTopicEventsAction.bind(null, topicId), {});
+  const [state, action, pending] = useActionState<TopicChecklistState, FormData>(save, {});
   return (
-    <section id="events" className="mt-10 space-y-3">
+    <section id={id} className="mt-10 space-y-3">
       <div>
         <h2 className="text-xl font-semibold">{t.title}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t.hint}</p>
       </div>
-      {events.length === 0 ? (
+      {items.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t.empty}</p>
       ) : (
         <form action={action} className="space-y-3 rounded-xl border bg-card p-4">
           <ul className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-3">
-            {events.map((event) => (
-              <li key={event.id}>
+            {items.map((item) => (
+              <li key={item.id}>
                 <label className="flex items-start gap-2">
-                  <input type="checkbox" name="event" value={event.id} defaultChecked={linked.includes(event.id)} className="mt-1" />
+                  <input type="checkbox" name="item" value={item.id} defaultChecked={linked.includes(item.id)} className="mt-1" />
                   <span>
-                    {event.title}
-                    {event.status !== "published" && <span className="text-muted-foreground"> ({t.draft})</span>}
+                    {item.title}
+                    {t.note[item.status] && <span className="text-muted-foreground"> ({t.note[item.status]})</span>}
                   </span>
                 </label>
               </li>

@@ -22,7 +22,7 @@ export type {
 
 export { SideForm } from "./components/side-form";
 export { VersionPointsEditor } from "./components/version-points-editor";
-export { TopicEventsForm } from "./components/topic-events-form";
+export { TopicChecklistForm } from "./components/topic-checklist-form";
 export { TopicBadge } from "./components/topic-badges";
 export { TopicForm } from "./components/topic-form/topic-form";
 export { TopicList } from "./components/topic-list/topic-list";

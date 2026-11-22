@@ -56,3 +56,18 @@ export async function listEventLinksForEdit(topicId: number): Promise<{ linked: 
   ]);
   return { linked: linked.rows.map((r) => r.id), events: events.rows };
 }
+
+// The places a topic is linked to, and every place the admin may choose.
+export async function listPlaceLinksForEdit(topicId: number): Promise<{ linked: number[]; places: { id: number; title: string; status: string }[] }> {
+  const [linked, places] = await Promise.all([
+    db().query<{ id: number }>("SELECT place_id::int AS id FROM topic_places WHERE topic_id = $1", [topicId]),
+    db().query<{ id: number; title: string; status: string }>(
+      `SELECT p.id::int, coalesce(x.name, p.slug) AS title,
+              CASE WHEN p.lat IS NULL THEN 'nocoords' ELSE 'published' END AS status
+       FROM places p LEFT JOIN place_texts x ON x.place_id = p.id AND x.locale = $1
+       ORDER BY title`,
+      [LOCALE],
+    ),
+  ]);
+  return { linked: linked.rows.map((r) => r.id), places: places.rows };
+}

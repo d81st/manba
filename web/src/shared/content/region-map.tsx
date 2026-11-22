@@ -4,6 +4,8 @@ import land from "@/shared/content/geo/arabia-land.json";
 // Earth land, public domain): an equirectangular view stretched by the cosine
 // of its middle latitude, with points that link to the parts of the page
 // below it. No interaction beyond the links, so it renders on the server.
+// The Caspian is a hole in the land (even-odd fill). The outline is built by
+// web/scripts/clip-land.py.
 
 export type MapView = { west: number; east: number; south: number; north: number; scale: number };
 export type MapPoint = {
@@ -14,6 +16,7 @@ export type MapPoint = {
   size: number; // radius of the point
   title: string; // hover text
   label?: [number, number, "start" | "end" | "middle"]; // name offset, for points close to others
+  href?: string; // where the point leads; by default the part of the page "#slug"
 };
 
 export function RegionMap({ view, points, label }: { view: MapView; points: MapPoint[]; label: string }) {
@@ -26,12 +29,12 @@ export function RegionMap({ view, points, label }: { view: MapView; points: MapP
     .join("");
   return (
     <svg viewBox={`0 0 ${width.toFixed(0)} ${height.toFixed(0)}`} className="block h-auto w-full" role="img" aria-label={label}>
-      <path d={shape} className="fill-sira-land stroke-border" strokeWidth={1} />
+      <path d={shape} fillRule="evenodd" className="fill-sira-land stroke-border" strokeWidth={1} />
       {points.map((point) => {
         const [x, y] = project(point.lon, point.lat);
         const [dx, dy, anchor] = point.label ?? [10, 4, "start"];
         return (
-          <a key={point.slug} href={`#${point.slug}`}>
+          <a key={point.slug} href={point.href ?? `#${point.slug}`}>
             <circle cx={x} cy={y} r={point.size} className="fill-primary stroke-card" strokeWidth={1.5}>
               <title>{point.title}</title>
             </circle>

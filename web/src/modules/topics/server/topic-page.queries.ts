@@ -6,6 +6,7 @@ import { passagesOf } from "../topic.passages";
 import type { MainPassage, PublicPosition, PublicTopic, QuoteLinks, TopicAyah, TopicPlace, TopicSummary, TopicVersions } from "../topic.types";
 import { LOCALE, SUMMARY, type RefRole } from "./topic.sql";
 import { getEventsForTopic, getSiraData } from "@/modules/sira/server";
+import type { SiraPlace } from "@/modules/sira";
 import { getHadithRefs } from "@/modules/hadith/server";
 import { bookPath, formatBookRef, isBook } from "@/shared/addresses/book-query";
 import { formatHadithRef, hadithPath } from "@/shared/addresses/hadith-query";
@@ -226,7 +227,18 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
   );
 
   const publicSides = sides.map(({ title, positions }) => ({ title, positions }));
-  const [versions, events] = await Promise.all([topicVersions(topic.id, publicSides), getEventsForTopic(topic.id, drafts)]);
+  const [versions, events, places] = await Promise.all([
+    topicVersions(topic.id, publicSides),
+    getEventsForTopic(topic.id, drafts),
+    db().query<SiraPlace>(
+      `SELECT p.id::int, p.slug, coalesce(x.name, p.slug) AS name, p.name_ar AS "nameAr", p.lat, p.lon,
+              p.coord_source AS "coordSource"
+       FROM topic_places tp JOIN places p ON p.id = tp.place_id
+       LEFT JOIN place_texts x ON x.place_id = p.id AND x.locale = $2
+       WHERE tp.topic_id = $1 ORDER BY p.lon NULLS LAST, p.slug`,
+      [topic.id, LOCALE],
+    ),
+  ]);
 
   return {
     ...topic,
@@ -237,6 +249,7 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
     circumstancesQuotes,
     versions,
     events,
+    places: places.rows,
     relatedRefs: refsOf("related"),
     relatedHadiths: hadithsOf("related"),
     sides: publicSides,

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/shared/auth/auth";
 import { TOPICS_TAG } from "../topic.constants";
 import { checkTopicInput } from "../topic.validation";
-import { deleteDraftTopic, saveTopic, saveTopicEvents } from "./topic.commands";
+import { deleteDraftTopic, saveTopic, saveTopicEvents, saveTopicPlaces } from "./topic.commands";
 import { SIRA_TAG } from "@/modules/sira";
 import type { InputProblem } from "@/shared/forms/input";
 
@@ -44,18 +44,32 @@ export async function deleteTopicAction(id: number): Promise<{ ok: boolean }> {
   redirect("/admin/topics");
 }
 
-export type TopicEventsState = { saved?: boolean; failed?: boolean };
+export type TopicChecklistState = { saved?: boolean; failed?: boolean };
+export type TopicEventsState = TopicChecklistState;
 
 // The events of the Prophet's life a topic is about: the ticked boxes "event".
 export async function saveTopicEventsAction(topicId: number, _prev: TopicEventsState, formData: FormData): Promise<TopicEventsState> {
   const session = await requireAdmin();
   const ids = formData
-    .getAll("event")
+    .getAll("item")
     .map((v) => Number(v))
     .filter((n) => Number.isInteger(n) && n > 0);
   const ok = await saveTopicEvents(topicId, [...new Set(ids)], session.login);
   if (!ok) return { failed: true };
   updateTag(TOPICS_TAG);
   updateTag(SIRA_TAG);
+  return { saved: true };
+}
+
+// The places a topic names: the ticked boxes "item".
+export async function saveTopicPlacesAction(topicId: number, _prev: TopicChecklistState, formData: FormData): Promise<TopicChecklistState> {
+  const session = await requireAdmin();
+  const ids = formData
+    .getAll("item")
+    .map((v) => Number(v))
+    .filter((n) => Number.isInteger(n) && n > 0);
+  const ok = await saveTopicPlaces(topicId, [...new Set(ids)], session.login);
+  if (!ok) return { failed: true };
+  updateTag(TOPICS_TAG);
   return { saved: true };
 }
