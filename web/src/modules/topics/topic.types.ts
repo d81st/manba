@@ -38,7 +38,11 @@ export type PublicPosition = {
   sourceNote: string;
   refs: TopicAyah[];
   hadiths: HadithRef[];
+  // Arabic quotations of the text -> the page of the fragment each was found in.
+  quotes: QuoteLinks;
 };
+
+export type QuoteLinks = Record<string, string>;
 
 export type PublicTopic = TopicSummary & {
   circumstances: string;
@@ -47,6 +51,7 @@ export type PublicTopic = TopicSummary & {
   mainHadiths: HadithRef[];
   circumstancesRefs: TopicAyah[];
   circumstancesHadiths: HadithRef[];
+  circumstancesQuotes: QuoteLinks;
   relatedRefs: TopicAyah[];
   relatedHadiths: HadithRef[];
   // Grouped by side in the order of the sides list.

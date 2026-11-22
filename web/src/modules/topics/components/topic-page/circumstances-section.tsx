@@ -16,7 +16,7 @@ export function CircumstancesSection({ topic }: { topic: PublicTopic }) {
   return (
     <section id="circumstances" className="scroll-mt-4">
       <SectionHeading>{t.circumstances}</SectionHeading>
-      {circumstances && <LinkedParagraphs text={circumstances} />}
+      {circumstances && <LinkedParagraphs text={circumstances} quotes={topic.circumstancesQuotes} quoteTitle={t.quoteLink} />}
       {circumstancesRefs.length > 0 && <AyahList ayahs={circumstancesRefs} compact className="mt-3" />}
       {circumstancesHadiths.length > 0 && <HadithRefList hadiths={circumstancesHadiths} className="mt-3" />}
       {circumstancesNote && (

@@ -33,6 +33,24 @@ test.describe("reading", () => {
     expect(errors).toEqual([]);
   });
 
+  test("a quotation of a topic opens its place in the source with the words marked", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto("/topics/when-is-the-hour");
+    const quote = page.locator("main a.quote-link").first();
+    await expect(quote).toBeVisible();
+    const words = (await quote.innerText()).trim();
+    await quote.click();
+    await expect(page).toHaveURL(/[?&]hl=/);
+    await expect.poll(() => page.evaluate(() => "highlights" in CSS && CSS.highlights.has("quote"))).toBe(true);
+    const marked = await page.evaluate(() => {
+      const highlight = CSS.highlights.get("quote");
+      const range = highlight ? ([...highlight][0] as Range) : null;
+      return range ? range.toString() : "";
+    });
+    expect(marked.replace(/\s+/g, "")).toBe(words.replace(/\s+/g, ""));
+    expect(errors).toEqual([]);
+  });
+
   test("the sura strip keeps the ayahs and opens another sura", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/quran/36");

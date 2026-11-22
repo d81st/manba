@@ -84,7 +84,7 @@ function PositionCard({ id, position }: { id: string; position: PublicPosition }
         </Badge>
       </div>
       <div className="mt-2">
-        <LinkedParagraphs text={position.text} />
+        <LinkedParagraphs text={position.text} quotes={position.quotes} quoteTitle={t.quoteLink} />
       </div>
       {position.refs.length > 0 && <AyahList ayahs={position.refs} compact className="mt-3" />}
       {position.hadiths.length > 0 && <HadithRefList hadiths={position.hadiths} className="mt-3" />}

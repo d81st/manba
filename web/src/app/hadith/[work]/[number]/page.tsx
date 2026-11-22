@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { HIGHLIGHT_PARAM, withHighlight } from "@/shared/content/quote-match";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/shared/layout/page";
@@ -20,24 +21,34 @@ export function generateMetadata(): Metadata {
 // A permanent link to one hadith: /hadith/bukhari/3951 opens it in its book;
 // /hadith/muslim/8b opens the second narration of Muslim 8, /hadith/kafi/4.60.3
 // the third hadith of chapter 60 of book 4.
-export default function HadithNumberPage({ params }: PageProps<"/hadith/[work]/[number]">) {
+export default function HadithNumberPage({ params, searchParams }: PageProps<"/hadith/[work]/[number]">) {
   return (
     <Page>
       <Suspense fallback={<p className="mt-8 text-muted-foreground">{t.loading}</p>}>
-        <Locate params={params} />
+        <Locate params={params} searchParams={searchParams} />
       </Suspense>
     </Page>
   );
 }
 
-async function Locate({ params }: { params: PageProps<"/hadith/[work]/[number]">["params"] }) {
+async function Locate({
+  params,
+  searchParams,
+}: {
+  params: PageProps<"/hadith/[work]/[number]">["params"];
+  searchParams: PageProps<"/hadith/[work]/[number]">["searchParams"];
+}) {
   await connection();
   const { work, number: raw } = await params;
+  const quote = (await searchParams)[HIGHLIGHT_PARAM];
   const path = /^[a-z][a-z0-9_]*$/.test(work) ? parseRef(schemeOf(work), safeDecode(raw)) : null;
   if (!path || !isDatabaseConfigured()) notFound();
   const [collection, place] = await Promise.all([getCollection(work), locateHadith(work, path)]);
   if (!collection || !place) notFound();
-  if (place.book !== null) redirect(bookPageHref(work, place.book, place.page, hadithAnchor(place.path)));
+  if (place.book !== null) {
+    const href = bookPageHref(work, place.book, place.page, hadithAnchor(place.path));
+    redirect(typeof quote === "string" && quote ? withHighlight(href, quote) : href);
+  }
   const number = path.join(".");
 
   const beyond = place.after === null;

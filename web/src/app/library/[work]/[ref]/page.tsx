@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { HIGHLIGHT_PARAM, withHighlight } from "@/shared/content/quote-match";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { Page } from "@/shared/layout/page";
@@ -21,19 +22,26 @@ export function generateMetadata(): Metadata {
 // A permanent link: /library/ibn_hisham/1.235 opens the Sira's section at that
 // page (1.235.2 at its second piece); /library/tafsir_ibn_kathir/2.64 the
 // tafsir at the comment on ayah 2:64.
-export default function BookPageLink({ params }: PageProps<"/library/[work]/[ref]">) {
+export default function BookPageLink({ params, searchParams }: PageProps<"/library/[work]/[ref]">) {
   return (
     <Page>
       <Suspense fallback={<p className="mt-8 text-muted-foreground">{messages.hadith.loading}</p>}>
-        <Locate params={params} />
+        <Locate params={params} searchParams={searchParams} />
       </Suspense>
     </Page>
   );
 }
 
-async function Locate({ params }: { params: PageProps<"/library/[work]/[ref]">["params"] }) {
+async function Locate({
+  params,
+  searchParams,
+}: {
+  params: PageProps<"/library/[work]/[ref]">["params"];
+  searchParams: PageProps<"/library/[work]/[ref]">["searchParams"];
+}) {
   await connection();
   const { work, ref } = await params;
+  const quote = (await searchParams)[HIGHLIGHT_PARAM];
   let decoded = ref;
   try {
     decoded = decodeURIComponent(ref);
@@ -42,7 +50,10 @@ async function Locate({ params }: { params: PageProps<"/library/[work]/[ref]">["
   if (!path || !isDatabaseConfigured()) notFound();
   const [book, place] = await Promise.all([getBookWork(work), locatePage(work, path)]);
   if (!book) notFound();
-  if (place) redirect(sectionHref(work, place.section, place.page, bookAnchor(place.path)));
+  if (place) {
+    const href = sectionHref(work, place.section, place.page, bookAnchor(place.path));
+    redirect(typeof quote === "string" && quote ? withHighlight(href, quote) : href);
+  }
   return (
     <>
       <nav className="mt-6 text-sm">

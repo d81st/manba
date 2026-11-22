@@ -20,12 +20,13 @@ const topic: PublicTopic = {
   mainHadiths: [{ address: "bukhari.1", title: "Бухари 1", href: "/hadith/bukhari/1", items: [], more: 0 }],
   circumstancesRefs: [],
   circumstancesHadiths: [],
+  circumstancesQuotes: {},
   relatedRefs: [],
   relatedHadiths: [],
   sides: [
     {
       title: "Сторона А",
-      positions: [{ side: "Сторона А", holder: "Вымышленная школа", recognition: "minority", text: "…", sourceNote: "", refs: [ayah(2, 2), ayah(3, 7)], hadiths: [] }],
+      positions: [{ side: "Сторона А", holder: "Вымышленная школа", recognition: "minority", text: "…", sourceNote: "", refs: [ayah(2, 2), ayah(3, 7)], hadiths: [], quotes: {} }],
     },
   ],
   terms: [{ slug: "test-term", translation: "тестовый термин" }],

@@ -3,10 +3,13 @@ import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/shared/db";
 import { CONTEXT_AYAHS, TOPICS_TAG } from "../topic.constants";
 import { passagesOf } from "../topic.passages";
-import type { MainPassage, PublicPosition, PublicTopic, TopicAyah, TopicPlace, TopicSummary } from "../topic.types";
+import type { MainPassage, PublicPosition, PublicTopic, QuoteLinks, TopicAyah, TopicPlace, TopicSummary } from "../topic.types";
 import { LOCALE, SUMMARY, type RefRole } from "./topic.sql";
 import { getSiraData } from "@/modules/sira/server";
 import { getHadithRefs } from "@/modules/hadith/server";
+import { bookPath, isBook } from "@/shared/addresses/book-query";
+import { hadithPath } from "@/shared/addresses/hadith-query";
+import { arabicQuotes, withHighlight } from "@/shared/content/quote-match";
 
 type AyahRow = { address: string; text: string; sura_name: string };
 
@@ -33,6 +36,40 @@ async function ayahRange(sura: number, from: number, to: number): Promise<TopicA
     [`quran.${sura}`, from, to],
   );
   return rows.map(toAyah);
+}
+
+// The page of a fragment: an ayah, a page of a book, a hadith.
+function fragmentHref(address: string): string {
+  const [work, ...rest] = address.split(".");
+  const path = rest.map(Number);
+  if (work === "quran") return `/quran/${path[0]}#${path[0]}-${path[1]}`;
+  return isBook(work) ? bookPath(work, path) : hadithPath(work, path);
+}
+
+// For every Arabic quotation of each text, the first of its addresses whose
+// primary Arabic text contains it word for word; a quotation found nowhere
+// stays plain text.
+async function quoteLinks(items: { text: string; addresses: string[] }[]): Promise<QuoteLinks[]> {
+  const rows = items.flatMap((item, i) =>
+    item.addresses.length ? arabicQuotes(item.text).map((quote) => ({ i, quote, addrs: item.addresses })) : [],
+  );
+  const links: QuoteLinks[] = items.map(() => ({}));
+  if (!rows.length) return links;
+  const found = await db().query<{ i: number; quote: string; address: string | null }>(
+    `SELECT q.i, q.quote,
+            (SELECT x.address::text FROM texts x
+             JOIN text_versions v ON v.id = x.version_id AND v.is_primary AND v.status = 'published' AND v.language = 'ar'
+             JOIN addresses a ON a.address = x.address
+             WHERE x.address <@ ANY (q.addrs::extensions.ltree[]) AND position(q.quote IN x.content) > 0
+             ORDER BY (SELECT min(u.k) FROM unnest(q.addrs) WITH ORDINALITY AS u(ad, k) WHERE x.address <@ u.ad::extensions.ltree), a.ordinal
+             LIMIT 1) AS address
+     FROM jsonb_to_recordset($1::jsonb) AS q(i int, quote text, addrs text[])`,
+    [JSON.stringify(rows)],
+  );
+  for (const row of found.rows) {
+    if (row.address) links[row.i][row.quote] = withHighlight(fragmentHref(row.address), row.quote);
+  }
+  return links;
 }
 
 export async function getPublishedTopic(slug: string, drafts = false): Promise<PublicTopic | null> {
@@ -96,6 +133,7 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
     [topic.id, LOCALE],
   );
   const sides: (PublicTopic["sides"][number] & { id: number })[] = [];
+  const positionItems: { position: PublicPosition; addresses: string[] }[] = [];
   for (const p of positions.rows) {
     const position: PublicPosition = {
       side: p.side,
@@ -105,11 +143,19 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
       sourceNote: p.source_note,
       refs: refsOf("position", String(p.id)),
       hadiths: hadithsOf("position", String(p.id)),
+      quotes: {},
     };
+    positionItems.push({ position, addresses: refsFor("position", String(p.id)) });
     const group = sides.at(-1);
     if (group && group.id === p.side_id) group.positions.push(position);
     else sides.push({ id: p.side_id, title: p.side, positions: [position] });
   }
+
+  const [circumstancesQuotes, ...positionQuotes] = await quoteLinks([
+    { text: topic.circumstances, addresses: [...refsFor("circumstances", null), ...refsFor("main", null)] },
+    ...positionItems.map(({ position, addresses }) => ({ text: position.text, addresses })),
+  ]);
+  positionItems.forEach(({ position }, k) => (position.quotes = positionQuotes[k]));
 
   const terms = await db().query(
     `SELECT t.slug, x.translation FROM topic_terms r
@@ -132,6 +178,7 @@ export async function getPublishedTopic(slug: string, drafts = false): Promise<P
     mainHadiths: hadithsOf("main"),
     circumstancesRefs: refsOf("circumstances"),
     circumstancesHadiths: hadithsOf("circumstances"),
+    circumstancesQuotes,
     relatedRefs: refsOf("related"),
     relatedHadiths: hadithsOf("related"),
     sides: sides.map(({ title, positions }) => ({ title, positions })),

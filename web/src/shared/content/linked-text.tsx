@@ -9,7 +9,32 @@ import { linkAddresses } from "@/shared/addresses/refs";
 // book pages ("Ибн Хишам 1:235") and verses of other religions' texts
 // ("Исход 21:24", not taken for an ayah) are links into the library, and web
 // addresses (a scan of an edition) open in a new tab.
-export function LinkedText({ text }: { text: string }) {
+//
+// With "quotes" (quotation -> page of its fragment), an Arabic quotation in
+// guillemets found word for word in its source links to that place, where
+// the page marks it (quote-highlight.tsx).
+export type QuoteLinkProps = { quotes?: Record<string, string>; quoteTitle?: string };
+
+export function LinkedText({ text, quotes, quoteTitle }: { text: string } & QuoteLinkProps) {
+  if (quotes && Object.keys(quotes).length) {
+    return text.split(/«([^«»]+)»/).map((chunk, k) => {
+      if (k % 2 === 0) return <Fragment key={k}>{chunk && <LinkedText text={chunk} />}</Fragment>;
+      const href = quotes[chunk];
+      return (
+        <Fragment key={k}>
+          «
+          {href ? (
+            <Link href={href} title={quoteTitle} className="quote-link">
+              <ArabicRuns text={chunk} />
+            </Link>
+          ) : (
+            <LinkedText text={chunk} />
+          )}
+          »
+        </Fragment>
+      );
+    });
+  }
   return text.split(/(https:\/\/[^\s,;«»()]+[^\s,;«»().])/).map((chunk, k) =>
     k % 2 ? (
       <a key={k} href={chunk} target="_blank" rel="noreferrer" className="break-all">
@@ -89,12 +114,12 @@ function ArabicRuns({ text }: { text: string }) {
 }
 
 // Paragraphs separated by blank lines, with ayah addresses as links.
-export function LinkedParagraphs({ text }: { text: string }) {
+export function LinkedParagraphs({ text, quotes, quoteTitle }: { text: string } & QuoteLinkProps) {
   return (
     <div className="space-y-3 leading-relaxed">
       {text.split(/\n\s*\n/).map((paragraph, i) => (
         <p key={i} className="whitespace-pre-line">
-          <LinkedText text={paragraph} />
+          <LinkedText text={paragraph} quotes={quotes} quoteTitle={quoteTitle} />
         </p>
       ))}
     </div>

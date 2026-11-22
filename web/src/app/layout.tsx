@@ -7,6 +7,7 @@ import { getMessages } from "@/shared/i18n";
 import { LOCALE_COOKIE } from "@/shared/i18n/locale";
 import { requestLocale } from "@/shared/i18n/locale-reader.server";
 import { DocumentLang } from "@/shared/layout/document-lang";
+import { QuoteHighlight } from "@/shared/content/quote-highlight";
 // Interface font served from our own server (OFL), with Cyrillic.
 import "@fontsource-variable/inter";
 import "./globals.css";
@@ -49,6 +50,7 @@ async function Localized({ children }: { children: ReactNode }) {
         <BookmarkButton />
         <ReportButton />
         <ReadingTracker />
+        <QuoteHighlight />
       </Suspense>
     </div>
   );

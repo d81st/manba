@@ -180,3 +180,21 @@
   content-visibility: auto;
   contain-intrinsic-size: auto 14rem;
 }
+
+/* Words a topic's quotation links to, on the source's page (shared/content/quote-highlight.tsx). */
+::highlight(quote) {
+  background-color: var(--highlight);
+}
+
+/* An Arabic quotation on a topic page that opens its place in the source. */
+.quote-link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--muted-foreground);
+  text-underline-offset: 0.35em;
+}
+.quote-link:hover {
+  text-decoration-style: solid;
+  text-decoration-color: var(--primary);
+}
