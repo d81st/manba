@@ -8,8 +8,8 @@ import { Page } from "@/shared/layout/page";
 import { Badge } from "@/shared/ui/badge";
 import { getMessages } from "@/shared/i18n";
 import { requireAdmin } from "@/shared/auth/auth";
-import { TopicForm } from "@/modules/topics";
-import { getTopicForEdit, listSides, listTopicChoices } from "@/modules/topics/server";
+import { TopicForm, VersionPointsEditor } from "@/modules/topics";
+import { getTopicForEdit, listSides, listTopicChoices, listVersionPointsForEdit } from "@/modules/topics/server";
 import { PreviewLink } from "../../preview-link";
 import { StatusBadge } from "../../status-badge";
 import { listTermChoices } from "@/modules/glossary/server";
@@ -47,11 +47,12 @@ async function EditTopic({
   if (!/^\d+$/.test(raw)) notFound();
   const topic = await getTopicForEdit(Number(raw));
   if (!topic) notFound();
-  const [sides, terms, topics, choices] = await Promise.all([
+  const [sides, terms, topics, choices, versions] = await Promise.all([
     listSides(),
     listTermChoices(),
     listTopicChoices(),
     listChoices(),
+    listVersionPointsForEdit(topic.id),
   ]);
   const saved = (await searchParams).saved === "1";
   const { id, ...initial } = topic;
@@ -78,6 +79,7 @@ async function EditTopic({
         saved={saved}
         t={t}
       />
+      <VersionPointsEditor topicId={id} points={versions.points} holders={versions.holders} t={t.versions} />
     </>
   );
 }

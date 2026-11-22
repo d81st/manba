@@ -6,6 +6,7 @@ export { filterTopics, listFilterOf } from "./topic.filters";
 export { topicGraph } from "./topic.graph";
 export { passagesOf, type Passage } from "./topic.passages";
 export { checkSideInput, checkTopicInput, hasOutsideSource, topicSchema } from "./topic.validation";
+export { checkVersionPointInput } from "./topic.versions";
 export type { SideInput, TopicInput } from "./topic.validation";
 export type {
   MainPassage,
@@ -20,6 +21,7 @@ export type {
 } from "./topic.types";
 
 export { SideForm } from "./components/side-form";
+export { VersionPointsEditor } from "./components/version-points-editor";
 export { TopicBadge } from "./components/topic-badges";
 export { TopicForm } from "./components/topic-form/topic-form";
 export { TopicList } from "./components/topic-list/topic-list";

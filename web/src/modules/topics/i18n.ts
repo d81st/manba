@@ -63,6 +63,35 @@ export const topicsRu = { topics };
 
 // Groups of messages.admin.
 export const topicsAdminRu = {
+  versions: {
+    title: "Версии рядом",
+    hint: "Где ранние рассказы расходятся: строка — нейтральный вопрос, клетка — дословная арабская цитата из текста позиции и её место в библиотеке. Пустая клетка значит «источник об этом не говорит». Цитата должна стоять и в тексте позиции, и в книге по указанному месту, иначе вопрос не сохранится. Таблица на сайте видна, когда клетки есть хотя бы у двух позиций.",
+    label: "Вопрос — нейтрально, например: «Предложение брака»",
+    order: "Порядок",
+    quote: "Цитата — дословно из текста позиции",
+    ref: "Место в библиотеке",
+    refExample: "Ибн Хишам 2:245b, Бухари 4200, 2:255",
+    orphan: "Позиции с таким названием в теме больше нет, клетка на сайте не показывается. Очистите её или верните название позиции.",
+    add: "Добавить вопрос",
+    save: "Сохранить",
+    remove: "Удалить вопрос",
+    saved: "Сохранено.",
+    removed: "Вопрос удалён.",
+    empty: "Вопросов пока нет.",
+    noPositions: "Сначала добавьте позиции темы.",
+    errors: {
+      label: "Напишите вопрос (до 200 знаков).",
+      quote: "Цитата слишком длинная.",
+      holderTwice: "Одна позиция указана дважды.",
+      quoteMissing: "Место указано, а цитаты нет.",
+      refOne: "Укажите одно место в библиотеке.",
+      quoteNotInPosition: "Этой цитаты нет в тексте позиции.",
+      quoteNotInSource: "Этой цитаты нет в тексте по указанному месту.",
+      placeMissing: "Такого места в библиотеке нет.",
+      notFound: "Вопрос не найден.",
+      invalid: "Проверьте поле",
+    },
+  },
   topics: {
     title: "Темы",
     add: "Добавить тему",
@@ -223,6 +252,35 @@ const topicsEnBody: typeof topics = {
 export const topicsEn: typeof topicsRu = { topics: topicsEnBody };
 
 export const topicsAdminEn: typeof topicsAdminRu = {
+  versions: {
+    title: "Versions side by side",
+    hint: "Where the early reports disagree: a row is a neutral question, a cell a word-for-word Arabic quotation from the position's text and its place in the library. An empty cell means \"the source says nothing on it\". The quotation must stand both in the position's text and in the book at that place, or the question is not saved. The table shows on the site once at least two positions have cells.",
+    label: "Question, neutrally, for example: \"The offer of marriage\"",
+    order: "Order",
+    quote: "Quotation, word for word from the position's text",
+    ref: "Place in the library",
+    refExample: "Ибн Хишам 2:245b, Бухари 4200, 2:255",
+    orphan: "The topic no longer has a position of this name; the cell is not shown on the site. Clear it or restore the position's name.",
+    add: "Add a question",
+    save: "Save",
+    remove: "Delete the question",
+    saved: "Saved.",
+    removed: "The question was deleted.",
+    empty: "No questions yet.",
+    noPositions: "Add the topic's positions first.",
+    errors: {
+      label: "Write the question (up to 200 characters).",
+      quote: "The quotation is too long.",
+      holderTwice: "One position is given twice.",
+      quoteMissing: "A place is given but no quotation.",
+      refOne: "Give one place in the library.",
+      quoteNotInPosition: "The position's text does not contain this quotation.",
+      quoteNotInSource: "The text at that place does not contain this quotation.",
+      placeMissing: "The library has no such place.",
+      notFound: "The question was not found.",
+      invalid: "Check the field",
+    },
+  },
   topics: {
     title: "Topics",
     add: "Add a topic",

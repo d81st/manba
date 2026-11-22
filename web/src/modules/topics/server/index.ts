@@ -8,3 +8,5 @@ export { deleteDraftTopic, saveTopic } from "./topic.commands";
 export { listSides } from "./side.queries";
 export { saveSide } from "./side.commands";
 export { listTopicLinks } from "./topic-links.queries";
+export { listVersionPointsForEdit } from "./version.queries";
+export { deleteVersionPoint, saveVersionPoint } from "./version.commands";
