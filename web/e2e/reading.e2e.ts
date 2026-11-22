@@ -35,8 +35,12 @@ test.describe("reading", () => {
 
   test("a quotation of a topic opens its place in the source with the words marked", async ({ page }) => {
     const errors = collectErrors(page);
-    await page.goto("/topics/when-is-the-hour");
-    const quote = page.locator("main a.quote-link").first();
+    // A draft built after the books are loaded (DRAFTS_AFTER_IMPORT), so a fresh database has it too.
+    await page.goto("/admin/topics");
+    await page.getByRole("link", { name: "Райхана", exact: true }).first().click();
+    await page.getByRole("button", { name: "Открыть на сайте" }).click();
+    await page.waitForURL(/\/topics\/rayhana\?drafts=1/);
+    const quote = page.locator("#positions a.quote-link").first();
     await expect(quote).toBeVisible();
     const words = (await quote.innerText()).trim();
     await quote.click();
