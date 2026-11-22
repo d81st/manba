@@ -14,6 +14,8 @@ import { type PagesOptions, parseOpenitiPages } from "../src/shared/import/openi
 import { parseOpenitiTafsir } from "../src/shared/import/openiti-tafsir.ts";
 import { fadailToAnnotated, masahifToAnnotated } from "../src/shared/import/openiti-jk.ts";
 import { parseOpenitiRunning } from "../src/shared/import/openiti-running.ts";
+import { mustadrakToNumbered } from "../src/shared/import/openiti-mustadrak.ts";
+import { stripTags } from "../src/shared/import/openiti-html.ts";
 import { parseTanzil } from "../src/shared/import/tanzil.ts";
 import { plainKey } from "../src/shared/text/plain-key.ts";
 
@@ -1508,7 +1510,110 @@ const FUTUH_BULDAN: HadithSource = {
   retrievedAt: "2026-11-22",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI, SARIM_MASLUL, FUTUH_BULDAN];
+// Books for the leads on al-Hakim's «al-Mustadrak» (docs/topics/hakim-mustadrak-leads.md)
+// and for the Shia side of the sira (docs/PLAN.md, 22.11.2026).
+const MIZAN_ITIDAL: HadithSource = {
+  file: "0748Dhahabi.MizanIctidal.Shamela0001692-ara3",
+  layout: "pages",
+  transform: (text) => stripTags(text).text,
+  pages: { gaps: true, repair: true, tail: true },
+  key: "openiti:0748Dhahabi.MizanIctidal.Shamela0001692-ara3:3a235a2",
+  sourceId: "openiti.mizan-itidal-shamela0001692",
+  sourceTitle: "OpenITI · 0748Dhahabi.MizanIctidal.Shamela0001692-ara3",
+  sourceVersion: "OpenITI/0750AH 3a235a2 (2026-11-22)",
+  sourceUrl: "https://github.com/OpenITI/0750AH",
+  notice: `${OPENITI_CITATION}. Text: 0748Dhahabi.MizanIctidal.Shamela0001692-ara3 — Mizan al-i'tidal fi naqd al-rijal of al-Dhahabi, ed. Ali Muhammad al-Bijawi, Dar al-Ma'rifa, Beirut, 1st ed., 1382/1963, 4 vols, with the edition's pages, without the stray tags of the web page; the editor's note after the last page marker is read as the next page (data/sources/openiti/README.md). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "mizan_itidal",
+    category: "history",
+    canon: "sunni",
+    titles: { ar: "ميزان الاعتدال في نقد الرجال", ru: "ад-Захаби, «Мизан аль-итидаль»", "ru-short": "Мизан" },
+    authoritySunni: null,
+  },
+  versionId: "mizan_itidal.ar.openiti",
+  versionTitle: "Арабский текст: изд. Али Мухаммада аль-Биджави («Дар аль-Марифа», Бейрут, 1-е изд., 1382/1963), 4 тома, страницы издания (OpenITI)",
+  minItems: 4800,
+  retrievedAt: "2026-11-22",
+};
+
+const FURUSIYYA: HadithSource = {
+  file: "0751IbnQayyimJawziyya.Furusiyya.Shamela0006275-ara1",
+  layout: "pages",
+  transform: (text) => stripTags(text).text,
+  pages: { gaps: true },
+  key: "openiti:0751IbnQayyimJawziyya.Furusiyya.Shamela0006275-ara1:61b0c78",
+  sourceId: "openiti.furusiyya-shamela0006275",
+  sourceTitle: "OpenITI · 0751IbnQayyimJawziyya.Furusiyya.Shamela0006275-ara1",
+  sourceVersion: "OpenITI/0775AH 61b0c78 (2026-11-22)",
+  sourceUrl: "https://github.com/OpenITI/0775AH",
+  notice: `${OPENITI_CITATION}. Text: 0751IbnQayyimJawziyya.Furusiyya.Shamela0006275-ara1 — al-Furusiyya of Ibn Qayyim al-Jawziyya, ed. Mashhur ibn Hasan Al Salman, Dar al-Andalus, Ha'il, 1st ed., 1414/1993, with the edition's pages, without the stray tags of the web page. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "furusiyya",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "الفروسية", ru: "Ибн аль-Каййим, «аль-Фурусийя»", "ru-short": "Фурусийя" },
+    authoritySunni: null,
+  },
+  versionId: "furusiyya.ar.openiti",
+  versionTitle: "Арабский текст: изд. Машхура ибн Хасана Аль Салмана («Дар аль-Андалус», Хаиль, 1-е изд., 1414/1993), страницы издания (OpenITI)",
+  minItems: 510,
+  retrievedAt: "2026-11-22",
+};
+
+// The edition prints al-Dhahabi's remarks from his «Talkhis» after the
+// reports; they stay in their reports, under the editor's label (openiti-mustadrak.ts).
+const MUSTADRAK: HadithSource = {
+  file: "0405HakimNaysaburi.Mustadrak.Shamela0002266-ara1",
+  layout: "numbered",
+  transform: (text) => mustadrakToNumbered(stripTags(text).text).text,
+  key: "openiti:0405HakimNaysaburi.Mustadrak.Shamela0002266-ara1:3a3c829",
+  sourceId: "openiti.mustadrak-shamela0002266",
+  sourceTitle: "OpenITI · 0405HakimNaysaburi.Mustadrak.Shamela0002266-ara1",
+  sourceVersion: "OpenITI/0425AH 3a3c829 (2026-11-22)",
+  sourceUrl: "https://github.com/OpenITI/0425AH",
+  notice: `${OPENITI_CITATION}. Text: 0405HakimNaysaburi.Mustadrak.Shamela0002266-ara1 — al-Mustadrak 'ala al-Sahihayn of al-Hakim al-Naysaburi, ed. Mustafa Abd al-Qadir Ata, Dar al-Kutub al-'Ilmiyya, Beirut, 1st ed., 1411/1990, 4 vols, with al-Dhahabi's remarks from al-Talkhis as printed in the edition. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "mustadrak",
+    canon: "sunni",
+    titles: { ar: "المستدرك على الصحيحين", ru: "аль-Хаким, «аль-Мустадрак» (с пометами ад-Захаби)", "ru-short": "Мустадрак" },
+    authoritySunni: null,
+  },
+  versionId: "mustadrak.ar.ata",
+  versionTitle: "Арабский текст: изд. Мустафы Абд аль-Кадира Аты («Дар аль-кутуб аль-ильмийя», Бейрут, 1-е изд., 1411/1990), номера хадисов издания, с пометами ад-Захаби из «Тальхиса» (OpenITI)",
+  minItems: 8700,
+  retrievedAt: "2026-11-22",
+};
+
+// The export opens with the editor's introduction, paged 1–16 on its own,
+// and ends with the site's endnotes (links, not the book): both are left out.
+const IRSHAD_MUFID: HadithSource = {
+  file: "0413ShaykhMufid.Irshad.Shia001294Vols-ara1",
+  layout: "pages",
+  transform: (text) => {
+    const end = text.indexOf("#####ENDNOTES#");
+    return stripTags(end < 0 ? text : text.slice(0, end)).text;
+  },
+  pages: { gaps: true, startAt: "# بسم الله الرحمن الرحيم وبه ثقتي أخبرنا السيد الأجل عميد الرؤساء أبو" },
+  key: "openiti:0413ShaykhMufid.Irshad.Shia001294Vols-ara1:3a3c829",
+  sourceId: "openiti.irshad-mufid-shia001294",
+  sourceTitle: "OpenITI · 0413ShaykhMufid.Irshad.Shia001294Vols-ara1",
+  sourceVersion: "OpenITI/0425AH 3a3c829 (2026-11-22)",
+  sourceUrl: "https://github.com/OpenITI/0425AH",
+  notice: `${OPENITI_CITATION}. Text: 0413ShaykhMufid.Irshad.Shia001294Vols-ara1 — al-Irshad fi ma'rifat hujaj Allah 'ala al-'ibad of al-Shaykh al-Mufid, ed. Mu'assasat Al al-Bayt li-Ihya' al-Turath, Dar al-Mufid, Beirut, 2nd ed., 1414/1993, 2 vols, with the edition's pages; the editor's introduction, the export's endnotes and the links of the web page are left out (data/sources/openiti/README.md). License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "irshad_mufid",
+    category: "history",
+    canon: "shia",
+    titles: { ar: "الإرشاد في معرفة حجج الله على العباد", ru: "аш-Шейх аль-Муфид, «аль-Иршад»", "ru-short": "Иршад" },
+    authoritySunni: null,
+  },
+  versionId: "irshad_mufid.ar.openiti",
+  versionTitle: "Арабский текст: изд. Муассасат Аль аль-Бейт («Дар аль-Муфид», Бейрут, 2-е изд., 1414/1993), 2 тома, страницы издания (OpenITI)",
+  minItems: 720,
+  retrievedAt: "2026-11-22",
+};
+
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI, SARIM_MASLUL, FUTUH_BULDAN, MIZAN_ITIDAL, FURUSIYYA, IRSHAD_MUFID];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 
@@ -2013,6 +2118,7 @@ async function main() {
     for (const src of SCIENCE_BOOKS) await importOpenitiHadith(client, src);
     for (const src of DISPUTE_BOOKS) await importOpenitiHadith(client, src);
     await importOpenitiHadith(client, MUSANNAF);
+    await importOpenitiHadith(client, MUSTADRAK);
     await applyDraftsAfterImport(client);
     for (const src of EXTERNAL_SOURCES) await importExternal(client, src);
     for (const src of EXTERNAL_ADDITIONS) await importExternalAdditions(client, src);
