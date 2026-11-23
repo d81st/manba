@@ -1,4 +1,5 @@
-import { getMessages } from "@/shared/i18n";
+import { getMessages, plural } from "@/shared/i18n";
+import { Reveal } from "@/shared/ui/reveal";
 import type { PublicTopic } from "../../topic.types";
 import { Chips } from "./chips";
 import { SectionHeading } from "./section-heading";
@@ -11,11 +12,10 @@ const t = getMessages().topics;
 export function RelatedRefsSection({ topic }: { topic: PublicTopic }) {
   if (topic.relatedRefs.length === 0 && topic.relatedHadiths.length === 0) return null;
   return (
-    <section id="related" className="scroll-mt-4">
-      <SectionHeading>{t.relatedRefs}</SectionHeading>
+    <Reveal id="related" title={t.relatedRefs} count={plural(topic.relatedRefs.length + topic.relatedHadiths.length, t.counts.refs)}>
       {topic.relatedRefs.length > 0 && <AyahList ayahs={topic.relatedRefs} compact />}
       {topic.relatedHadiths.length > 0 && <HadithRefList hadiths={topic.relatedHadiths} className="mt-3" />}
-    </section>
+    </Reveal>
   );
 }
 

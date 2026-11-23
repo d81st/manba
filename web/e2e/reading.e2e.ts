@@ -40,6 +40,9 @@ test.describe("reading", () => {
     await page.getByRole("link", { name: "Райхана", exact: true }).first().click();
     await page.getByRole("button", { name: "Открыть на сайте" }).click();
     await page.waitForURL(/\/topics\/rayhana\?drafts=1/);
+    // The full positions are a second level: the board opens one by its link.
+    await page.locator("#positions nav a[href='#position-0-0']").click();
+    await expect(page.locator("#position-0-0")).toBeVisible();
     const quote = page.locator("#positions a.quote-link").first();
     await expect(quote).toBeVisible();
     const words = (await quote.innerText()).trim();
@@ -61,6 +64,7 @@ test.describe("reading", () => {
     await page.getByRole("link", { name: "Райхана", exact: true }).first().click();
     await page.getByRole("button", { name: "Открыть на сайте" }).click();
     await page.waitForURL(/\/topics\/rayhana\?drafts=1/);
+    await page.locator("#versions summary").click();
     const table = page.locator("#versions table");
     await expect(table).toBeVisible();
     await expect(table.getByRole("rowheader", { name: "Предложение брака" })).toBeVisible();
@@ -78,7 +82,8 @@ test.describe("reading", () => {
     await expect(page.getByRole("heading", { name: "Места на карте" })).toBeVisible();
     await page.getByRole("button", { name: "Открыть на сайте" }).click();
     await page.waitForURL(/\/topics\/caucasus-conquest\?drafts=1/);
-    const map = page.locator("#map svg");
+    await page.locator("#map summary").click();
+    const map = page.locator("#map svg[role=img]");
     await expect(map).toBeVisible();
     await expect(map.locator("text", { hasText: "Тифлис" })).toBeVisible();
     await expect(map.locator("text", { hasText: "Баб аль-Абваб (Дербент)" })).toBeVisible();

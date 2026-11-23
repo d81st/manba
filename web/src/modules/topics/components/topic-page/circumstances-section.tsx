@@ -1,5 +1,6 @@
 import { LinkedParagraphs, LinkedText } from "@/shared/content/linked-text";
-import { getMessages } from "@/shared/i18n";
+import { getMessages, plural } from "@/shared/i18n";
+import { Reveal } from "@/shared/ui/reveal";
 import type { PublicTopic } from "../../topic.types";
 import { SectionHeading } from "./section-heading";
 import { AyahList } from "@/modules/quran";
@@ -17,8 +18,19 @@ export function CircumstancesSection({ topic }: { topic: PublicTopic }) {
     <section id="circumstances" className="scroll-mt-4">
       <SectionHeading>{t.circumstances}</SectionHeading>
       {circumstances && <LinkedParagraphs text={circumstances} quotes={topic.circumstancesQuotes} quoteTitle={t.quoteLink} />}
-      {circumstancesRefs.length > 0 && <AyahList ayahs={circumstancesRefs} compact className="mt-3" />}
-      {circumstancesHadiths.length > 0 && <HadithRefList hadiths={circumstancesHadiths} className="mt-3" />}
+      {/* The paragraph stays in view (no text without its context); the passages
+          it cites, in full, open on request. */}
+      {(circumstancesRefs.length > 0 || circumstancesHadiths.length > 0) && (
+        <Reveal
+          id="circumstances-texts"
+          className="mt-3"
+          title={t.circumstancesTexts}
+          count={plural(circumstancesRefs.length + circumstancesHadiths.length, t.counts.refs)}
+        >
+          {circumstancesRefs.length > 0 && <AyahList ayahs={circumstancesRefs} compact />}
+          {circumstancesHadiths.length > 0 && <HadithRefList hadiths={circumstancesHadiths} className="mt-3" />}
+        </Reveal>
+      )}
       {circumstancesNote && (
         <p className="mt-3 text-sm text-muted-foreground">
           {t.sourceNote}: <LinkedText text={circumstancesNote} />

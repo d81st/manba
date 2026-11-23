@@ -1,7 +1,7 @@
 import { type MapView, RegionMap } from "@/shared/content/region-map";
-import { getMessages } from "@/shared/i18n";
+import { getMessages, plural } from "@/shared/i18n";
+import { Reveal } from "@/shared/ui/reveal";
 import type { SiraPlace } from "@/modules/sira";
-import { SectionHeading } from "./section-heading";
 
 const t = getMessages().topics;
 
@@ -65,8 +65,7 @@ export function MapSection({ places }: { places: SiraPlace[] }) {
   const view = drawn.length > 0 ? viewOf(drawn) : null;
   const labels = view ? labelsFor(drawn, view) : [];
   return (
-    <section id="map" className="scroll-mt-4">
-      <SectionHeading>{t.map}</SectionHeading>
+    <Reveal id="map" title={t.map} count={plural(places.length, t.counts.places)}>
       {view && (
         <div className="max-w-2xl overflow-hidden rounded-xl border bg-sira-sea">
           <RegionMap
@@ -96,7 +95,7 @@ export function MapSection({ places }: { places: SiraPlace[] }) {
         ))}
       </ul>
       <p className="mt-2 text-xs text-muted-foreground">{t.mapCredit}</p>
-    </section>
+    </Reveal>
   );
 }
 

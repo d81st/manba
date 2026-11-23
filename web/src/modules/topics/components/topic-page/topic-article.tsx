@@ -1,4 +1,5 @@
-import { getMessages } from "@/shared/i18n";
+import { getMessages, plural } from "@/shared/i18n";
+import { Reveal } from "@/shared/ui/reveal";
 import type { GraphData } from "@/shared/graph/graph.types";
 import type { PublicTopic, TopicPlace } from "../../topic.types";
 import { TopicBadge } from "../topic-badges";
@@ -15,6 +16,7 @@ import { type PublicVideo, VideoList } from "@/modules/videos";
 import { TopicTimeline } from "@/modules/sira";
 
 const t = getMessages().topics;
+const videosTitle = getMessages().videos.title;
 
 // A published topic: the texts in full, their circumstances, the positions of
 // all sides, related places, videos and links. Data comes from the page.
@@ -60,9 +62,9 @@ export function TopicArticle({
         <PositionsSection sides={topic.sides} />
         <RelatedRefsSection topic={topic} />
         {videos.length > 0 && (
-          <div id="videos" className="scroll-mt-4">
-            <VideoList videos={videos} />
-          </div>
+          <Reveal id="videos" title={videosTitle} count={plural(videos.length, t.counts.videos)}>
+            <VideoList videos={videos} bare />
+          </Reveal>
         )}
         <LinksSection topic={topic} />
       </article>

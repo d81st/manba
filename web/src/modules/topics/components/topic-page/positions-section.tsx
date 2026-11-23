@@ -1,6 +1,7 @@
 import { LinkedParagraphs, LinkedText } from "@/shared/content/linked-text";
 import { Badge } from "@/shared/ui/badge";
-import { getMessages } from "@/shared/i18n";
+import { getMessages, plural } from "@/shared/i18n";
+import { Reveal } from "@/shared/ui/reveal";
 import type { PublicPosition, PublicTopic } from "../../topic.types";
 import { SectionHeading } from "./section-heading";
 import { AyahList } from "@/modules/quran";
@@ -20,15 +21,16 @@ export function PositionsSection({ sides }: { sides: PublicTopic["sides"] }) {
       ) : (
         <div className="space-y-6">
           <SideBoard sides={sides} />
+          {/* The full quotations of every side open the same way: no side is
+              kept deeper than another. */}
           {sides.map((side, i) => (
-            <div key={side.title} id={`side-${i}`} className="scroll-mt-4">
-              <h3 className="mb-2 font-semibold">{side.title}</h3>
+            <Reveal key={side.title} id={`side-${i}`} remember="side" title={side.title} count={plural(side.positions.length, t.counts.positions)}>
               <ul className="space-y-4">
                 {side.positions.map((position, j) => (
                   <PositionCard key={j} id={`position-${i}-${j}`} position={position} />
                 ))}
               </ul>
-            </div>
+            </Reveal>
           ))}
         </div>
       )}
@@ -89,9 +91,12 @@ function PositionCard({ id, position }: { id: string; position: PublicPosition }
       {position.refs.length > 0 && <AyahList ayahs={position.refs} compact className="mt-3" />}
       {position.hadiths.length > 0 && <HadithRefList hadiths={position.hadiths} className="mt-3" />}
       {position.sourceNote && (
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t.sourceNote}: <LinkedText text={position.sourceNote} />
-        </p>
+        <details className="mt-2 text-sm text-muted-foreground">
+          <summary className="cursor-pointer">{t.sourceNoteOpen}</summary>
+          <p className="mt-1">
+            {t.sourceNote}: <LinkedText text={position.sourceNote} />
+          </p>
+        </details>
       )}
     </li>
   );

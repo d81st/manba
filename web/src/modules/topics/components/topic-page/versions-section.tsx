@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { getMessages } from "@/shared/i18n";
+import { getMessages, plural } from "@/shared/i18n";
+import { Reveal } from "@/shared/ui/reveal";
 import type { TopicVersions, VersionCell } from "../../topic.types";
-import { SectionHeading } from "./section-heading";
 
 const t = getMessages().topics;
 
@@ -12,8 +12,7 @@ const t = getMessages().topics;
 // sideways; a phone, one card per point.
 export function VersionsSection({ versions }: { versions: TopicVersions }) {
   return (
-    <section id="versions" className="scroll-mt-4">
-      <SectionHeading>{t.versions}</SectionHeading>
+    <Reveal id="versions" title={t.versions} count={plural(versions.rows.length, t.counts.questions)}>
       <p className="mb-3 text-sm text-muted-foreground">{t.versionsHint}</p>
 
       <div className="hidden overflow-x-auto rounded-xl border bg-card md:block">
@@ -66,7 +65,7 @@ export function VersionsSection({ versions }: { versions: TopicVersions }) {
           </li>
         ))}
       </ol>
-    </section>
+    </Reveal>
   );
 }
 

@@ -8,7 +8,18 @@ const t = getMessages().videos;
 
 // Videos next to a fragment or a topic: links out, never embedded (the
 // platform would learn who reads what), marked as additional material.
-export function VideoList({ videos, compact = false, className }: { videos: PublicVideo[]; compact?: boolean; className?: string }) {
+// bare: only the hint and the list, for a block that has its own heading.
+export function VideoList({
+  videos,
+  compact = false,
+  bare = false,
+  className,
+}: {
+  videos: PublicVideo[];
+  compact?: boolean;
+  bare?: boolean;
+  className?: string;
+}) {
   if (videos.length === 0) return null;
   const items = (
     <ul className="space-y-2">
@@ -35,6 +46,14 @@ export function VideoList({ videos, compact = false, className }: { videos: Publ
       ))}
     </ul>
   );
+  if (bare) {
+    return (
+      <div className={cn("text-sm", className)}>
+        <p className="mb-2 text-xs text-muted-foreground">{t.hint}</p>
+        {items}
+      </div>
+    );
+  }
   if (compact) {
     return (
       <details className={cn("text-sm", className)}>

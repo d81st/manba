@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getMessages } from "@/shared/i18n";
+import { getMessages, plural } from "@/shared/i18n";
+import { Reveal } from "@/shared/ui/reveal";
 import { approxCommonEra, formatReading, monthsFromHijra } from "../sira.dates";
 import type { SiraEvent } from "../sira.types";
 import { SOURCE_WORKS, sortDates, SourceDot, sourceColor, sourceLabel, SourceLink, workOf } from "./sira-sources";
@@ -25,8 +26,7 @@ export function TopicTimeline({ events, suffix }: { events: SiraEvent[]; suffix:
   const height = TOP + dated.length * ROW + 10;
 
   return (
-    <section id="timeline" className="scroll-mt-4">
-      <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">{t.topicTimeline.title}</h2>
+    <Reveal id="timeline" title={t.topicTimeline.title} count={plural(events.length, t.mapPage.events)}>
       <p className="mb-3 text-sm text-muted-foreground">{t.topicTimeline.hint}</p>
       {dated.length > 0 && (
         <div className="overflow-x-auto rounded-xl border bg-card p-2">
@@ -100,6 +100,6 @@ export function TopicTimeline({ events, suffix }: { events: SiraEvent[]; suffix:
       <p className="mt-2 text-sm">
         <Link href={`/sira/timeline${suffix}`}>{t.topicTimeline.open} →</Link>
       </p>
-    </section>
+    </Reveal>
   );
 }
