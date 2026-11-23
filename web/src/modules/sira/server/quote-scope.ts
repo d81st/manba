@@ -12,8 +12,10 @@ export async function passageForQuote(client: pg.PoolClient, address: string): P
   const { rows } = await client.query<{ known: boolean; n: number; text: string | null }>(
     `WITH scope AS (
        SELECT t.address, t.content
-       FROM texts t
-       WHERE t.address <@ $1::extensions.ltree
+       FROM addresses a
+       -- Descendants through addresses, whose GiST index serves <@ (texts has none).
+       JOIN texts t ON t.address = a.address
+       WHERE a.address <@ $1::extensions.ltree
        ORDER BY t.address
        LIMIT $2
      )

@@ -1,10 +1,7 @@
-import { SiteHeader } from "@/shared/layout/site-header";
+import { SiteShell } from "@/shared/layout/site-shell";
 
 export default function HistoryLayout({ children }: LayoutProps<"/history">) {
   return (
-    <>
-      <SiteHeader />
-      {children}
-    </>
+    <SiteShell>{children}</SiteShell>
   );
 }

@@ -6,7 +6,7 @@ const videosTitle = getMessages().videos.title;
 const siraTimeline = getMessages().sira.topicTimeline.title;
 
 // The sections of a topic, so a long page of positions can be opened by side
-// instead of scrolled through. On a wide screen it stays in view.
+// instead of scrolled through. On a wide screen it stays in view on the right.
 export function TopicContents({ topic, hasVideos }: { topic: PublicTopic; hasVideos: boolean }) {
   const items: { href: string; label: string }[] = [];
   if (topic.places.length > 0) items.push({ href: "#map", label: t.map });
@@ -24,9 +24,9 @@ export function TopicContents({ topic, hasVideos }: { topic: PublicTopic; hasVid
   if (items.length < 2) return null;
 
   return (
-    <nav aria-label={t.contents} className="sticky top-0 z-30 -mx-1 bg-background/95 py-2 backdrop-blur lg:top-4 lg:z-auto lg:mx-0 lg:bg-transparent lg:py-0 lg:backdrop-blur-none">
-      <p className="mb-2 hidden text-sm font-medium text-muted-foreground lg:block">{t.contents}</p>
-      <ul className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+    <nav aria-label={t.contents} className="sticky top-0 z-30 -mx-1 bg-background/95 py-2 backdrop-blur xl:static xl:z-auto xl:mx-0 xl:bg-transparent xl:py-0 xl:backdrop-blur-none">
+      <p className="mb-2 hidden text-sm font-medium text-muted-foreground xl:block">{t.contents}</p>
+      <ul className="flex gap-2 overflow-x-auto xl:flex-col xl:overflow-visible">
         {items.map((item) => (
           <li key={item.href} className="shrink-0">
             <a href={item.href} className="block rounded-md px-2 py-1 text-sm hover:bg-muted">

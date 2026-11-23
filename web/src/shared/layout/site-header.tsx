@@ -10,10 +10,11 @@ import { LanguageSwitch } from "@/shared/layout/language-switch";
 
 const t = getMessages();
 
-export function SiteHeader() {
+export function SiteHeader({ menu }: { menu?: React.ReactNode } = {}) {
   return (
     <header className="overflow-x-clip border-b bg-card">
-      <div className="mx-auto flex w-full min-w-0 max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+      <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-3 px-4 py-3">
+        {menu}
         <Link href="/" className="flex flex-col text-foreground no-underline">
           <span className="text-lg font-semibold leading-tight">{t.appName}</span>
           <span className="text-sm text-muted-foreground">{t.appTagline}</span>

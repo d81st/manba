@@ -85,6 +85,28 @@ test.describe("reading", () => {
     expect(errors).toEqual([]);
   });
 
+  test("the panel on the left leads to the sections and marks the one being read; on a phone it opens from Menu", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.goto("/glossary");
+    const panel = page.getByRole("navigation", { name: "Разделы сайта" }).filter({ visible: true });
+    await panel.getByRole("link", { name: "Хадисы" }).click();
+    await expect(page).toHaveURL(/\/hadith$/);
+    await panel.getByRole("link", { name: "Бухари" }).click();
+    await expect(page).toHaveURL(/\/hadith\/bukhari$/);
+    await expect(panel.getByRole("link", { name: "Бухари" })).toHaveAttribute("aria-current", "page");
+    await panel.getByRole("searchbox", { name: "Найти раздел" }).fill("словарь");
+    await expect(panel.getByRole("link", { name: "Словарь терминов" })).toBeVisible();
+    await expect(panel.getByRole("link", { name: "Бухари" })).toHaveCount(0);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole("button", { name: "Меню" }).click();
+    const menu = page.getByRole("dialog", { name: "Разделы сайта" });
+    await menu.getByRole("link", { name: "Словарь терминов" }).click();
+    await expect(page).toHaveURL(/\/glossary$/);
+    await expect(menu).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+
   test("the sura strip keeps the ayahs and opens another sura", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/quran/36");

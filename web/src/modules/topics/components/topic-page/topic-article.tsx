@@ -34,8 +34,12 @@ export function TopicArticle({
   notice?: React.ReactNode;
 }) {
   return (
-    <div className="mt-3 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-start lg:gap-8">
-      <TopicContents topic={topic} hasVideos={videos.length > 0} />
+    // The page's own contents stand on the right of the text on a wide screen
+    // (the left belongs to the tree of the site); on a narrow one, a strip above it.
+    <div className="mt-3 xl:grid xl:grid-cols-[minmax(0,1fr)_13rem] xl:items-start xl:gap-8">
+      <div className="xl:sticky xl:top-4 xl:order-last">
+        <TopicContents topic={topic} hasVideos={videos.length > 0} />
+      </div>
       <article id="top" className="min-w-0 scroll-mt-4 space-y-8">
         {notice}
         <header className="space-y-2 border-b pb-4">

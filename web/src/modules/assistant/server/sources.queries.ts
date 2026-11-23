@@ -85,9 +85,12 @@ export async function sources(concepts: Concept[], refs: string[]) {
     const { rows } = await db().query<TextRow>(
       `SELECT DISTINCT ON (t.address) t.address::text, t.content AS text, w.id AS work, w.titles->>'ru' AS title,
               w.titles->>'ru-short' AS short, w.authority_sunni AS sunni, w.authority_shia AS shia
-       FROM texts t JOIN text_versions v ON v.id = t.version_id AND v.status = 'published' AND v.is_primary AND v.language = 'ar'
+       FROM unnest($1::extensions.ltree[]) AS u(ad)
+       -- Descendants through addresses, whose GiST index serves <@ (texts has none).
+       JOIN addresses a ON a.address <@ u.ad
+       JOIN texts t ON t.address = a.address
+       JOIN text_versions v ON v.id = t.version_id AND v.status = 'published' AND v.is_primary AND v.language = 'ar'
        JOIN works w ON w.id = v.work_id
-       WHERE t.address <@ ANY ($1::extensions.ltree[])
        ORDER BY t.address`,
       [missing],
     );
