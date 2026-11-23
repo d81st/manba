@@ -10,6 +10,7 @@ import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
 import { ceLabel } from "@/modules/history";
 import { listHistoryForAdmin } from "@/modules/history/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.admin.history;
@@ -25,7 +26,7 @@ export default function AdminHistoryPage() {
         <Link href="/admin">← {messages.admin.title}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <Link href="/admin/history/new">+ {t.add}</Link>
         <PreviewLink href="/history">{t.preview}</PreviewLink>

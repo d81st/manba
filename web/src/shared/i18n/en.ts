@@ -62,6 +62,8 @@ export const en: Messages = {
   forms: {
     optional: "(optional)",
     showPassword: "Show the password",
+    readMore: "Read more",
+    readLess: "Show less",
   },
   nav: {
     signOut: "Sign out",
@@ -86,6 +88,7 @@ export const en: Messages = {
     adminPeople: "People",
     adminHome: "Admin home",
     toSite: "To the site",
+    topics: "Topics",
   },
   admin: {
     ...accountsAdminEn,

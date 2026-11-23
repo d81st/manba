@@ -22,7 +22,7 @@ import {
 import Link from "next/link";
 import { ContinueReading } from "@/modules/bookmarks";
 import { Page } from "@/shared/layout/page";
-import { SiteHeader } from "@/shared/layout/site-header";
+import { SiteShell } from "@/shared/layout/site-shell";
 import { Badge } from "@/shared/ui/badge";
 import { getMessages, type Messages } from "@/shared/i18n";
 import { cn } from "@/shared/ui/utils";
@@ -78,8 +78,7 @@ export default function Home() {
   const sections = Object.entries(t.home.sections) as [SectionKey, string][];
 
   return (
-    <>
-      <SiteHeader />
+    <SiteShell>
       <Page>
         <ContinueReading />
         <p className="mt-8 max-w-3xl text-muted-foreground">{t.home.start}</p>
@@ -95,11 +94,8 @@ export default function Home() {
                   <span>{name}</span>
                   <span className="text-sm text-muted-foreground">{t.home.hints[key]}</span>
                 </span>
-                {href ? (
-                  <Badge>{t.home.open}</Badge>
-                ) : (
-                  <Badge variant="secondary">{t.home.soon}</Badge>
-                )}
+                {/* The card itself is the link; only a section to come says so. */}
+                {!href && <Badge variant="secondary">{t.home.soon}</Badge>}
               </>
             );
             const box = "flex h-full items-center gap-3 rounded-xl border bg-card p-4 text-card-foreground shadow-sm";
@@ -120,6 +116,6 @@ export default function Home() {
           })}
         </ul>
       </Page>
-    </>
+    </SiteShell>
   );
 }

@@ -8,6 +8,7 @@ import { acquireHeavyForSession } from "@/shared/load-session";
 import { ask, recordMiss } from "@/modules/assistant/server";
 import { MAX_QUESTION } from "@/modules/assistant";
 import { Answer, AskForm, Examples } from "@/modules/assistant";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.assistant;
@@ -22,7 +23,7 @@ export default function AssistantPage({ searchParams }: PageProps<"/assistant">)
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">{messages.hadith.loading}</p>}>
         <Assistant searchParams={searchParams} />
       </Suspense>

@@ -141,7 +141,8 @@ function Sources({ title, hits }: { title: string; hits: SourceHit[] }) {
           <li key={s.address} className="flex flex-col gap-1 border-b py-3 sm:flex-row sm:items-baseline sm:gap-4">
             <Link href={s.href} className="min-w-28 shrink-0 text-xs tabular-nums text-muted-foreground no-underline">
               {s.label}
-              <span className="block">{s.title}</span>
+              {/* "Абу Дауд 253" already names the book: the title is not repeated under it. */}
+              {!s.label.startsWith(s.title) && <span className="block">{s.title}</span>}
               {s.level !== null && <span className="block">{t.level.replace("{n}", String(s.level))}</span>}
               {s.concepts.length > 1 && <span className="block">{t.matched.replace("{n}", String(s.concepts.length))}</span>}
             </Link>

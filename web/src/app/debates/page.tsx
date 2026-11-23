@@ -10,6 +10,7 @@ import { Page } from "@/shared/layout/page";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import type { DebateListItem } from "@/modules/debates";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.debates;
@@ -27,7 +28,7 @@ export default function DebatesPage() {
           <Link href="/debates/new">{t.new}</Link>
         </Button>
       </div>
-      <p className="mt-2 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-2">{t.intro}</Lead>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>
         <Lists />
       </Suspense>

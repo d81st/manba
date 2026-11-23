@@ -11,6 +11,7 @@ import { requireAdmin } from "@/shared/auth/auth";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
 import { getSiraForAdmin } from "@/modules/sira/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.admin.sira;
@@ -26,7 +27,7 @@ export default function SiraAdminPage() {
         <Link href="/admin">← {messages.admin.title}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <p className="mt-2 flex flex-wrap gap-x-4 text-sm">
         <PreviewLink href="/sira/timeline">{messages.sira.views.timeline}</PreviewLink>
         <PreviewLink href="/sira/map">{messages.sira.views.map}</PreviewLink>

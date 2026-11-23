@@ -9,6 +9,7 @@ import { isPreview } from "@/shared/auth/preview";
 import { PreviewNote } from "@/shared/layout/preview";
 import { PlaceCard, type SiraEvent, SiraNav } from "@/modules/sira";
 import { getSiraData } from "@/modules/sira/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -57,7 +58,7 @@ async function SiraMap({ searchParams }: Pick<PageProps<"/sira/map">, "searchPar
       <SiraNav path="/sira/map" preview={preview} />
       <PreviewNote preview={preview} />
       <h1 className="mt-4 text-2xl font-semibold">{t.mapPage.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.mapPage.intro}</p>
+      <Lead className="mt-1">{t.mapPage.intro}</Lead>
       {events.length === 0 && <p className="mt-6 text-muted-foreground">{t.empty}</p>}
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">

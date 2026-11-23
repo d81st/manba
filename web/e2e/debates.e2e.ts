@@ -93,7 +93,7 @@ test("a debate is accepted, cited, checked and published beside the ayah", async
   await page.goto("/quran/2#2-255");
   await expect(page.getByRole("link", { name: question })).toBeVisible();
   await page.goto("/");
-  await expect(page.getByRole("link", { name: "Дебаты" })).toBeVisible();
+  await expect(page.locator("main").getByRole("link", { name: "Дебаты" })).toBeVisible();
 
   // A badge is a div. Nested in a paragraph, the browser rewrites the markup
   // and React reports a hydration error. These pages must stay quiet.

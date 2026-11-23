@@ -10,6 +10,7 @@ import { listPublishedTopics } from "@/modules/topics/server";
 import { SIRA_PERIODS, SIRA_WORK } from "@/modules/sira";
 import { getBookWork } from "@/modules/library/server";
 import { BookSearchForm } from "@/modules/library";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -33,7 +34,7 @@ export default function SiraPage() {
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <ul className="mt-6 grid gap-3 sm:grid-cols-3">
         {VIEWS.map(({ href, icon: Icon, title, hint }) => (
           <li key={href}>

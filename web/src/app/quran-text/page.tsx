@@ -7,6 +7,7 @@ import { Page } from "@/shared/layout/page";
 import { getMessages } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
 import { listPublishedTopics } from "@/modules/topics/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.quranText;
@@ -31,7 +32,7 @@ export default function QuranTextPage() {
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <h2 className="mt-8 mb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
         {t.topics}
       </h2>

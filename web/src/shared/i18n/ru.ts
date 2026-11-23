@@ -62,6 +62,8 @@ export const ru = {
   forms: {
     optional: "(необязательно)",
     showPassword: "Показать пароль",
+    readMore: "Читать дальше",
+    readLess: "Свернуть",
   },
   nav: {
     signOut: "Выйти",
@@ -86,6 +88,7 @@ export const ru = {
     adminPeople: "Люди",
     adminHome: "Начало админки",
     toSite: "На сайт",
+    topics: "Темы",
   },
   admin: {
     ...accountsAdminRu,

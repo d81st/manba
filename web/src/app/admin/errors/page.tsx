@@ -8,6 +8,7 @@ import { requireAdmin } from "@/shared/auth/auth";
 import { getMessages, plural } from "@/shared/i18n";
 import { Page } from "@/shared/layout/page";
 import { Button } from "@/shared/ui/button";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.admin.siteErrors;
@@ -25,7 +26,7 @@ export default function AdminErrorsPage() {
         <Link href="/admin">← {messages.admin.title}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro.replace("{days}", String(KEEP_DAYS))}</p>
+      <Lead className="mt-1">{t.intro.replace("{days}", String(KEEP_DAYS))}</Lead>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>
         <Errors />
       </Suspense>

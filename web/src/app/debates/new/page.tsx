@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ProposeForm } from "@/modules/debates";
 import { getMessages } from "@/shared/i18n";
 import { Page } from "@/shared/layout/page";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.debates;
@@ -18,7 +19,7 @@ export default function NewDebatePage() {
         <Link href="/debates">← {t.back}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">{t.new}</h1>
-      <p className="mt-2 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-2">{t.intro}</Lead>
       <ProposeForm />
     </Page>
   );

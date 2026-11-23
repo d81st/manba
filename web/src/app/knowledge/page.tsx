@@ -6,6 +6,7 @@ import { getKnowledgeMap } from "@/modules/knowledge/server";
 import { isDatabaseConfigured } from "@/shared/db";
 import { getMessages } from "@/shared/i18n";
 import { Page } from "@/shared/layout/page";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.knowledge;
@@ -18,7 +19,7 @@ export default function KnowledgePage() {
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">…</p>}>
         <Knowledge />
       </Suspense>

@@ -8,6 +8,7 @@ import { getMessages, plural } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
 import { isExternal } from "@/shared/addresses/external";
 import { getExternalContents } from "@/modules/library/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.external;
@@ -38,7 +39,7 @@ async function Contents({ params }: Pick<PageProps<"/external/[work]">, "params"
   return (
     <>
       <h1 className="mt-3 text-2xl font-semibold">{t.works[work]}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.hints[work]}</p>
+      <Lead className="mt-1">{t.hints[work]}</Lead>
       <ol className="mt-6 grid gap-3 sm:grid-cols-2">
         {books.map((book) => (
           <li key={book.n} className="rounded-xl border bg-card px-4 py-3 text-card-foreground shadow-sm">

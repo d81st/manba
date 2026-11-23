@@ -31,7 +31,7 @@ export function siteNav(): NavGroup[] {
       items: [
         {
           href: "/topics",
-          label: s.encyclopedia,
+          label: n.topics,
           children: [
             { href: "/topics", label: n.allTopics },
             { href: "/topics?category=hard", label: s.hardTopics },

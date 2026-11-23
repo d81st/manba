@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Page } from "@/shared/layout/page";
 import { getMessages } from "@/shared/i18n";
 import { EXTERNAL_IDS } from "@/shared/addresses/external";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.external;
@@ -18,7 +19,7 @@ export default function ExternalPage() {
         <Link href="/origins">← {messages.origins.title}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <ul className="mt-6 mb-8 grid gap-3 sm:grid-cols-3">
         {EXTERNAL_IDS.map((work) => (
           <li key={work}>

@@ -9,6 +9,7 @@ import { isPreview } from "@/shared/auth/preview";
 import { PreviewNote } from "@/shared/layout/preview";
 import { formatReading, monthsFromHijra, type SiraEvent, SiraNav, SiraTimelineChart, SiraTimelineLegend, sortDates, SourceDot, sourceLabel } from "@/modules/sira";
 import { getSiraData } from "@/modules/sira/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -43,7 +44,7 @@ async function Timeline({ searchParams }: Pick<PageProps<"/sira/timeline">, "sea
       <SiraNav path="/sira/timeline" preview={preview} />
       <PreviewNote preview={preview} />
       <h1 className="mt-4 text-2xl font-semibold">{t.timelinePage.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.timelinePage.intro}</p>
+      <Lead className="mt-1">{t.timelinePage.intro}</Lead>
       <SiraTimelineLegend />
       {events.length === 0 && <p className="mt-6 text-muted-foreground">{t.empty}</p>}
 

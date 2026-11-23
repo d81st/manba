@@ -11,6 +11,7 @@ import { listPublishedTopics, listTopicsForAdmin } from "@/modules/topics/server
 import { isPreview } from "@/shared/auth/preview";
 import { PreviewBar } from "@/shared/layout/preview";
 import { getSiraData } from "@/modules/sira/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.cities;
@@ -25,7 +26,7 @@ export default function CitiesPage({ searchParams }: PageProps<"/cities">) {
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">{messages.hadith.loading}</p>}>
         <Cities searchParams={searchParams} />
       </Suspense>

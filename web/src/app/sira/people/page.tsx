@@ -8,6 +8,7 @@ import { isPreview } from "@/shared/auth/preview";
 import { forceLayout, pageOf, PeopleGraph, SiraNav } from "@/modules/sira";
 import { PreviewNote } from "@/shared/layout/preview";
 import { getCoMentions, getSiraData } from "@/modules/sira/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.sira;
@@ -52,7 +53,7 @@ async function People({ searchParams }: Pick<PageProps<"/sira/people">, "searchP
       <SiraNav path="/sira/people" preview={preview} />
       <PreviewNote preview={preview} />
       <h1 className="mt-4 text-2xl font-semibold">{t.peoplePage.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.peoplePage.intro}</p>
+      <Lead className="mt-1">{t.peoplePage.intro}</Lead>
       {people.length === 0 ? (
         <p className="mt-6 text-muted-foreground">{t.empty}</p>
       ) : (

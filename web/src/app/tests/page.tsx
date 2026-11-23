@@ -9,6 +9,7 @@ import { levelKey, QuizList } from "@/modules/quiz";
 import { getQuizQuestions } from "@/modules/quiz/server";
 import { isPreview } from "@/shared/auth/preview";
 import { PreviewBar } from "@/shared/layout/preview";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.tests;
@@ -24,7 +25,7 @@ export default function TestsPage({ searchParams }: PageProps<"/tests">) {
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">{messages.hadith.loading}</p>}>
         <Tests searchParams={searchParams} />
       </Suspense>

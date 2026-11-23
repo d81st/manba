@@ -11,6 +11,7 @@ import { requireAdmin } from "@/shared/auth/auth";
 import { PreviewLink } from "../preview-link";
 import { StatusBadge } from "../status-badge";
 import { listParallelsForAdmin } from "@/modules/origins/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.admin.origins;
@@ -35,7 +36,7 @@ export default function OriginsAdminPage() {
           </Link>
         </Button>
       </div>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <p className="mt-2 text-sm">
         <PreviewLink href="/origins">{t.preview}</PreviewLink>
       </p>

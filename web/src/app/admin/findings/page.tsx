@@ -9,6 +9,7 @@ import { requireAdmin } from "@/shared/auth/auth";
 import { cn } from "@/shared/ui/utils";
 import { FINDING_STATUSES, foundLabel } from "@/modules/findings";
 import { listFindings } from "@/modules/findings/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.admin.findings;
@@ -24,7 +25,7 @@ export default function AdminFindingsPage({ searchParams }: PageProps<"/admin/fi
         <Link href="/admin">← {messages.admin.title}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <div className="mt-4 flex flex-wrap gap-4 text-sm">
         <Link href="/admin/findings/new">+ {t.add}</Link>
         <Link href="/not-found-in-sources">{messages.notFoundInSources.title}</Link>

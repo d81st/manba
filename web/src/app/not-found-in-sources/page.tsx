@@ -6,6 +6,7 @@ import { getMessages } from "@/shared/i18n";
 import { isDatabaseConfigured } from "@/shared/db";
 import { NotFoundList } from "@/modules/findings";
 import { listPublicNotFound } from "@/modules/findings/server";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.notFoundInSources;
@@ -20,7 +21,7 @@ export default function NotFoundInSourcesPage() {
   return (
     <Page>
       <h1 className="mt-8 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <Suspense fallback={<p className="mt-6 text-muted-foreground">{messages.hadith.loading}</p>}>
         <List />
       </Suspense>

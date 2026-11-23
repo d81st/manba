@@ -10,6 +10,7 @@ import { cn } from "@/shared/ui/utils";
 import { StatusBadge } from "../status-badge";
 import { listVideos } from "@/modules/videos/server";
 import { CheckLinks, VIDEO_STATUSES } from "@/modules/videos";
+import { Lead } from "@/shared/ui/lead";
 
 const messages = getMessages();
 const t = messages.admin.videos;
@@ -25,7 +26,7 @@ export default function AdminVideosPage({ searchParams }: PageProps<"/admin/vide
         <Link href="/admin">← {messages.admin.title}</Link>
       </nav>
       <h1 className="mt-3 text-2xl font-semibold">{t.title}</h1>
-      <p className="mt-1 max-w-3xl text-muted-foreground">{t.intro}</p>
+      <Lead className="mt-1">{t.intro}</Lead>
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
         <Link href="/admin/videos/new">+ {t.add}</Link>
         <CheckLinks t={t} />
