@@ -9,6 +9,7 @@ import { Picker } from "./picker";
 
 // Related places in the library, glossary terms and related topics.
 export function LinksCard({
+  step,
   form,
   set,
   errorOf,
@@ -16,6 +17,7 @@ export function LinksCard({
   topicChoices,
   f,
 }: {
+  step?: string;
   form: TopicInput;
   set: SetField;
   errorOf: ErrorOf;
@@ -26,7 +28,10 @@ export function LinksCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{f.relatedRefs}</CardTitle>
+        <CardTitle>
+          {step && <span className="mb-1 block text-sm font-normal text-muted-foreground">{step}</span>}
+          {f.relatedRefs}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <Field id="relatedRefs" label={f.relatedRefs} hint={f.relatedRefsHint} error={errorOf("relatedRefs")} wide>

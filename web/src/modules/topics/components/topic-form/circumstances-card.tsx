@@ -9,11 +9,13 @@ import type { ErrorOf, FormStrings, SetField } from "./form-types";
 
 // Circumstances of the texts: the account itself, its references and the source note.
 export function CircumstancesCard({
+  step,
   form,
   set,
   errorOf,
   f,
 }: {
+  step?: string;
   form: TopicInput;
   set: SetField;
   errorOf: ErrorOf;
@@ -22,7 +24,10 @@ export function CircumstancesCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{f.circumstances}</CardTitle>
+        <CardTitle>
+          {step && <span className="mb-1 block text-sm font-normal text-muted-foreground">{step}</span>}
+          {f.circumstances}
+        </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2">
         <Field id="circumstances" label={f.circumstances} hint={f.circumstancesHint} error={errorOf("circumstances")} wide>

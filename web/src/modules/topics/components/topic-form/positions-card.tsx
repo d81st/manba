@@ -20,12 +20,14 @@ export function withKeys(positions: Omit<Position, "key">[]): Position[] {
 
 // Positions of the sides: who holds the view, how widely it is recognised, its text and references.
 export function PositionsCard({
+  step,
   positions,
   setPositions,
   sides,
   errorOf,
   t,
 }: {
+  step?: string;
   positions: Position[];
   setPositions: Dispatch<SetStateAction<Position[]>>;
   sides: { id: number; title: string }[];
@@ -46,7 +48,10 @@ export function PositionsCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{f.positions}</CardTitle>
+        <CardTitle>
+          {step && <span className="mb-1 block text-sm font-normal text-muted-foreground">{step}</span>}
+          {f.positions}
+        </CardTitle>
         <p className="text-sm text-muted-foreground">{f.positionsHint}</p>
       </CardHeader>
       <CardContent className="space-y-4">

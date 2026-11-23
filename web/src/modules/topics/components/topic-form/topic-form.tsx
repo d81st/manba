@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlert, CircleCheck, Trash2 } from "lucide-react";
+import { CircleAlert, Trash2 } from "lucide-react";
 import { startTransition, useActionState, useState, useTransition } from "react";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
@@ -68,6 +68,13 @@ export function TopicForm({
     problem &&
     `${t.topicErrors[problem.code as keyof typeof t.topicErrors] ?? t.topicErrors.invalid}${problem.detail ? `: ${problem.detail}` : ""}`;
   const errorOf = (field: string) => message(state.problems.find((p) => p.field === field));
+  // The box a problem is about: "mainRefs" -> #mainRefs, "positions.2.text" -> #text-<key of the third position>.
+  const fieldId = (field: string) => {
+    const m = field.match(/^positions\.(\d+)\.(holder|text|refs)$/);
+    if (m) return positions[Number(m[1])] ? `${m[2]}-${positions[Number(m[1])].key}` : null;
+    return /^[a-zA-Z]+$/.test(field) && field !== "positions" ? field : null;
+  };
+  const step = (n: number) => f.step.replace("{n}", String(n)).replace("{total}", "5");
   const payload = JSON.stringify({
     ...form,
     positions: positions.map(({ sideId, holder, recognition, text, sourceNote, refs }) => ({
@@ -97,22 +104,19 @@ export function TopicForm({
         <Alert variant="destructive">
           <CircleAlert className="size-4" />
           <AlertDescription>
-            <ul className="list-disc ps-4">
-              {state.problems.map((problem, i) => (
-                <li key={i}>{message(problem)}</li>
-              ))}
+            <p className="font-medium">{f.problemsTitle}</p>
+            <ul className="mt-1 list-disc ps-4">
+              {state.problems.map((problem, i) => {
+                const target = fieldId(problem.field);
+                return <li key={i}>{target ? <a href={`#${target}`}>{message(problem)}</a> : message(problem)}</li>;
+              })}
             </ul>
           </AlertDescription>
         </Alert>
       )}
-      {state.saved && state.problems.length === 0 && !pending && (
-        <Alert>
-          <CircleCheck className="size-4" />
-          <AlertDescription>{f.saved}</AlertDescription>
-        </Alert>
-      )}
 
       <MainCard
+        step={step(1)}
         form={form}
         set={set}
         errorOf={errorOf}
@@ -121,10 +125,10 @@ export function TopicForm({
         publishedBefore={initial?.status === "published"}
         t={t}
       />
-      <CircumstancesCard form={form} set={set} errorOf={errorOf} f={f} />
-      <PositionsCard positions={positions} setPositions={setPositions} sides={sides} errorOf={errorOf} t={t} />
-      <LinksCard form={form} set={set} errorOf={errorOf} termChoices={termChoices} topicChoices={topicChoices} f={f} />
-      <PublishCard form={form} set={set} errorOf={errorOf} t={t} />
+      <CircumstancesCard step={step(2)} form={form} set={set} errorOf={errorOf} f={f} />
+      <PositionsCard step={step(3)} positions={positions} setPositions={setPositions} sides={sides} errorOf={errorOf} t={t} />
+      <LinksCard step={step(4)} form={form} set={set} errorOf={errorOf} termChoices={termChoices} topicChoices={topicChoices} f={f} />
+      <PublishCard step={step(5)} form={form} set={set} errorOf={errorOf} t={t} />
 
       {deleteDenied && (
         <Alert variant="destructive">
@@ -132,10 +136,18 @@ export function TopicForm({
           <AlertDescription>{f.deleteDenied}</AlertDescription>
         </Alert>
       )}
-      <div className="flex flex-wrap justify-between gap-3">
-        <Button type="submit" size="lg" disabled={pending}>
-          {pending ? f.saving : f.save}
-        </Button>
+      {/* The save button stays at the foot of the screen while the form scrolls. */}
+      <div className="sticky bottom-0 z-20 -mx-4 flex flex-wrap items-center justify-between gap-3 border-t bg-background/95 px-4 py-3 backdrop-blur">
+        <div className="flex items-center gap-3">
+          <Button type="submit" size="lg" disabled={pending}>
+            {pending ? f.saving : f.save}
+          </Button>
+          {state.saved && state.problems.length === 0 && !pending && (
+            <span role="status" className="text-sm text-muted-foreground">
+              {f.saved}
+            </span>
+          )}
+        </div>
         {id && initial?.status === "draft" && (
           <Button
             type="button"

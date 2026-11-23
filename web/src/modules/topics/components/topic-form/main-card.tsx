@@ -14,6 +14,7 @@ import { slugify } from "@/shared/forms/input";
 
 // Title, permanent id, question, category, place on the map and the main texts.
 export function MainCard({
+  step,
   form,
   set,
   errorOf,
@@ -22,6 +23,7 @@ export function MainCard({
   publishedBefore,
   t,
 }: {
+  step?: string;
   form: TopicInput;
   set: SetField;
   errorOf: ErrorOf;
@@ -36,7 +38,10 @@ export function MainCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{f.main}</CardTitle>
+        <CardTitle>
+          {step && <span className="mb-1 block text-sm font-normal text-muted-foreground">{step}</span>}
+          {f.main}
+        </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2">
         <Field id="title" label={f.title} error={errorOf("title")}>

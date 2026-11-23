@@ -81,6 +81,11 @@ export const en: Messages = {
     map: "Map of places",
     people: "People",
     nothing: "Nothing found",
+    adminMaterials: "Materials",
+    adminChecks: "Checks",
+    adminPeople: "People",
+    adminHome: "Admin home",
+    toSite: "To the site",
   },
   admin: {
     ...accountsAdminEn,

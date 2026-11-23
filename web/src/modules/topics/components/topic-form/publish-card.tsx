@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Field } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
@@ -10,11 +10,13 @@ import type { AdminStrings, ErrorOf, SetField } from "./form-types";
 
 // Status of the topic and the reason for a change (required once it is published).
 export function PublishCard({
+  step,
   form,
   set,
   errorOf,
   t,
 }: {
+  step?: string;
   form: TopicInput;
   set: SetField;
   errorOf: ErrorOf;
@@ -23,7 +25,13 @@ export function PublishCard({
   const f = t.topicForm;
   return (
     <Card>
-      <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+      <CardHeader>
+        <CardTitle>
+          {step && <span className="mb-1 block text-sm font-normal text-muted-foreground">{step}</span>}
+          {f.publishTitle}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 sm:grid-cols-2">
         <Field id="status" label={f.status}>
           <Select value={form.status} onValueChange={(value) => set("status", value as TopicInput["status"])}>
             <SelectTrigger id="status">

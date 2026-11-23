@@ -81,6 +81,11 @@ export const ru = {
     map: "Карта мест",
     people: "Люди",
     nothing: "Ничего не найдено",
+    adminMaterials: "Материалы",
+    adminChecks: "Проверка",
+    adminPeople: "Люди",
+    adminHome: "Начало админки",
+    toSite: "На сайт",
   },
   admin: {
     ...accountsAdminRu,
