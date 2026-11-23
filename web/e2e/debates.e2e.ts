@@ -50,7 +50,7 @@ test("a debate is accepted, cited, checked and published beside the ayah", async
   await askForm.getByRole("button", { name: "Отправить ход" }).click();
   await expect(askForm.locator("p", { hasText: ask })).toBeVisible();
 
-  await askForm.locator("#kind").selectOption("answer");
+  await askForm.locator("input[name=kind][value=answer]").check();
   await askForm.locator("#parent").selectOption({ index: 1 });
   await askForm.locator("#address").fill("2:255");
   await askForm.locator("#body").fill("Свой вопрос автор не отвечает.");
@@ -59,7 +59,7 @@ test("a debate is accepted, cited, checked and published beside the ayah", async
 
   const reply = reader.locator("main").filter({ visible: true });
   await reader.goto(debateUrl);
-  await reply.locator("#kind").selectOption("answer");
+  await reply.locator("input[name=kind][value=answer]").check();
   await reply.locator("#parent").selectOption({ index: 1 });
   await reply.locator("#body").fill(answer);
   await reply.getByRole("button", { name: "Отправить ход" }).click();

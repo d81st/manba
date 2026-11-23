@@ -17,7 +17,7 @@ export function SiteHeader({ menu }: { menu?: React.ReactNode } = {}) {
         {menu}
         <Link href="/" className="flex flex-col text-foreground no-underline">
           <span className="text-lg font-semibold leading-tight">{t.appName}</span>
-          <span className="text-sm text-muted-foreground">{t.appTagline}</span>
+          <span className="hidden text-sm text-muted-foreground sm:block">{t.appTagline}</span>
         </Link>
         {/* One search for the whole site: the assistant finds the word or the
             address in the Quran, the hadiths, the books, the topics and the glossary. */}
@@ -34,14 +34,24 @@ export function SiteHeader({ menu }: { menu?: React.ReactNode } = {}) {
             />
           </div>
         </form>
-        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
-          <LanguageSwitch />
-          <Suspense fallback={<span className="text-sm text-muted-foreground">{t.home.loading}</span>}>
-            <Account />
-          </Suspense>
+        {/* With a menu (reader pages), the language and the account move into it on a phone. */}
+        <div className={menu ? "hidden min-w-0 flex-wrap items-center justify-end gap-2 lg:flex" : "flex min-w-0 flex-wrap items-center justify-end gap-2"}>
+          <AccountBar />
         </div>
       </div>
     </header>
+  );
+}
+
+// The language switch and the account: in the header, or inside the menu on a phone.
+export function AccountBar() {
+  return (
+    <>
+      <LanguageSwitch />
+      <Suspense fallback={<span className="text-sm text-muted-foreground">{t.home.loading}</span>}>
+        <Account />
+      </Suspense>
+    </>
   );
 }
 

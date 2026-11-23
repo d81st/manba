@@ -87,7 +87,8 @@ export function SiteSidebar({ groups, labels }: { groups: NavGroup[]; labels: La
 }
 
 // On a phone the tree opens over the page from the "Menu" button.
-export function MobileMenu({ groups, labels }: { groups: NavGroup[]; labels: Labels }) {
+// "children": the language switch and the account, at the foot of the menu.
+export function MobileMenu({ groups, labels, children }: { groups: NavGroup[]; labels: Labels; children?: React.ReactNode }) {
   // Open for the page it was opened on: going to another page closes it.
   const pathname = usePathname();
   const [openOn, setOpenOn] = useState<string | null>(null);
@@ -126,6 +127,7 @@ export function MobileMenu({ groups, labels }: { groups: NavGroup[]; labels: Lab
               </button>
             </div>
             <NavTree groups={groups} labels={labels} onNavigate={() => setOpen(false)} />
+            {children && <div className="mt-6 flex flex-wrap items-center gap-3 border-t pt-4">{children}</div>}
           </div>
         </div>
       )}

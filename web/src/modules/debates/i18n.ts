@@ -14,7 +14,7 @@ export const debatesRu = {
     language: "Язык спора",
     languageHint: "Язык вопросов и ответов. Цитата остаётся на языке источника, перевод — рядом.",
     topic: "Тема энциклопедии",
-    topicHint: "Необязательно. Адрес опубликованной темы, например namaz.",
+    topicHint: "Адрес опубликованной темы, например namaz.",
     propose: "Предложить спор",
     invitations: "Вам предложили",
     mine: "Мои споры",
@@ -71,6 +71,11 @@ export const debatesRu = {
     at: "UTC",
     languages: { ru: "Русский", en: "English" },
     kinds: { question: "Вопрос", answer: "Ответ", counter: "Встречный вопрос" },
+    kindHints: {
+      question: "Спросить собеседника.",
+      answer: "Ответить цитатой: нужен адрес фрагмента в библиотеке.",
+      counter: "Ответить на ход своим вопросом.",
+    },
     statuses: {
       proposed: "ждёт согласия",
       open: "идёт",
@@ -136,7 +141,7 @@ export const debatesEn = {
     language: "Language of the debate",
     languageHint: "The language of the questions and answers. The quotation stays in the language of the source, with a translation beside it.",
     topic: "Encyclopedia topic",
-    topicHint: "Optional. The address of a published topic, for example namaz.",
+    topicHint: "The address of a published topic, for example namaz.",
     propose: "Propose a debate",
     invitations: "Proposed to you",
     mine: "My debates",
@@ -193,6 +198,11 @@ export const debatesEn = {
     at: "UTC",
     languages: { ru: "Русский", en: "English" },
     kinds: { question: "Question", answer: "Answer", counter: "Counter-question" },
+    kindHints: {
+      question: "Ask the other person.",
+      answer: "Answer with a quotation: it needs the address of a passage in the library.",
+      counter: "Answer a move with a question of your own.",
+    },
     statuses: {
       proposed: "waiting for agreement",
       open: "open",

@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { activeLocale, getMessages } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
-import { Field } from "@/shared/ui/field";
+import { Field, NativeSelect } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { MAX_QUESTION, MIN_QUESTION } from "../debate.validation";
@@ -18,7 +18,7 @@ export function ProposeForm() {
   const [partner, setPartner] = useState("");
   const [topic, setTopic] = useState("");
   return (
-    <form action={action} className="mt-6 flex max-w-xl flex-col gap-4">
+    <form action={action} className="mt-6 flex max-w-xl flex-col gap-5">
       <FormProblem code={state.problem} />
       <Field id="question" label={t.question} hint={t.questionHint}>
         <Textarea
@@ -36,20 +36,15 @@ export function ProposeForm() {
         <Input id="partner" name="partner" required maxLength={80} autoComplete="off" value={partner} onChange={(event) => setPartner(event.target.value)} />
       </Field>
       <Field id="language" label={t.language} hint={t.languageHint}>
-        <select
-          id="language"
-          name="language"
-          defaultValue={activeLocale()}
-          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
-        >
+        <NativeSelect id="language" name="language" defaultValue={activeLocale()} className="sm:w-64">
           <option value="ru">{t.languages.ru}</option>
           <option value="en">{t.languages.en}</option>
-        </select>
+        </NativeSelect>
       </Field>
-      <Field id="topic" label={t.topic} hint={t.topicHint}>
+      <Field id="topic" label={t.topic} hint={t.topicHint} optional={getMessages().forms.optional}>
         <Input id="topic" name="topic" maxLength={80} autoComplete="off" value={topic} onChange={(event) => setTopic(event.target.value)} />
       </Field>
-      <Button type="submit" disabled={pending} className="w-fit">
+      <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-fit">
         {t.propose}
       </Button>
     </form>

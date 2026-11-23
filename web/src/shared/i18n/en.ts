@@ -59,6 +59,10 @@ export const en: Messages = {
   appName: "Manba",
   appTagline: "An encyclopedia of Islam from primary sources",
   locale: { label: "Language", ru: "Русский", en: "English" },
+  forms: {
+    optional: "(optional)",
+    showPassword: "Show the password",
+  },
   nav: {
     signOut: "Sign out",
     home: "Sections",

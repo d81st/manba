@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { getMessages } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
-import { Field } from "@/shared/ui/field";
+import { Field, NativeSelect } from "@/shared/ui/field";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { MOVE_KINDS, type MoveKind } from "../debate.types";
@@ -28,34 +28,36 @@ export function MoveForm({
   const [body, setBody] = useState("");
   const [address, setAddress] = useState("");
   return (
-    <form action={action} className="mt-4 flex max-w-xl flex-col gap-4 rounded-xl border bg-card p-4">
+    <form action={action} className="mt-4 flex max-w-xl flex-col gap-5 rounded-xl border bg-card p-4">
       <h2 className="text-lg font-semibold">{t.move}</h2>
       <input type="hidden" name="id" value={debateId} />
       {state.sent && <p role="status">{t.sent}</p>}
       <FormProblem code={state.problem} />
-      <Field id="kind" label={t.kind}>
-        <select
-          id="kind"
-          name="kind"
-          value={kind}
-          onChange={(event) => setKind(event.target.value as MoveKind)}
-          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
-        >
-          {MOVE_KINDS.map((item) => (
-            <option key={item} value={item}>
-              {t.kinds[item]}
-            </option>
-          ))}
-        </select>
-      </Field>
+      {/* The kind of move as a choice of three, each with what it means. */}
+      <fieldset className="space-y-2">
+        <legend className="mb-1.5 text-base font-medium">{t.kind}</legend>
+        {MOVE_KINDS.map((item) => (
+          <label
+            key={item}
+            className="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border px-3 py-2 has-[:checked]:border-primary has-[:checked]:bg-accent"
+          >
+            <input
+              type="radio"
+              name="kind"
+              value={item}
+              checked={kind === item}
+              onChange={() => setKind(item)}
+              className="mt-1 size-4 accent-[var(--primary)]"
+            />
+            <span>
+              <span className="font-medium">{t.kinds[item]}</span>
+              <span className="block text-sm text-muted-foreground">{t.kindHints[item]}</span>
+            </span>
+          </label>
+        ))}
+      </fieldset>
       <Field id="parent" label={t.parent}>
-        <select
-          id="parent"
-          name="parent"
-          value={parent}
-          onChange={(event) => setParent(event.target.value)}
-          className="h-9 max-w-full rounded-md border border-input bg-background px-2 text-sm"
-        >
+        <NativeSelect id="parent" name="parent" value={parent} onChange={(event) => setParent(event.target.value)}>
           <option value="">{t.parentNone}</option>
           {parents.map((item) => (
             <option key={item.id} value={item.id}>
@@ -63,7 +65,7 @@ export function MoveForm({
               {item.label}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       </Field>
       <Field id="body" label={t.body} hint={t.bodyHint}>
         <Textarea id="body" name="body" required maxLength={MAX_BODY} rows={3} value={body} onChange={(event) => setBody(event.target.value)} />
@@ -71,7 +73,7 @@ export function MoveForm({
       <Field id="address" label={t.address} hint={t.addressHint}>
         <Input id="address" name="address" maxLength={200} autoComplete="off" value={address} onChange={(event) => setAddress(event.target.value)} />
       </Field>
-      <Button type="submit" disabled={pending} className="w-fit">
+      <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-fit">
         {t.send}
       </Button>
     </form>

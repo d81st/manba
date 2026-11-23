@@ -59,6 +59,10 @@ export const ru = {
   appName: "Манба",
   appTagline: "Энциклопедия ислама по первоисточникам",
   locale: { label: "Язык", ru: "Русский", en: "English" },
+  forms: {
+    optional: "(необязательно)",
+    showPassword: "Показать пароль",
+  },
   nav: {
     signOut: "Выйти",
     home: "Разделы",

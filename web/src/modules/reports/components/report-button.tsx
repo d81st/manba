@@ -6,6 +6,7 @@ import { useActionState, useRef, useState } from "react";
 import { getMessages } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import { Textarea } from "@/shared/ui/textarea";
+import { Field } from "@/shared/ui/field";
 import { MAX_MESSAGE, MAX_QUOTE } from "../report.validation";
 import { type ReportFormState, sendReportAction } from "../server/report.actions";
 
@@ -90,20 +91,24 @@ function ReportForm({ place, onClose }: { place: { page: string; quote: string }
           ) : (
             <p className="text-xs text-muted-foreground">{t.quoteHint}</p>
           )}
-          <label className="flex flex-col gap-1 text-sm font-medium">
-            {t.message}
-            <Textarea name="message" required minLength={5} maxLength={MAX_MESSAGE} rows={4} placeholder={t.placeholder} autoFocus className="font-normal" />
-          </label>
-          {state.problem && (
-            <p role="alert" className="text-sm text-destructive">
-              {t.problems[state.problem]}
-            </p>
-          )}
-          <div className="flex justify-end gap-2">
+          <Field id="report-message" label={t.message} error={state.problem ? t.problems[state.problem] : undefined}>
+            <Textarea
+              id="report-message"
+              name="message"
+              required
+              minLength={5}
+              maxLength={MAX_MESSAGE}
+              rows={4}
+              placeholder={t.placeholder}
+              autoFocus
+            />
+          </Field>
+          {/* The main action first and large; leaving is the quieter one. */}
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <Button type="button" variant="outline" onClick={onClose}>
               {t.cancel}
             </Button>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" size="lg" disabled={pending}>
               {t.send}
             </Button>
           </div>

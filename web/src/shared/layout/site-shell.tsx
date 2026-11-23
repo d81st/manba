@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { getMessages } from "@/shared/i18n";
-import { SiteHeader } from "./site-header";
+import { AccountBar, SiteHeader } from "./site-header";
 import { siteNav } from "./site-nav";
 import { MobileMenu, SiteSidebar } from "./site-sidebar";
 
@@ -13,7 +13,13 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const labels = { sections: t.sections, filter: t.filter, menu: t.menu, close: t.close, nothing: t.nothing };
   return (
     <>
-      <SiteHeader menu={<MobileMenu groups={groups} labels={labels} />} />
+      <SiteHeader
+        menu={
+          <MobileMenu groups={groups} labels={labels}>
+            <AccountBar />
+          </MobileMenu>
+        }
+      />
       <div className="flex min-w-0">
         <SiteSidebar groups={groups} labels={labels} />
         <div className="min-w-0 flex-1">{children}</div>
