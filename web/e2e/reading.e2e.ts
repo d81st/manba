@@ -115,6 +115,8 @@ test.describe("reading", () => {
   test("the sura strip keeps the ayahs and opens another sura", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/quran/36");
+    // The strip is a second level: its button stands above the ayahs.
+    await page.locator("#sura-strip summary").click();
     const strip = page.getByRole("navigation", { name: "Суры мусхафа" }).filter({ visible: true });
     await expect(strip).toBeVisible();
     await expect(strip.getByRole("link")).toHaveCount(114);
@@ -154,7 +156,8 @@ test.describe("reading", () => {
     const ayah = page.locator("#\\32 -255");
     await expect(ayah.locator("p[lang=ar]")).not.toBeEmpty();
     await expect(ayah.locator("p[lang=ru]")).not.toBeEmpty();
-    // The places of this sura sit above the text. A press opens the ayah below.
+    // The places of this sura open above the text. A press opens the ayah below.
+    await page.locator("#place-rail summary").click();
     const rail = page.getByRole("navigation", { name: "Места на этой странице" }).filter({ visible: true });
     await expect(rail.getByRole("link")).toHaveCount(286);
     await rail.getByRole("link", { name: "286", exact: true }).click();
