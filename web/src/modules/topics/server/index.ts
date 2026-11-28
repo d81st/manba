@@ -11,3 +11,7 @@ export { listEventLinksForEdit, listPlaceLinksForEdit, listTopicLinks, listTopic
 export { listVersionPointsForEdit } from "./version.queries";
 export { deleteVersionPoint, saveVersionPoint } from "./version.commands";
 export { saveTopicEventsAction, saveTopicPlacesAction } from "./topic.actions";
+export { getTopicReview, listReviewQueue } from "./review.queries";
+export type { ReviewEntry, ReviewQueueRow, TopicReview } from "./review.queries";
+export { saveReviewCheckAction } from "./review.actions";
+export type { ReviewCheckState } from "./review.actions";

@@ -40,7 +40,7 @@ async function ayahRange(sura: number, from: number, to: number): Promise<TopicA
 }
 
 // The page of a fragment: an ayah, a page of a book, a hadith.
-function fragmentHref(address: string): string {
+export function fragmentHref(address: string): string {
   const [work, ...rest] = address.split(".");
   const path = rest.map(Number);
   if (work === "quran") return `/quran/${path[0]}#${path[0]}-${path[1]}`;
@@ -51,7 +51,7 @@ function fragmentHref(address: string): string {
 // (descendants are found through addresses, whose GiST index serves <@)
 // primary Arabic text contains it word for word; a quotation found nowhere
 // stays plain text.
-async function quoteLinks(items: { text: string; addresses: string[] }[]): Promise<QuoteLinks[]> {
+export async function quoteLinks(items: { text: string; addresses: string[] }[]): Promise<QuoteLinks[]> {
   const rows = items.flatMap((item, i) =>
     item.addresses.length ? arabicQuotes(item.text).map((quote) => ({ i, quote, addrs: item.addresses })) : [],
   );
@@ -76,7 +76,7 @@ async function quoteLinks(items: { text: string; addresses: string[] }[]): Promi
   return links;
 }
 
-function fragmentLabel(address: string): string {
+export function fragmentLabel(address: string): string {
   const [work, ...rest] = address.split(".");
   if (work === "quran") return rest.slice(0, 2).join(":");
   return isBook(work) ? formatBookRef(address) : formatHadithRef(address);

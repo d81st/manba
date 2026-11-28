@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { ClipboardCheck, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -78,6 +78,12 @@ async function EditTopic({
           <ExternalLink className="size-4" />
           {t.topics.view}
         </PreviewLink>
+        {topic.status !== "published" && topic.status !== "retired" && (
+          <Link href={`/admin/review/${topic.id}`} className="inline-flex items-center gap-1 text-sm">
+            <ClipboardCheck className="size-4" />
+            {t.review.title}
+          </Link>
+        )}
       </div>
       <TopicForm
         key={`${id}-${topic.status}`}

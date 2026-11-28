@@ -1,4 +1,4 @@
-import { BookA, Bug, CalendarRange, Flag, Gavel, History, Link2, ListChecks, MessageCircleQuestion, Network, Scale, SearchX, UserCog, Users, Video } from "lucide-react";
+import { BookA, Bug, CalendarRange, ClipboardCheck, Flag, Gavel, History, Link2, ListChecks, MessageCircleQuestion, Network, Scale, SearchX, UserCog, Users, Video } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Page } from "@/shared/layout/page";
@@ -18,6 +18,7 @@ function sections() {
     { href: "/admin/origins", icon: Network, title: t.sections.origins, hint: t.sections.originsHint },
     { href: "/admin/history", icon: History, title: t.sections.history, hint: t.sections.historyHint },
     { href: "/admin/tests", icon: ListChecks, title: t.sections.tests, hint: t.sections.testsHint },
+    { href: "/admin/review", icon: ClipboardCheck, title: t.sections.review, hint: t.sections.reviewHint },
     { href: "/admin/reports", icon: Flag, title: t.sections.reports, hint: t.sections.reportsHint },
     { href: "/admin/errors", icon: Bug, title: t.sections.errors, hint: t.sections.errorsHint },
     { href: "/admin/findings", icon: SearchX, title: t.sections.findings, hint: t.sections.findingsHint },

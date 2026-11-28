@@ -25,6 +25,7 @@ export function adminNav(): NavGroup[] {
     {
       label: n.adminChecks,
       items: [
+        { href: "/admin/review", label: s.review },
         { href: "/admin/findings", label: s.findings },
         { href: "/admin/reports", label: s.reports },
         { href: "/admin/debates", label: s.debates },

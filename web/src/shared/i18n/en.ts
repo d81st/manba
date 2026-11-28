@@ -127,6 +127,8 @@ export const en: Messages = {
       reportsHint: "What readers wrote about mistakes on pages: typos, dates, links.",
       errors: "Site errors",
       errorsHint: "Failures of the server and of readers’ browsers over 30 days — without the Render logs.",
+      review: "What to check",
+      reviewHint: "Draft topics with items for the specialist: what is checked, what changed after the check, remarks and quotations not found in the sources.",
       findings: "New leads",
       findingsHint: "Leads from outside (a post, a video) with a text attributed to a source: check it against the primary source — confirmed or not found.",
       assistant: "Assistant: synonyms",
