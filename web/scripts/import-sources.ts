@@ -2125,7 +2125,7 @@ const DRAFTS_AFTER_IMPORT = [
   "096_topic_sira_events.sql",
   "097_topic_places.sql",
   "098_gharaniq_draft.sql",
-  "099_sihr_draft.sql", "100_parents_draft.sql", "102_hakim_mustadrak_draft.sql", "104_qadar_draft.sql",
+  "099_sihr_draft.sql", "100_parents_draft.sql", "102_hakim_mustadrak_draft.sql", "104_qadar_draft.sql", "105_divine_attributes_draft.sql",
 ];
 
 async function applyDraftsAfterImport(client: pg.Client) {
