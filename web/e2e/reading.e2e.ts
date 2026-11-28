@@ -20,7 +20,7 @@ test.describe("reading", () => {
     const errors = collectErrors(page);
     const pages = [
       "/", "/quran", "/quran/1", "/quran/map", "/hadith", "/hadith/bukhari", "/hadith/bukhari/book/1", "/library",
-      "/library/ibn_hisham", "/library/umm_shafii", "/library/hidaya", "/library/bidayat_mujtahid", "/library/sarim_maslul", "/library/futuh_buldan", "/library/mughni", "/library/asnam", "/library/mizan_itidal", "/library/furusiyya", "/library/irshad_mufid", "/hadith/musannaf", "/hadith/mustadrak", "/topics", "/glossary", "/sira", "/sira/timeline", "/sira/people", "/history", "/origins",
+      "/library/ibn_hisham", "/library/umm_shafii", "/library/hidaya", "/library/bidayat_mujtahid", "/library/sarim_maslul", "/library/futuh_buldan", "/library/mughni", "/library/asnam", "/library/mizan_itidal", "/library/furusiyya", "/library/irshad_mufid", "/library/majmu_fatawa", "/hadith/musannaf", "/hadith/mustadrak", "/topics", "/glossary", "/sira", "/sira/timeline", "/sira/people", "/history", "/origins",
       "/science", "/tests", "/assistant", "/knowledge", "/galaxy", "/bookmarks", "/debates", "/not-found-in-sources", "/admin",
       "/admin/reports", "/admin/errors", "/admin/topics", "/admin/debates",
     ];

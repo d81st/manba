@@ -1560,6 +1560,34 @@ const FURUSIYYA: HadithSource = {
   retrievedAt: "2026-11-22",
 };
 
+// Only volume 22 of Ibn Taymiyya's «Majmu' al-fatawa» (the author's decision:
+// the whole collection is too large for the base), for the leads on al-Hakim.
+// The file is that volume cut from the OpenITI export with its header, byte
+// for byte (data/sources/openiti/README.md).
+const MAJMU_FATAWA: HadithSource = {
+  file: "0728IbnTaymiyya.MajmucFatawa.Shamela0007289-ara1.vol22",
+  layout: "pages",
+  transform: (text) => stripTags(text).text,
+  pages: { gaps: true, repair: true },
+  key: "openiti:0728IbnTaymiyya.MajmucFatawa.Shamela0007289-ara1:3a235a2:vol22",
+  sourceId: "openiti.majmu-fatawa-shamela0007289",
+  sourceTitle: "OpenITI · 0728IbnTaymiyya.MajmucFatawa.Shamela0007289-ara1 (vol. 22)",
+  sourceVersion: "OpenITI/0750AH 3a235a2 (2026-11-28)",
+  sourceUrl: "https://github.com/OpenITI/0750AH",
+  notice: `${OPENITI_CITATION}. Text: 0728IbnTaymiyya.MajmucFatawa.Shamela0007289-ara1, volume 22 only — Majmu' al-fatawa of Ibn Taymiyya, collected by Abd al-Rahman ibn Muhammad ibn Qasim, King Fahd Complex for the Printing of the Holy Quran, Medina, 1416/1995, with the edition's pages. License: ${OPENITI_LICENSE} (https://creativecommons.org/licenses/by-nc-sa/4.0/).`,
+  work: {
+    id: "majmu_fatawa",
+    category: "fiqh",
+    canon: "sunni",
+    titles: { ar: "مجموع الفتاوى", ru: "Ибн Таймия, «Маджму аль-фатава»", "ru-short": "Маджму" },
+    authoritySunni: null,
+  },
+  versionId: "majmu_fatawa.ar.openiti",
+  versionTitle: "Арабский текст: сборник Абд ар-Рахмана ибн Касима (Комплекс короля Фахда, Медина, 1416/1995), только том 22, страницы издания (OpenITI)",
+  minItems: 620,
+  retrievedAt: "2026-11-28",
+};
+
 // The edition prints al-Dhahabi's remarks from his «Talkhis» after the
 // reports; they stay in their reports, under the editor's label (openiti-mustadrak.ts).
 const MUSTADRAK: HadithSource = {
@@ -1613,7 +1641,7 @@ const IRSHAD_MUFID: HadithSource = {
   retrievedAt: "2026-11-22",
 };
 
-const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI, SARIM_MASLUL, FUTUH_BULDAN, MIZAN_ITIDAL, FURUSIYYA, IRSHAD_MUFID];
+const DISPUTE_BOOKS = [IQTIDA_SIRAT, AHKAM_DHIMMA, UMM_SHAFII, HIDAYA_MARGHINANI, KHARAJ_ABU_YUSUF, IKHTILAF_AIMMA, BIDAYAT_MUJTAHID, MUGHNI, SARIM_MASLUL, FUTUH_BULDAN, MIZAN_ITIDAL, FURUSIYYA, IRSHAD_MUFID, MAJMU_FATAWA];
 
 const SCIENCE_BOOKS = [UYUN_ANBA, IKHBAR_ULAMA, SHARH_ISHARAT, TAHAFUT, MUNQIDH, JAWAHIR_QURAN, IGHATHAT_LAHFAN, MUWAFAQAT, ITQAN];
 
@@ -2097,7 +2125,7 @@ const DRAFTS_AFTER_IMPORT = [
   "096_topic_sira_events.sql",
   "097_topic_places.sql",
   "098_gharaniq_draft.sql",
-  "099_sihr_draft.sql", "100_parents_draft.sql",
+  "099_sihr_draft.sql", "100_parents_draft.sql", "102_hakim_mustadrak_draft.sql",
 ];
 
 async function applyDraftsAfterImport(client: pg.Client) {
